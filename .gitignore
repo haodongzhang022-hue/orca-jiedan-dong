@@ -1,0 +1,64 @@
+# 私有项目 · 不提交大文件与临时文件
+
+# 输出与日志（运行时自动生成，可恢复）
+outputs/
+logs/
+backups/
+worktrees/              # ORCA 物理隔离工作树（由 git worktree 管理，不提交）
+*.log
+*.tmp
+*.temp
+
+# 模型与缓存
+*.bin
+*.safetensors
+*.gguf
+*.onnx
+*.pkl
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 大文件格式（课程原始文件不放入 Git，只放萃取后的 Markdown）
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.flv
+*.ts
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.pdf
+*.docx
+*.doc
+*.pptx
+*.ppt
+*.xlsx
+*.xls
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+
+# 环境与密钥
+.env
+.env.*
+secrets.yaml
+*.key
+*.pem
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+
+# 测试生成物（保留样本本身，不保留动态输出）
+tests/sample_course/out_*/

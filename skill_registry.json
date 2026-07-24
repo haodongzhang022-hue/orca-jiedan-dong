@@ -1,0 +1,17 @@
+{
+  "skills": [
+    {
+      "id": "knowledge_extraction_from_cloud_drive",
+      "name": "网盘课程知识萃取",
+      "version": "1.0.0",
+      "category": "龙虾舰队流水线 · 知识管理技能库",
+      "entry_script": "scripts/auto_knowledge_extract.py",
+      "project_root": "E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目",
+      "latest_case": {
+        "course": "",
+        "date": "",
+        "outputs": ""
+      }
+    }
+  ]
+}

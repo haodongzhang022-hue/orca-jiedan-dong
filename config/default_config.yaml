@@ -1,0 +1,51 @@
+# ORCA 多 Agent 舰队 · 默认配置（通用模板，企业微信群定制接单项目 由 init_orca_silent.sh 替换）
+
+project:
+  name: "企业微信群定制接单项目"
+  id: "knowledge_extraction_from_cloud_drive"
+  version: "1.0.0"
+  encoding: "utf-8"
+  # 项目根目录：所有相对路径基于此。自动推导为脚本所在目录的父目录。
+  root_dir: "auto"
+
+paths:
+  # 临时/缓存目录，优先使用 G 盘，避免 C 盘
+  temp_dir: "G:/temp/knowledge_extraction"
+  cache_dir: "G:/temp/knowledge_extraction/cache"
+  # Obsidian 双知识库（主库 + 备份库），统一落在 G 盘不占本地
+  obsidian_main: "G:/龙虾知识库主库"
+  obsidian_backup: "G:/龙虾知识库主库/Backup"
+  # 技能库注册位置
+  skill_registry_dir: "E:/龙虾AI主控中心/我的AI分身/技能库"
+  # 全局模板路径（追加触发规则用）
+  global_template: "E:/龙虾AI主控中心/我的AI分身/技能库/龙虾全域官方模板-最终版.md"
+
+# 授权控制：在以下节点必须询问用户
+gates:
+  ask_new_cloud_drive: true
+  ask_batch_delete: true
+  ask_github_sync: true
+  ask_overwrite_existing: true
+
+# 萃取质量标准
+quality:
+  min_accuracy: 0.90
+  min_coverage: 0.85
+  max_output_tokens_per_chunk: 4096
+  chunk_overlap: 200
+
+# 日志与备份
+logging:
+  level: INFO
+  format: "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+  rotate_days: 7
+
+backup:
+  enabled: true
+  before_extraction: true
+  retention_days: 30
+
+# 断点续传
+resume:
+  state_file: "logs/resume_state.json"
+  enabled: true

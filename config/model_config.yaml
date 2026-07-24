@@ -1,0 +1,65 @@
+# 本地大模型配置
+# 视频/音频转文字 → 分段摘要 → 知识点提取 均通过此处的模型后端完成
+
+# 模型后端选择：ollama / openai / mimo / mock
+active_backend: "ollama"
+
+# Ollama（本地首选）
+ollama:
+  base_url: "http://127.0.0.1:11434/v1"
+  model: "gemma4:e4b"
+  embedding_model: "nomic-embed-text"
+  timeout: 120
+  max_retries: 2
+
+# OpenAI 兼容接口（用于 Claude/MIMO/DeepSeek 等）
+openai:
+  base_url: ""
+  api_key: "${env:OPENAI_API_KEY}"
+  model: ""
+  timeout: 60
+
+# MIMO（MiMO V2.5 Pro，小米后端）
+mimo:
+  base_url: "https://token-plan-cn.xiaomimimo.com/v1"
+  api_key: "${env:MIMO_API_KEY}"
+  model: "mimo-v2.5-pro"
+
+# 转写模型（Whisper 或兼容 API）
+transcription:
+  backend: "whisper"  # whisper / faster-whisper / api
+  model: "base"
+  language: "zh"
+  device: "cpu"
+  # 若使用 API 转写，填写如下
+  api_url: ""
+  api_key: ""
+
+# 降级策略：当主模型不可用时
+degradation:
+  # fallback_backends 顺序尝试
+  fallback_backends: ["mimo", "openai", "mock"]
+  # 若全部失败，使用启发式摘要（仅标题/目录）
+  heuristic_fallback: true
+
+# 摘要与提取 Prompt 模板
+prompts:
+  summarize_chunk: |
+    请用中文总结以下课程片段。要求：
+    - 列出核心知识点（不超过7条）
+    - 提取可落地的行动要点
+    - 用 markdown 无序列表输出
+
+  extract_outline: |
+    请根据课程目录/章节/标题生成标准课程大纲。要求：
+    - 输出一级、二级标题
+    - 每个二级标题下附 1 句核心目标
+    - 只输出大纲，不展开细节
+
+  knowledge_card: |
+    请将以下知识点转为「知识卡片」：
+    - 概念
+    - 为什么重要
+    - 如何应用
+    - 常见误区
+    - 关联标签

@@ -1,0 +1,16 @@
+# 网盘课程知识萃取项目依赖
+# 安装：python -m pip install -r requirements.txt
+
+pyyaml>=6.0
+
+# 可选：PDF 解析
+pypdf>=4.0
+
+# 可选：Word 文档解析
+python-docx>=1.1
+
+# 可选：音视频转写（需要 ffmpeg 系统二进制）
+openai-whisper>=20231117
+
+# 可选：模型接口（如使用 OpenAI 兼容 API）
+openai>=1.0
