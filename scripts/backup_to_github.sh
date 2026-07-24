@@ -35,7 +35,8 @@ else
 fi
 
 # —— 4) 提交本地变更并推送（清本地代理前缀，走 gh-proxy URL）——
-git add -A
+# 注意：worktrees/ 是 ORCA 物理隔离工作树（git worktree 管理），勿作为 gitlink 提交
+git add -A -- ':!worktrees'
 git commit -q -m "chore: auto-backup $(date '+%Y-%m-%d %H:%M:%S')" || echo "（无新提交）"
 HTTPS_PROXY= HTTP_PROXY= https_proxy= http_proxy= git -c http.proxy= push github --all
 git push github --tags || true
