@@ -1,14 +1,20 @@
 #!/bin/bash
 # ============================================================
-# 项目本地舰队任务拉取脚本（v2.1）
-# 路径：E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目/scripts/fleet_pull.sh
+# 项目本地舰队任务拉取脚本（v2.2）
+# 路径：scripts/fleet_pull.sh
 # 用法：
-#   bash scripts/fleet_pull.sh                    # 手动拉取一次
-#   bash scripts/fleet_pull.sh auto 30 600          # 每30秒扫描，连续10分钟无任务退出
+#   bash scripts/fleet_pull.sh                       # 手动拉取一次
+#   bash scripts/fleet_pull.sh auto 30 600           # 每30秒扫描，连续10分钟无任务退出
+#   bash scripts/fleet_pull.sh auto 30 0               # 每30秒扫描，永不退出（批量接单模式）
+#   bash scripts/fleet_pull.sh auto 30 600 <Hermes>    # 显式指定 Agent
 # ============================================================
 set -euo pipefail
 
-EX="E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目/fleet_exchange"
+# 自动定位项目根目录（脚本位于 scripts/ 下）
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+EX="$PROJECT_ROOT/fleet_exchange"
 IN="$EX/incoming"
 DO="$EX/doing"
 RS="$EX/results"
@@ -21,12 +27,25 @@ INTERVAL="${2:-30}"
 TIMEOUT="${3:-600}"
 
 AGENT_NAME=""
-if [[ "${ORCA_AGENT_NAME:-}" == "hermes" ]] || [[ "$(git -C . rev-parse --abbrev-ref HEAD 2>/dev/null)" == "hermes/brain" ]]; then
+# 优先读取 ORCA_AGENT_NAME 环境变量
+if [[ "${ORCA_AGENT_NAME:-}" == "hermes" ]]; then
   AGENT_NAME="Hermes"
-elif [[ "${ORCA_AGENT_NAME:-}" == "codex" ]] || [[ "$(git -C . rev-parse --abbrev-ref HEAD 2>/dev/null)" == "codex/executor" ]]; then
+elif [[ "${ORCA_AGENT_NAME:-}" == "codex" ]]; then
   AGENT_NAME="Codex"
-elif [[ "${ORCA_AGENT_NAME:-}" == "claude" ]] || [[ "$(git -C . rev-parse --abbrev-ref HEAD 2>/dev/null)" == "claude/reviewer" ]]; then
+elif [[ "${ORCA_AGENT_NAME:-}" == "claude" ]]; then
   AGENT_NAME="CloudCode"
+fi
+
+# 其次根据当前 git 分支判断（ORCA worktree 分支通常是 hermes/brain 等）
+if [ -z "$AGENT_NAME" ]; then
+  CURRENT_BRANCH="$(git -C "$PROJECT_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+  if [[ "$CURRENT_BRANCH" == "hermes/brain" ]]; then
+    AGENT_NAME="Hermes"
+  elif [[ "$CURRENT_BRANCH" == "codex/executor" ]]; then
+    AGENT_NAME="Codex"
+  elif [[ "$CURRENT_BRANCH" == "claude/reviewer" ]]; then
+    AGENT_NAME="CloudCode"
+  fi
 fi
 
 # 如果无法自动判断，要求传入
@@ -41,7 +60,6 @@ fi
 idle_count=0
 
 while true; do
-  # 按时间排序找本 Agent 的任务（文件名匹配 或 frontmatter to: 匹配）
   found=""
   for f in $(ls -1t "$IN"/*.md 2>/dev/null | head -50); do
     fname=$(basename "$f")
@@ -59,7 +77,7 @@ while true; do
     echo "[PULL] $(date '+%Y-%m-%d %H:%M:%S') 无 $AGENT_NAME 任务，等待 ${INTERVAL}s"
     if [ "$MODE" == "auto" ]; then
       idle_count=$((idle_count + INTERVAL))
-      if [ "$idle_count" -ge "$TIMEOUT" ]; then
+      if [ "$TIMEOUT" -gt 0 ] && [ "$idle_count" -ge "$TIMEOUT" ]; then
         echo "[PULL] 连续 ${TIMEOUT}s 无任务，退出"
         exit 0
       fi
