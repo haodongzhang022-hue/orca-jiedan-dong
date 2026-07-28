@@ -1,0 +1,23 @@
+# Claude Code MCP 注册配置
+{
+  "mcpServers": {
+    "lobster-claude": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_claude_mcp_server.py"],
+      "description": "龙虾Claude MCP服务"
+    },
+    "lobster-codex": {
+      "type": "stdio",
+      "command": "python", 
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_codex_mcp_server.py"],
+      "description": "龙虾Codex代码服务 - Claude注册Codex为MCP服务"
+    },
+    "lobster-hermes": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_hermes_mcp_server.py"],
+      "description": "龙虾Hermes调度中枢 - Claude注册Hermes为MCP服务"
+    }
+  }
+}

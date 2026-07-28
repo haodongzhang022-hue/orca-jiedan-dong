@@ -1,0 +1,30 @@
+# Codex MCP 注册配置
+# 安装到: ~/.codex/mcp.json 或 CC Switch 自动发现
+{
+  "mcpServers": {
+    "lobster-codex": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_codex_mcp_server.py"],
+      "description": "龙虾Codex MCP服务"
+    },
+    "lobster-hermes": {
+      "type": "stdio", 
+      "command": "python",
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_hermes_mcp_server.py"],
+      "description": "龙虾Hermes调度中枢 - Codex注册Hermes为MCP服务"
+    },
+    "lobster-claude": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_claude_mcp_server.py"],
+      "description": "龙虾Claude规划服务 - Codex注册Claude为MCP服务"
+    },
+    "lobster-codex-claude-bridge": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["E:\\龙虾AI主控中心\\MCP服务\\lobster_codex_claude_bridge.py"],
+      "description": "Codex↔Claude桥接"
+    }
+  }
+}
