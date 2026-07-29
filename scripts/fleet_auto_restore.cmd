@@ -96,8 +96,42 @@ echo   [OK] Codex 桌面版配置已修复
 
 echo.
 
-:: === 3. 分支同步 ===
-echo [3/5] 分支同步...
+:: === 3. Codex CLI shim 检查 ===
+echo [3/7] Codex CLI shim 检查...
+set "SHIM_PATH=%APPDATA%\npm\codex"
+if not exist "%SHIM_PATH%" (
+    echo   [FIX] Codex CLI shim 缺失，正在创建...
+    (
+    echo #!/bin/sh
+    echo exec node "I:/npm/node_modules/@openai/codex/bin/codex.js" "$@"
+    ) > "%SHIM_PATH%"
+    (
+    echo @ECHO off
+    echo node "I:\npm\node_modules\@openai\codex\bin\codex.js" %%*
+    ) > "%APPDATA%\npm\codex.cmd"
+    echo   [OK] Codex CLI shim 已创建
+) else (
+    echo   [OK] Codex CLI shim 存在
+)
+
+:: === 4. Codex 运行时配置同步 ===
+echo [4/7] Codex 运行时配置同步...
+if exist "%CODEX_CONFIG%" (
+    set "RUNTIME_DIR=%APPDATA%\Orca\codex-runtime-home\home"
+    if exist "%RUNTIME_DIR%" (
+        copy /Y "%CODEX_CONFIG%" "%RUNTIME_DIR%\config.toml" >nul 2>&1
+        echo   [OK] Codex runtime 配置已同步
+    ) else (
+        echo   [SKIP] Orca runtime 目录不存在
+    )
+) else (
+    echo   [SKIP] Codex 配置不存在
+)
+
+echo.
+
+:: === 5. 分支同步 ===
+echo [5/7] 分支同步...
 cd /d "%PROJECT%"
 for %%b in (claude codex hermes) do (
     if exist "worktrees\%%b" (
@@ -114,8 +148,8 @@ for %%b in (claude codex hermes) do (
 
 echo.
 
-:: === 4. 端口验证 ===
-echo [4/5] 端口验证...
+:: === 6. 端口验证 ===
+echo [6/7] 端口验证...
 set "all_ok=1"
 netstat -an | findstr ":15721 " | findstr "LISTENING" >nul 2>&1
 if errorlevel 1 (echo   [FAIL] 15721 未启动 & set "all_ok=0") else (echo   [OK] 15721)
@@ -124,8 +158,8 @@ if errorlevel 1 (echo   [FAIL] 15730 未启动 & set "all_ok=0") else (echo   [O
 
 echo.
 
-:: === 5. 汇总 ===
-echo [5/5] 汇总
+:: === 7. 汇总 ===
+echo [7/7] 汇总
 echo ============================================
 if "%all_ok%"=="1" (
     echo  ✅ 龙虾舰队全部正常！

@@ -18,9 +18,25 @@ for port in 15721 15730; do
   fi
 done
 
-# 2. 验证 API 连通
+# 2. 检查 Codex CLI shim（MODULE_NOT_FOUND 修复）
+if [ ! -f ~/AppData/Roaming/npm/codex ]; then
+  echo "Codex CLI shim 缺失，正在创建..."
+  cat > ~/AppData/Roaming/npm/codex << 'SHIM'
+#!/bin/sh
+exec node "I:/npm/node_modules/@openai/codex/bin/codex.js" "$@"
+SHIM
+  chmod +x ~/AppData/Roaming/npm/codex
+fi
+
+# 3. 同步 Codex 运行时配置
+cp ~/.codex/config.toml ~/AppData/Roaming/Orca/codex-runtime-home/home/config.toml 2>/dev/null
+
+# 4. 验证 API 连通
 curl -s http://127.0.0.1:15730/health && echo " Codex Proxy OK"
 curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
+
+# 5. 完整就绪检查（可选，需要更多时间）
+# bash scripts/fleet_auto_ready.sh
 ```
 
 ## 项目约定
