@@ -27,11 +27,23 @@
 """
 import json
 import os
+import re
 import shutil
+import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
+
+# 业务目录脚手架（同目录 scripts/business_folders.py）
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    import business_folders as bf
+except Exception:
+    bf = None
+
+# 业务目录路径缓存（process_task 填充，看板汇总时读取）
+BUSINESS_PATHS = {}
 
 # ============================================================
 # 路径配置
@@ -46,6 +58,11 @@ G_DRIVE_ROOT = Path(os.environ.get(
     "G:/WorkBuddy-Cache/企业微信群定制接单项目"
 ))
 G_PROJECT_ROOT = G_DRIVE_ROOT
+# 兼容用户曾尝试切换的镜像路径：如果默认不存在但镜像路径存在，则回退
+G_MIRROR_ROOT = Path("G:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目")
+if not G_DRIVE_ROOT.exists() and G_MIRROR_ROOT.exists():
+    G_DRIVE_ROOT = G_MIRROR_ROOT
+    G_PROJECT_ROOT = G_DRIVE_ROOT
 G_OUTPUTS_DIR = G_PROJECT_ROOT / "outputs"
 G_LOGS_DIR = G_PROJECT_ROOT / "logs"
 G_DELIVERABLES_DIR = G_PROJECT_ROOT / "deliverables"  # 备用 G 盘交付镜像
@@ -54,6 +71,7 @@ G_DELIVERABLES_DIR = G_PROJECT_ROOT / "deliverables"  # 备用 G 盘交付镜像
 FLEET = E_PROJECT_ROOT / "fleet_exchange"
 FLEET_IN = FLEET / "incoming"
 FLEET_DOING = FLEET / "doing"
+FLEET_DONE = FLEET / "done"
 FLEET_RESULTS = FLEET / "results"
 FLEET_LOGS = FLEET / "logs"
 PENDING_DIR = E_PROJECT_ROOT / "待分发任务"
@@ -127,13 +145,15 @@ def list_tasks(directory: Path) -> list[Path]:
 
 
 def agent_tag(filename: str) -> str | None:
-    if "_Hermes_" in filename:
-        return "Hermes"
-    if "_Codex_" in filename:
-        return "Codex"
-    if "_CloudCode_" in filename or "_Claude_" in filename:
+    """返回文件名中的第一个 Agent 标记。结果文件名可能同时包含多个 Agent 标记
+    （例如 2026xxx__Codex_2026xxx__Hermes_...），此时第一个标记才是结果生产者。"""
+    m = re.search(r'_(Hermes|Codex|CloudCode|Claude)_', filename)
+    if not m:
+        return None
+    tag = m.group(1)
+    if tag == "Claude":
         return "CloudCode"
-    return None
+    return tag
 
 
 def find_task_in_dirs(task_id: str, agent: str, dirs: list[Path]) -> Path | None:
@@ -144,6 +164,10 @@ def find_task_in_dirs(task_id: str, agent: str, dirs: list[Path]) -> Path | None
             if f.is_file() and f.suffix == ".md" and task_id in f.name and agent_tag(f.name) == agent:
                 return f
     return None
+
+
+# 查找任务时同时检查 done/ 目录（任务可能已被 Agent 认领但未出结果）
+ALL_TASK_DIRS = [FLEET_IN, FLEET_DOING, FLEET_DONE, PENDING_DIR, CONFIRM_DIR]
 
 
 def find_result_for_task(task_id: str, agent: str) -> Path | None:
@@ -194,6 +218,54 @@ def migrate_legacy_outputs(task_id: str) -> bool:
     return False
 
 
+def run_image_generation_adapter(task_id: str) -> dict:
+    """调用图像生成适配器，处理 image_gen_requests.json。"""
+    adapter = Path(__file__).resolve().parent / "image_generation_adapter.py"
+    if not adapter.exists():
+        log(f"  -> 图像适配器不存在: {adapter}")
+        return {"all_done": False, "error": "adapter not found"}
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(adapter), "--task-id", task_id, "--mode", "auto"],
+            capture_output=True, text=True, timeout=300, cwd=str(E_PROJECT_ROOT)
+        )
+        log(f"  -> 适配器 stdout: {proc.stdout.strip()[-500:]}")
+        if proc.stderr:
+            log(f"  -> 适配器 stderr: {proc.stderr.strip()[-500:]}")
+        try:
+            result = json.loads(proc.stdout.splitlines()[-1])
+        except Exception:
+            result = {"all_done": False, "raw": proc.stdout}
+        return result
+    except subprocess.TimeoutExpired:
+        log(f"  -> 图像适配器超时（300s）")
+        return {"all_done": False, "error": "timeout"}
+    except Exception as e:
+        log(f"  -> 图像适配器异常: {e}")
+        return {"all_done": False, "error": str(e)}
+
+
+def check_image_gen_pending(task_id: str) -> bool:
+    """检查是否存在未完成的 WorkBuddy 图像生成钩子。"""
+    pending = G_OUTPUTS_DIR / task_id / "pending_workbuddy_image_gen.json"
+    e_pending = E_LEGACY_OUTPUTS / task_id / "pending_workbuddy_image_gen.json"
+    if pending.exists() or e_pending.exists():
+        return True
+    return False
+
+
+def mark_image_gen_completed(task_id: str, output_name: str, source_path: Path) -> bool:
+    """WorkBuddy 完成图像生成后，将图片放入 completed_workbuddy_images 目录。"""
+    completed_dir = G_OUTPUTS_DIR / task_id / "completed_workbuddy_images"
+    try:
+        os.makedirs(str(completed_dir), exist_ok=True)
+        shutil.copy2(source_path, completed_dir / output_name)
+        return True
+    except Exception as e:
+        log(f"  -> 标记 completed_workbuddy_images 失败: {e}")
+        return False
+
+
 # ============================================================
 # 任务模板生成
 # ============================================================
@@ -234,12 +306,14 @@ logs_root: {G_LOGS_STR}
 1. 按设计简报和原始需求，产出 **2~3 版** 设计方案（海报/画册内页/短视频物料/钥匙扣矢量等，根据原始需求确定）。
 2. 每版方案附带：
    - 生成 prompt（如用文生图）或排版说明（如用 HTML/SVG/AI）
+   - **必须生成 `image_gen_requests.json`**：列出需要效果图的请求，每个请求包含 `output_name`、`prompt`、`prompt_cn`、`svg_file`（如有）、`size` 等字段；流水线会自动调用免费图像生成适配器（FAL 可选 / SVG 本地渲染 / WorkBuddy 内置 ImageGen）
    - 尺寸/格式
    - 消耗估算（token / 积分 / 时间）
 3. 低成本优先：演练任务走 mimo-bridge / ollama-bridge，不烧 Hy3 积分；真实付费单按需使用多模态。
-4. 产出：
-   - 所有方案文件 / 图片 / 文案统一落盘 **G 盘**：`{G_OUTPUTS_STR}/{task_id}/`
-   - 禁止写入 E 盘 outputs/ 目录（避免占用 E 盘空间）
+4. **禁止因 FAL_KEY 缺失中断**：如果外部付费 API 不可用，直接产出 SVG + image_gen_requests.json，由 WorkBuddy 图像适配器自动兜底。
+5. 产出：
+   - 所有方案文件 / 图片 / 文案**优先**落盘 **G 盘**：`{G_OUTPUTS_STR}/{task_id}/`
+   - 若 G 盘不可写，**回退**到 E 盘：`E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目/outputs/{task_id}/`（禁止占用 C 盘）
    - 结果摘要写回 `fleet_exchange/results/{task_id}__Codex_...__result_<时间>.md`（项目本地总线）
 
 ## 合规红线
@@ -294,7 +368,8 @@ logs_root: {G_LOGS_STR}
    - 汇总 Hermes + Codex 实际消耗（token/积分/时间）
    - 与报价档对比，给出毛利结论
 5. 产出：
-   - 终审报告统一落盘 **G 盘**：`{G_OUTPUTS_STR}/{task_id}/review_report.md`
+   - 终审报告**优先**落盘 **G 盘**：`{G_OUTPUTS_STR}/{task_id}/review_report.md`
+   - 若 G 盘不可写，**回退**到 E 盘：`E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目/outputs/{task_id}/review_report.md`（禁止占用 C 盘）
    - 结果摘要写回 `fleet_exchange/results/{task_id}__CloudCode_...__result_<时间>.md`（项目本地总线）
 
 ## 完成后
@@ -315,6 +390,21 @@ def process_task(hermes_task: Path):
     task_id = fm.get("task_id", hermes_task.stem.split("_")[0])
     log(f"处理任务 {task_id}: {hermes_task.name}")
 
+    # 业务目录落库（00_模拟演练案例库 / 01_正在执行实单）
+    business_path = None
+    if bf is not None:
+        try:
+            proj_dir, kind, reason = bf.scaffold_order(task_id, hermes_task.name, fm, copy_card=hermes_task)
+            if proj_dir is not None:
+                business_path = str(proj_dir)
+                BUSINESS_PATHS[task_id] = business_path
+                log(f"  -> 业务目录({kind}): {business_path} （{reason}）")
+            else:
+                log(f"  -> 业务目录创建跳过: {reason}")
+        except Exception as e:
+            log(f"  -> 业务目录创建异常: {e}")
+    BUSINESS_PATHS.setdefault(task_id, None)
+
     # 确保 G 盘 outputs/任务ID 存在，并尝试迁移旧 E 盘数据
     g_task_outputs = G_OUTPUTS_DIR / task_id
     try:
@@ -326,9 +416,9 @@ def process_task(hermes_task: Path):
     design_brief_path = g_task_outputs / "design_brief.md"
 
     hermes_result = find_result_for_task(task_id, "Hermes")
-    codex_task = find_task_in_dirs(task_id, "Codex", [FLEET_IN, FLEET_DOING, PENDING_DIR, CONFIRM_DIR])
+    codex_task = find_task_in_dirs(task_id, "Codex", ALL_TASK_DIRS)
     codex_result = find_result_for_task(task_id, "Codex")
-    cloudcode_task = find_task_in_dirs(task_id, "CloudCode", [FLEET_IN, FLEET_DOING, PENDING_DIR, CONFIRM_DIR])
+    cloudcode_task = find_task_in_dirs(task_id, "CloudCode", ALL_TASK_DIRS)
     cloudcode_result = find_result_for_task(task_id, "CloudCode")
 
     # 1. Hermes 完成 -> 推 Codex
@@ -348,22 +438,42 @@ def process_task(hermes_task: Path):
             if write_file(fallback, content):
                 log(f"  -> {target_name} 写入失败，已写入待分发: {fallback.name}")
 
-    # 2. Codex 完成 -> 推 CloudCode
+    # 2. Codex 完成 -> 执行图像生成适配器 -> 推 CloudCode
     if codex_result and not cloudcode_task and not cloudcode_result:
-        cloudcode_filename = f"{task_id}__CloudCode_{hermes_task.stem}.md"
-        if CONFIRM_MODE:
-            cloudcode_path = CONFIRM_DIR / cloudcode_filename
-            target_name = "待确认"
+        # 先处理图像生成：FAL（可选）→ SVG 渲染 → WorkBuddy 钩子
+        img_status = run_image_generation_adapter(task_id)
+        if img_status.get("all_done"):
+            log(f"  -> 图像生成全部完成（请求数: {img_status.get('requests_found', 0)}）")
         else:
-            cloudcode_path = FLEET_IN / cloudcode_filename
-            target_name = "incoming"
-        content = make_cloudcode_task(hermes_task, design_brief_path, codex_result)
-        if write_file(cloudcode_path, content):
-            log(f"  -> 已创建 CloudCode 任务（{target_name}）: {cloudcode_path.name}")
-        else:
-            fallback = PENDING_DIR / cloudcode_filename
-            if write_file(fallback, content):
-                log(f"  -> {target_name} 写入失败，已写入待分发: {fallback.name}")
+            pending = img_status.get("pending_hook_count", 0)
+            if pending > 0 or check_image_gen_pending(task_id):
+                log(f"  -> 图像生成有待 WorkBuddy 钩子处理（{pending} 个），暂缓创建 CloudCode 任务")
+                # 可选：写入一个等待状态，看板可展示
+                wait_file = g_task_outputs / "WAITING_IMAGE_GEN.txt"
+                try:
+                    wait_file.write_text(
+                        f"等待 WorkBuddy 图像生成完成\n任务ID: {task_id}\n时间: {datetime.now().isoformat()}\n",
+                        encoding="utf-8"
+                    )
+                except Exception:
+                    pass
+        
+        # 只有图像生成全部完成且无 pending 钩子时，才创建 CloudCode 终审任务
+        if img_status.get("all_done") and not check_image_gen_pending(task_id):
+            cloudcode_filename = f"{task_id}__CloudCode_{hermes_task.stem}.md"
+            if CONFIRM_MODE:
+                cloudcode_path = CONFIRM_DIR / cloudcode_filename
+                target_name = "待确认"
+            else:
+                cloudcode_path = FLEET_IN / cloudcode_filename
+                target_name = "incoming"
+            content = make_cloudcode_task(hermes_task, design_brief_path, codex_result)
+            if write_file(cloudcode_path, content):
+                log(f"  -> 已创建 CloudCode 任务（{target_name}）: {cloudcode_path.name}")
+            else:
+                fallback = PENDING_DIR / cloudcode_filename
+                if write_file(fallback, content):
+                    log(f"  -> {target_name} 写入失败，已写入待分发: {fallback.name}")
 
     # 3. CloudCode 完成 -> 汇总交付物
     if cloudcode_result:
@@ -409,6 +519,17 @@ def process_task(hermes_task: Path):
                             copied.append(f.name)
                         except Exception as e:
                             log(f"  -> 复制旧 E 盘 outputs 失败: {f} -> {e}")
+        # 同时汇总到业务目录【最终交付文件】（00_模拟演练案例库 / 01_正在执行实单）
+        if business_path:
+            biz_final = Path(business_path) / "最终交付文件"
+            try:
+                os.makedirs(str(biz_final), exist_ok=True)
+                for src in [cloudcode_result, codex_result, hermes_result]:
+                    if src and src.exists():
+                        shutil.copy2(src, biz_final / src.name)
+                log(f"  -> 已汇总交付物到业务目录: {biz_final}")
+            except Exception as e:
+                log(f"  -> 业务目录交付汇总失败: {e}")
         if copied:
             log(f"  -> 已汇总交付物到 E 盘: {deliverable_dir} ({len(copied)} 文件)")
             log(f"  -> 已镜像交付物到 G 盘: {g_deliverable_dir}")
@@ -470,20 +591,28 @@ def main():
         fm = read_frontmatter(f)
         task_id = fm.get("task_id", f.stem.split("_")[0])
         hermes_result = find_result_for_task(task_id, "Hermes")
-        codex_task = find_task_in_dirs(task_id, "Codex", [FLEET_IN, FLEET_DOING, PENDING_DIR, CONFIRM_DIR])
+        codex_task = find_task_in_dirs(task_id, "Codex", ALL_TASK_DIRS)
         codex_result = find_result_for_task(task_id, "Codex")
-        cloudcode_task = find_task_in_dirs(task_id, "CloudCode", [FLEET_IN, FLEET_DOING, PENDING_DIR, CONFIRM_DIR])
+        cloudcode_task = find_task_in_dirs(task_id, "CloudCode", ALL_TASK_DIRS)
         cloudcode_result = find_result_for_task(task_id, "CloudCode")
+        effective_sim = "sim"
+        if bf is not None:
+            try:
+                effective_sim, _ = bf.classify(fm)
+            except Exception:
+                pass
         dashboard_data["tasks"].append({
             "task_id": task_id,
             "title": f.name,
             "simulation": fm.get("simulation", "false"),
+            "effective_simulation": effective_sim,
             "real_order_min": fm.get("real_order_min", "300"),
             "hermes": {"done": bool(hermes_result), "result_file": str(hermes_result) if hermes_result else None},
             "codex": {"task_exists": bool(codex_task), "done": bool(codex_result), "result_file": str(codex_result) if codex_result else None},
             "cloudcode": {"task_exists": bool(cloudcode_task), "done": bool(cloudcode_result), "result_file": str(cloudcode_result) if cloudcode_result else None},
             "deliverables_dir": str(DELIVERABLES_DIR / task_id),
             "g_deliverables_dir": str(G_DELIVERABLES_DIR / task_id),
+            "business_path": BUSINESS_PATHS.get(task_id),
         })
 
     warnings = []

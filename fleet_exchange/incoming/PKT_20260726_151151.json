@@ -1,0 +1,24 @@
+{
+  "packet_id": "PKT_20260726_151151",
+  "aggregated_by": [
+    "WorkBody-01",
+    "WorkBody-02",
+    "WorkBody-03",
+    "WorkBody-04",
+    "WorkBody-05"
+  ],
+  "order": {
+    "order_id": "SIM-ANIMAL-VIDEO-001",
+    "source": "企业微信平面设计接单群",
+    "type": "图生视频",
+    "requirement": "四个动物（小狗、鸡、羊、小猪）从后方帘子门口跑出，停留片刻再原路跑回；场景/灯光/镜头全程固定；首尾帧统一使用动物合照；动作真实、四只同步、时长偏短",
+    "assets": [
+      "动物合照_首尾帧.png"
+    ],
+    "real_order_min": 0,
+    "simulation": true
+  },
+  "pipeline": "A",
+  "target": "hermes/brain (mimo-v2.5-pro)",
+  "created_at": "2026-07-26 15:11:51"
+}

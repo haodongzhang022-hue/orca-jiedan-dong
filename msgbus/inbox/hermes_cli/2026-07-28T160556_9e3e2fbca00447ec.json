@@ -1,0 +1,21 @@
+{
+  "omf_version": "1.0",
+  "msg_id": "9e3e2fbca00447ec",
+  "ts": "2026-07-28T16:05:56",
+  "project": "企业微信群定制接单项目",
+  "src": "hermes_gui",
+  "dst": "hermes_cli",
+  "type": "text",
+  "payload": "你是谁\n\n",
+  "task_chain": [
+    "hermes_cli",
+    "claude_cli",
+    "codex_cli",
+    "hermes_gui"
+  ],
+  "status": "forwarded",
+  "retries": 0,
+  "checksum": "6431cdf0",
+  "chain_pos": 1,
+  "forwarded_to": "claude_cli"
+}

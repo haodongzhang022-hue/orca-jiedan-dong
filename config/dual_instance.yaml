@@ -1,0 +1,56 @@
+# ORCA Dual-Instance Configuration
+# Project: 企业微信群定制接单项目
+# Version: 1.0.0
+# Note: 此项目已有 fleet_exchange/ 目录，双实例模式与其协同工作
+
+dual_instance:
+  enabled: true
+  version: "1.0.0"
+  project_name: "企业微信群定制接单项目"
+
+ports:
+  shared:
+    ai_code_switch: 4567
+    codex_gui_global: 57321
+    claude_serve_global: 57330
+  project_specific:
+    hermes_cli: 57361
+    codex_cli: 57362
+    claude_chat: 57363
+    msgbus_internal: 57364
+
+agents:
+  hermes:
+    display_name: "Hermes 商单调度中心"
+    role: "decision_maker"
+    cli_port: 57361
+    worktree: "worktrees/hermes"
+  codex:
+    display_name: "Codex 物料生成引擎"
+    role: "executor"
+    gui_port: 57321
+    cli_port: 57362
+    worktree: "worktrees/codex"
+    self_heal: true
+  claude:
+    display_name: "Claude Code 交付质量审核"
+    role: "reviewer"
+    serve_port: 57330
+    chat_port: 57363
+    worktree: "worktrees/claude"
+
+message_bus:
+  directory: "msgbus"
+  protocol: "file_based_json"
+
+fleet_exchange:
+  directory: "fleet_exchange"
+  enabled: true
+  queues: ["incoming", "doing", "done", "results", "logs"]
+
+business_skills:
+  - "5WorkBody舰队编排"
+  - "FAL-free图像生成适配器"
+  - "海报设计商单"
+  - "画册折页排版"
+  - "短视频物料制作"

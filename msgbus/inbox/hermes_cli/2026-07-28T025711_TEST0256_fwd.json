@@ -1,0 +1,21 @@
+{
+  "msg_id": "TEST025656",
+  "ts": "2026-07-28T025711",
+  "src": "codex_cli",
+  "dst": "hermes_cli",
+  "type": "text",
+  "payload": "[来自 codex 的回复]\n\nError loading config.toml: `wire_api = \"chat\"` is no longer supported.\nHow to fix: set `wire_api = \"responses\"` in your provider config.\nMore info: https://github.com/openai/codex/discussions/7782\nin `model_providers.aicodeswitch.wire_api`",
+  "task_chain": [
+    "hermes_cli",
+    "claude_cli",
+    "codex_cli",
+    "hermes_cli"
+  ],
+  "chain_pos": 3,
+  "status": "done",
+  "retries": 0,
+  "project": "企业微信群定制接单项目",
+  "prev_dst": "hermes_cli",
+  "forwarded_at": "2026-07-28T025711",
+  "done_at": "2026-07-28T025713"
+}

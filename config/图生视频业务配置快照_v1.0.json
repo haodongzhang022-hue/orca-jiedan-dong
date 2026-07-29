@@ -1,0 +1,74 @@
+{
+  "snapshot_id": "IMG2VIDEO_BASELINE_20260726",
+  "version": "1.0",
+  "created_at": "2026-07-26 15:15:00",
+  "business_type": "图生视频",
+  "order_ref": "SIM-ANIMAL-VIDEO-001（四动物帘门往返跑）",
+  "template_ref": "全域模板v3.43-R40 / 龙虾五步法V2.7",
+
+  "hermes_decompose_template": {
+    "name": "图生视频专用拆解模板 v1.0",
+    "auto_detect_constraints": [
+      "固定镜头（禁止推拉摇移，机位角度锁定）",
+      "灯光恒定（色温/强度全程不变）",
+      "多主体同步运动（N只动物同帧同步位移）",
+      "首尾帧统一（首帧=尾帧=客户提供底图）",
+      "时长偏短（默认目标8.5s，硬上限12s）",
+      "原路往返（出场路径与回场路径镜像对称）"
+    ],
+    "output_schema": "hermes_制作指令.json（sequence时序段落 + camera/lighting双锁 + frames首尾约束）"
+  },
+
+  "codex_render_params": {
+    "name": "图生视频渲染参数锁 v1.0",
+    "engine_priority": ["FAL(可选,有KEY才启用)", "本地关键帧时序合成(imageio+libx264,免费)", "ImageGen关键帧生成(免费)", "Prompt模板降级"],
+    "resolution": "1280x854",
+    "fps": 24,
+    "codec": "libx264 / yuv420p",
+    "camera_lock": true,
+    "lighting_lock": true,
+    "easing": "smoothstep缓入缓出（模拟真实起跑/减速）",
+    "keyframes": {
+      "KF1": "首尾帧_动物合照（客户底图或AI生成）",
+      "KF2": "同步跑出帧（帘口中后段，腿部动态模糊）",
+      "KF3": "前景停留帧（站定张望）"
+    },
+    "zero_credit": "全程本地免费算力，不消耗积分"
+  },
+
+  "claude_review_rules": {
+    "name": "视频真实度校验规则 v1.0",
+    "hard_checks": [
+      {"rule": "首尾帧统一", "metric": "首帧vs尾帧像素均值差", "threshold": "≤2.0"},
+      {"rule": "时长规范", "metric": "成片时长", "threshold": "≤12s"},
+      {"rule": "固定镜头", "metric": "背景区(顶部20%)漂移量", "threshold": "≤60(仅限渐变过渡)"},
+      {"rule": "分辨率规范", "metric": "宽度", "threshold": "≥1280"}
+    ],
+    "soft_checks": [
+      "动物跑动动作自然度（腿部动态模糊/缓入缓出节奏）",
+      "四主体同步性（同段落内位移一致）",
+      "灯光色温一致性（暖色顶光无跳变）"
+    ],
+    "fail_action": "输出修改意见→原路回传Codex迭代，最多3轮，不降级人工"
+  },
+
+  "workbody_dispatch": {
+    "nodes": 5,
+    "bus": "fleet_exchange/{incoming,doing,done,results}",
+    "packet_integrity": "MD5落盘字节校验",
+    "retry": {"times": 3, "interval_sec": 1, "fault_log": "logs/pipeline_ab_test/故障日志_*.log"}
+  },
+
+  "storage": {
+    "g_cache": "G:/WorkBuddy-Cache/企业微信群定制接单项目",
+    "keyframes": "outputs/animal_video_keyframes/",
+    "final": "outputs/animal_video_final/",
+    "logs": "logs/pipeline_ab_test/",
+    "archive_rule": "simulation=true 或 real_order_min<300 → 00_模拟演练案例库/短视频；≥300 → 01_正在执行实单"
+  },
+
+  "rollback": {
+    "backup_dir": "backups/",
+    "note": "本快照为新增文件，未修改任何既有配置；回滚=删除本文件即可"
+  }
+}

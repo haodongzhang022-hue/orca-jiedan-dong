@@ -1,0 +1,19 @@
+{
+  "msg_id": "TEST025656",
+  "ts": "2026-07-28T025656",
+  "src": "hermes_cli",
+  "dst": "hermes_cli",
+  "type": "text",
+  "payload": "【验收测试】你是谁？请简短回答。",
+  "task_chain": [
+    "hermes_cli",
+    "claude_cli",
+    "codex_cli",
+    "hermes_cli"
+  ],
+  "chain_pos": 1,
+  "status": "forwarded",
+  "retries": 0,
+  "project": "企业微信群定制接单项目",
+  "forwarded_to": "claude_cli"
+}

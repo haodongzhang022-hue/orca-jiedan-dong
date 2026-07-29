@@ -36,6 +36,10 @@ G_DRIVE_ROOT = Path(os.environ.get(
     "G_DRIVE_ROOT",
     "G:/WorkBuddy-Cache/企业微信群定制接单项目"
 ))
+# 兼容镜像路径
+G_MIRROR_ROOT = Path("G:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目")
+if not G_DRIVE_ROOT.exists() and G_MIRROR_ROOT.exists():
+    G_DRIVE_ROOT = G_MIRROR_ROOT
 G_PROJECT = G_DRIVE_ROOT
 G_OUTPUTS = G_PROJECT / "outputs"
 G_LOGS = G_PROJECT / "logs"

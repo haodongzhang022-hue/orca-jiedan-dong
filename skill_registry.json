@@ -16,9 +16,9 @@
     {
       "id": "wework_custom_order_pipeline",
       "name": "企业微信群定制接单流水线",
-      "version": "2.1",
+      "version": "2.2",
       "category": "龙虾舰队流水线 · 商单接单技能库",
-      "description": "面向企业微信群低/中单价设计商单的全自动多 Agent 接力流水线。Hermes 拆解需求 → Codex 产出方案 → CloudCode 质量/合规/成本终审 → WorkBuddy 汇总交付物。支持三条执行路线：全自动、前置确认、批量轮询。",
+      "description": "面向企业微信群低/中单价设计商单的全自动多 Agent 接力流水线。Hermes 拆解需求 → Codex 产出方案（SVG+image_gen_requests.json）→ 图像生成适配器自动完成 FAL-free 效果图 → CloudCode 质量/合规/成本终审 → WorkBuddy 汇总交付物。支持三条执行路线：全自动、前置确认、批量轮询。",
       "entry_script": "scripts/route_1_auto_pipeline.sh",
       "routes": {
         "route_1_auto": "scripts/route_1_auto_pipeline.sh",
@@ -28,9 +28,21 @@
       },
       "autopilot": "scripts/pipeline_autopilot_daemon.py",
       "archive_helper": "scripts/auto_archive.py",
+      "business_folders": "scripts/business_folders.py",
+      "order_archive": "scripts/archive_order.py",
+      "image_generation_adapter": "scripts/image_generation_adapter.py",
+      "create_structure_ps1": "scripts/创建目录结构.ps1",
+      "create_structure_sh": "scripts/创建目录结构.sh",
+      "directory_standard_doc": "docs/目录结构标准.md",
       "docs": "docs/流水线操作指南.md",
       "project_root": "E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目",
       "g_drive_root": "G:/WorkBuddy-Cache/企业微信群定制接单项目",
+      "directory_layers": {
+        "simulation": "00_模拟演练案例库",
+        "active_real_order": "01_正在执行实单",
+        "archived": "02_已完结归档实单",
+        "common_assets": "03_通用素材资源库"
+      },
       "tags": [
         "企业微信群",
         "定制接单",
@@ -38,7 +50,10 @@
         "画册折页",
         "短视频物料",
         "三Agent接力",
-        "自动归档"
+        "自动归档",
+        "FAL-free",
+        "免费文生图",
+        "SVG本地渲染"
       ]
     }
   ]

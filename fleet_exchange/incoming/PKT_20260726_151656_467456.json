@@ -1,0 +1,13 @@
+{
+  "packet_id": "PKT_20260726_151656_467456",
+  "source": "企业微信接单群(inbox监听)",
+  "order": {
+    "order_id": "SIM-ANIMAL-VIDEO-001",
+    "requirement": "图生视频需求：四个动物（小狗、鸡、羊、小猪）从后方帘子门口跑出，停留片刻再原路跑回；场景灯光镜头全程固定；首尾帧统一使用动物合照；时长偏短。交付后私聊报价结算 预算 200 元",
+    "assets": [],
+    "real_order_min": 200,
+    "simulation": true
+  },
+  "pipeline": "A",
+  "created_at": "2026-07-26 15:16:56"
+}

@@ -25,13 +25,32 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# 运行时产物目录（G 盘）
+G_DRIVE_ROOT = Path(os.environ.get(
+    "G_DRIVE_ROOT",
+    "G:/WorkBuddy-Cache/企业微信群定制接单项目"
+))
+# 兼容镜像路径
+G_MIRROR_ROOT = Path("G:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目")
+if not G_DRIVE_ROOT.exists() and G_MIRROR_ROOT.exists():
+    G_DRIVE_ROOT = G_MIRROR_ROOT
+G_OUTPUTS = G_DRIVE_ROOT / "outputs"
+G_LOGS = G_DRIVE_ROOT / "logs"
+G_DELIVERABLES = G_DRIVE_ROOT / "deliverables"
+
 PROJECT = Path("E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目")
 SCRIPTS = PROJECT / "scripts"
 FLEET_IN = PROJECT / "fleet_exchange" / "incoming"
 FLEET_DOING = PROJECT / "fleet_exchange" / "doing"
 FLEET_RESULTS = PROJECT / "fleet_exchange" / "results"
-OUTPUTS = PROJECT / "outputs"
-LOG_FILE = PROJECT / "logs" / "daemon.log"
+OUTPUTS = G_OUTPUTS
+LOG_FILE = G_LOGS / "daemon.log"
+
+for d in [G_DRIVE_ROOT, G_OUTPUTS, G_LOGS, G_DELIVERABLES]:
+    try:
+        os.makedirs(str(d), exist_ok=True)
+    except Exception as e:
+        print(f"[WARN] 无法创建 G 盘目录 {d}: {e}", file=sys.stderr)
 
 # 已处理的任务文件名缓存（避免重复处理）
 PROCESSED_CACHE: set[str] = set()
@@ -55,7 +74,7 @@ def log(msg: str):
     line = f"[{ts}] {msg}"
     print(line, flush=True)
     try:
-        LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        os.makedirs(str(LOG_FILE.parent), exist_ok=True)
         with LOG_FILE.open("a", encoding="utf-8") as f:
             f.write(line + "\n")
     except Exception:
@@ -101,10 +120,11 @@ def is_hermes_task(f: Path) -> bool:
 
 def auto_init_task(task_file: Path):
     """自动初始化任务目录"""
+    env = os.environ.copy()
     try:
         result = subprocess.run(
             [PYTHON, str(SCRIPTS / "auto_archive.py"), "init", str(task_file)],
-            cwd=str(PROJECT), capture_output=True, text=True
+            cwd=str(PROJECT), capture_output=True, text=True, env=env
         )
         if result.returncode == 0:
             log(f"  [ARCHIVE] 初始化完成: {task_file.name}")
@@ -116,10 +136,11 @@ def auto_init_task(task_file: Path):
 
 def run_pipeline():
     """运行一次流水线自动驾驶"""
+    env = os.environ.copy()
     try:
         result = subprocess.run(
             [PYTHON, str(SCRIPTS / "pipeline_autopilot.py")],
-            cwd=str(PROJECT), capture_output=True, text=True, timeout=120
+            cwd=str(PROJECT), capture_output=True, text=True, timeout=120, env=env
         )
         if result.returncode == 0:
             for line in result.stdout.strip().splitlines():
@@ -177,6 +198,7 @@ def main():
 
     log("=" * 50)
     log(f"守护进程启动 (v2.0)")
+    log(f"  G_DRIVE_ROOT: {G_DRIVE_ROOT}")
     log(f"  轮询间隔: {args.interval}s")
     log(f"  超时退出: {'永不' if args.timeout == 0 else f'{args.timeout}s'}")
     log(f"  Python: {PYTHON}")

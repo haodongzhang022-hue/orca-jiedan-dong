@@ -1,0 +1,200 @@
+{
+  "project_name": "企业微信群定制接单项目",
+  "project_root": "E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目",
+  "scaffold_version": "1.3.0",
+  "dual_instance_enabled": true,
+  "dual_instance_version": "2.0.0",
+  "dual_instance_mode": "C",
+  "mode_name": "全量舰队模式(三Agent双实例全开)",
+  "ui_framework": "MiMO V2.5 (auto-upgrade to V3.0)",
+  "created_at": "2026-07-27T23:22:00+08:00",
+  "upgraded_at": "2026-07-28T00:05:00+08:00",
+  "dual_core_path": "E:/龙虾AI主控中心/我的AI分身/项目脚手架/orca_multi_agent_fleet_v1.0/dual_core",
+  "g_data_root": "G:/龙虾AI主控中心/ORCA数据/企业微信群定制接单项目",
+  "ports": {
+    "ai_code_switch": 4567,
+    "codex_gui": 57321,
+    "codex_cli": 57362,
+    "hermes_gui": 57361,
+    "hermes_cli": 57368,
+    "claude_serve": 57330,
+    "claude_chat": 57363,
+    "msgbus_internal": 57364,
+    "gui_panel_hermes": 57365,
+    "gui_panel_codex": 57366,
+    "gui_panel_claude": 57367
+  },
+  "agents": {
+    "hermes": {
+      "role": "业务决策大脑（商单调度/任务分发）",
+      "gui_cmd": "scripts/launch_fleet_gui_hermes.cmd",
+      "cli_cmd": "scripts/launch_hermes_cli.cmd",
+      "worktree": "worktrees/hermes",
+      "status": "active",
+      "active_instance": "cli",
+      "ports": {
+        "cli": 57368,
+        "gui": 57365
+      }
+    },
+    "codex": {
+      "role": "代码执行单元（物料生成/自动化流水线）",
+      "gui_cmd": "scripts/launch_fleet_gui_codex.cmd",
+      "cli_cmd": "scripts/launch_codex_cli.cmd",
+      "worktree": "worktrees/codex",
+      "self_heal_script": "codex_self_heal.py",
+      "status": "active",
+      "active_instance": "cli",
+      "ports": {
+        "cli": 57362,
+        "gui": 57366
+      }
+    },
+    "claude": {
+      "role": "审核校验（交付质量/合规审查）",
+      "gui_cmd": "scripts/launch_fleet_gui_claude.cmd",
+      "cli_cmd": "scripts/launch_claude_serve.cmd",
+      "chat_cmd": "scripts/launch_claude_chat.cmd",
+      "worktree": "worktrees/claude",
+      "serve_port": 57330,
+      "status": "active",
+      "active_instance": "cli",
+      "ports": {
+        "cli": 57330,
+        "gui": 57367
+      }
+    }
+  },
+  "message_bus": {
+    "directory": "msgbus",
+    "protocol": "file-based JSON (OMF v1.0)",
+    "windows": [
+      "hermes_cli",
+      "hermes_gui",
+      "codex_cli",
+      "codex_gui",
+      "claude_cli",
+      "claude_gui"
+    ],
+    "max_message_size": "1MB",
+    "retention_days": 7
+  },
+  "fleet_exchange": {
+    "directory": "fleet_exchange",
+    "queues": [
+      "incoming",
+      "doing",
+      "done",
+      "results",
+      "logs"
+    ]
+  },
+  "business_skills": [
+    "5WorkBody舰队编排",
+    "FAL-free图像生成适配器",
+    "海报设计商单",
+    "画册折页排版",
+    "短视频物料制作"
+  ],
+  "interoperability": {
+    "omf_version": "1.0",
+    "message_format": "JSON",
+    "msg_types": [
+      "text",
+      "json",
+      "file_ref"
+    ],
+    "sync_mechanism": "shared_filesystem + HTTP_polling + fleet_exchange",
+    "router": "dual_core/orca_msgbus_router.py",
+    "dispatch": "dual_core/orca_dispatch.py",
+    "switch": "dual_core/orca_switch.py"
+  },
+  "bus_port": 15800,
+  "desktop_binaries": {
+    "claude_desktop_exe": "E:/龙虾AI主控中心/我的AI分身/ClaudeCode/AnthropicClaude/claude.exe",
+    "claude_desktop_app": "E:/龙虾AI主控中心/我的AI分身/ClaudeCode/AnthropicClaude/app-1.8555.0",
+    "claude_cli_exe": "I:/npm/node_modules/@anthropic-ai/claude-code/bin/claude.exe",
+    "codex_cli_js": "I:/npm/node_modules/@openai/codex/bin/codex.js",
+    "hermes_runtime_dir": "C:/Users/Administrator/AppData/Local/hermes",
+    "hermes_gui_port": 15800,
+    "hermes_setup_installer": "E:/tmp/Hermes-Setup.exe",
+    "branch_decision": "复用存量程序(情况B: E盘命中claude.exe桌面版+Hermes运行时已装C盘AppData; 未执行任何安装)",
+    "search_scope": "G→E→D 多磁盘检索 2026-07-28",
+    "registered_at": "2026-07-28T02:16:36"
+  },
+  "codex_invoke_fix": {
+    "old": [
+      "--quiet",
+      "-m",
+      "o3"
+    ],
+    "new": [
+      "exec",
+      "--skip-git-repo-check"
+    ],
+    "reason": "Codex 0.46 已移除 --quiet/-q, 非交互统一走 exec 子命令; 模型走 config.toml 默认 aicodeswitch/mimo",
+    "fixed_at": "2026-07-28T02:16:36"
+  },
+  "claude_15721_fix": {
+    "date": "2026-07-28",
+    "root_cause": "aicodeswitch(4567)对beta/claude模型名请求走fallback-rule(Original Config)，其数据源settings.json.aicodeswitch_backup内ANTHROPIC_BASE_URL=127.0.0.1:15721(CC-Switch已停摆)",
+    "fix": [
+      "备份文件fallback上游改为https://token-plan-cn.xiaomimimo.com/anthropic直连",
+      "重启4567进程加载2026-07-28新路由(旧进程7/27启动缓存旧配置)"
+    ],
+    "verified": "claude -p 返回「链路正常」; beta=true/stream/claude模型名 全部HTTP 200"
+  },
+  "msgbus_storm_fix": {
+    "date": "2026-07-28",
+    "root_causes": [
+      "多router/consumer实例并行互相转发(实测10+进程)",
+      "首尾同节点chain中chain.index(dst)永远命中位置0导致无限循环",
+      "router按裸msg_id去重导致末端消息永远pending"
+    ],
+    "fixes": [
+      "router/consumer单实例锁(锁文件+PID存活检测)",
+      "chain_pos显式游标",
+      "router复合键(msg_id@dst#chain_pos)去重",
+      "router跳过consumer管辖队列(claude_cli/codex_cli)"
+    ],
+    "verified": "standard_loop:hermes→claude→codex→hermes 末端status=done, 各队列1条无复制"
+  },
+  "msgbus_duplicate_fleet_fix": {
+    "date": "2026-07-28T03:00+08:00",
+    "root_cause": "两套Python运行时(WorkBuddy python + E:\\VNPY\\python.exe)各自拉起router+consumer; ORCA tui_gateway(PID 717300, python -m tui_gateway.entry)为唯一权威看门狗, 持续执行 'rm -f msgbus/router.lock && python scripts/msgbus_router.py'(VNPY), 每次启动前强制删router.lock, 使任何第二舰队router变孤儿重复进程; 且consumer脚本的acquire_single_instance_lock()此前定义但main()从未调用, 导致3个claude+3个codex消费者共存抢队列 → 8进程风暴",
+    "fixes": [
+      "consumer main()补调acquire_single_instance_lock(agent), 按agent分锁文件consumer_{agent}.lock",
+      "router/consumer锁改为os.open(O_CREAT|O_EXCL|O_WRONLY)原子创建, 消除TOCTOU竞态; 旧锁PID已死则接管",
+      "杀掉手动重复的WorkBuddy python舰队, 仅保留ORCA tui_gateway托管的单一舰队(VNPY python: 1 router + 2 consumer)",
+      "stability_monitor.py wmic输出按gbk解码(errors='ignore'), 修复Win下UnicodeDecodeError导致进程计数失效"
+    ],
+    "verified": "ps查仅剩3个msgbus进程(1 router + 2 consumer, 均VNPY python, 由tui_gateway托管); 注入TEST025656完成standard_loop零复制闭环; 5分钟稳定性监控异常轮次0"
+  },
+  "gui_verification_20260728": {
+    "date": "2026-07-28T13:35+08:00",
+    "shortcuts": {
+      "generated": "桌面 + 开始菜单\\程序\\ORCA Fleet 各 6 个 .lnk (3 舰队面板 + 3 原生程序)",
+      "generator": "C:\\Users\\Administrator\\WorkBuddy\\2026-07-23-10-30-42\\outputs\\gen_orca_gui_shortcuts.py (IShellLink+IPersistFile, 每进程隔离规避沙箱Desktop限流)",
+      "hotkeys": "Ctrl+Alt+H(hermes) / Ctrl+Alt+K(codex) / Ctrl+Alt+L(claude)"
+    },
+    "fleet_gui_http": {
+      "hermes_15800": "HTTP 200 (常驻, 由 tui_gateway 托管 gui_server.py)",
+      "codex_15801": "HTTP 200 (沙箱替代端口; .cmd 默认 57366 在动态端口区被拒 WinError 10013)",
+      "claude_15802": "HTTP 200 (沙箱替代端口; .cmd 默认 57367 同上为避坑)"
+    },
+    "e2e_hello_test": {
+      "msg_id": "badbc57cb7da44a0",
+      "inject": "经 Hermes GUI(15800) /api/send 注入 payload=你好 chain=[hermes_gui,claude_cli,codex_cli,hermes_gui]",
+      "claude_reply": "你好！我是 Claude，一个 AI 助手… (100字)",
+      "codex_reply_len": 2453,
+      "hermes_final": "status=done, payload含Codex回传",
+      "result": "PASS",
+      "no_storm": "各窗口文件数 hermes_gui=2 / codex_cli=1 / claude_cli=1, 零复制"
+    }
+  },
+  "fleet_gui_port_caveat": {
+    "date": "2026-07-28T13:35+08:00",
+    "issue": "脚手架默认 GUI 端口 57365/57366/57367 落在 Windows 动态端口保留区(49152-65535), 沙箱/部分系统绑定报 PermissionError WinError 10013",
+    "recommend": "改到 <49152 段 (如 15800/15801/15802) 或用户本机实测确认; 切勿在保留区端口强行绑定"
+  }
+}

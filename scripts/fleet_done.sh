@@ -20,6 +20,10 @@ RS="$EX/results"
 LOG="$EX/logs"
 
 G_DRIVE_ROOT="${G_DRIVE_ROOT:-G:/WorkBuddy-Cache/企业微信群定制接单项目}"
+# 兼容镜像路径：如果默认不存在但镜像路径存在，则回退
+if [ ! -d "$G_DRIVE_ROOT" ] && [ -d "G:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目" ]; then
+  G_DRIVE_ROOT="G:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目"
+fi
 G_OUTPUTS="$G_DRIVE_ROOT/outputs"
 G_LOGS="$G_DRIVE_ROOT/logs"
 

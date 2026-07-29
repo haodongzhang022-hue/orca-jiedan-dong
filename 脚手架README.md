@@ -131,5 +131,69 @@ bash "E:/龙虾AI主控中心/我的AI分身/项目脚手架/orca_multi_agent_fl
 
 ---
 
+## 自动恢复机制（v1.4 新增 · 核心防退化）
+
+**设计目标**：打开项目即恢复，不需要手动输入任何命令。
+
+### 架构
+
+```
+用户打开 Orca 项目
+       ↓
+Windows 计划任务 LobsterFleet_AutoRestore（开机自启）
+       ↓
+fleet_auto_restore.cmd 自动执行：
+  ├─ 检查端口 15721/15730 → 未运行则自动拉起
+  ├─ 校验 ~/.codex/config.toml → wire_api/base_url 错误则自动修复
+  ├─ 同步各 worktree 分支到 master
+  └─ 验证 API 连通性
+       ↓
+Claude Code / Codex 进入项目时读取 CLAUDE.md / CODEX.md
+  → 自动执行恢复检查（无需用户输入）
+```
+
+### 关键文件
+
+| 文件 | 作用 |
+|------|------|
+| `scripts/fleet_auto_restore.cmd` | Windows 一键恢复（开机自启） |
+| `scripts/fleet_restore.sh` | 完整恢复脚本（含快照管理） |
+| `scripts/fleet_health_check.sh` | 健康检查（只读，不修复） |
+| `scripts/register_auto_restore.cmd` | 注册计划任务 |
+| `CLAUDE.md` | Claude Code 自动恢复指令 |
+| `codex/CODEX.md` | Codex 自动恢复指令 |
+
+### 计划任务
+
+```
+任务名：LobsterFleet_AutoRestore
+触发器：用户登录时
+权限：最高权限
+脚本：fleet_auto_restore.cmd --auto
+```
+
+### 防退化铁律
+
+1. **禁止手动修改 `~/.codex/config.toml`** — 恢复脚本会自动校验并修复
+2. **每次会话开始必须先执行恢复检查** — 写入 CLAUDE.md 和 CODEX.md
+3. **快照 ≤20MB** — 旧快照自动清理，只保留最近 2 份
+4. **恢复脚本有幂等性** — 多次运行不会产生副作用
+
+### 手动恢复
+
+```bash
+# 完整恢复（含快照）
+bash scripts/fleet_restore.sh --snapshot
+
+# 只检查不修复
+bash scripts/fleet_health_check.sh
+
+# Windows 一键恢复
+scripts\fleet_auto_restore.cmd
+```
+
+---
+
 > 最后更新：2026-07-29  
+> 版本：v1.4（自动恢复机制）  
 > 维护者：龙虾 AI 主控中心
