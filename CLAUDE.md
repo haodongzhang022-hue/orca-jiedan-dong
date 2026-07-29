@@ -46,6 +46,8 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 - **Anthropic 代理端口**：15721（anthropic_proxy_15721.py）
 - **代理脚本位置**：E:\龙虾AI主控中心\MCP服务\
 - **启动脚本**：scripts/fleet_auto_restore.cmd（开机自启计划任务 LobsterFleet_AutoRestore）
+- **一键启动**：`bash scripts/launch_all_agents.sh`（三Agent同时拉起）
+- **全项目同步**：`bash scripts/sync_scaffold_to_all.sh`（脚手架变更后同步全部8个Orca项目）
 
 ## 分支结构
 
