@@ -96,11 +96,23 @@ echo   [OK] Codex 桌面版配置已修复
 
 echo.
 
-:: === 3. Codex CLI shim 检查 ===
+:: === 3. Codex CLI shim 检查（双格式：.sh + .cmd） ===
 echo [3/7] Codex CLI shim 检查...
+set "NEED_FIX=0"
 set "SHIM_PATH=%APPDATA%\npm\codex"
-if not exist "%SHIM_PATH%" (
-    echo   [FIX] Codex CLI shim 缺失，正在创建...
+set "SHIM_CMD_PATH=%APPDATA%\npm\codex.cmd"
+
+:: 检查 .sh shim
+if not exist "%SHIM_PATH%" (set "NEED_FIX=1" & echo   [!] .sh shim 缺失)
+:: 检查 .cmd shim
+if not exist "%SHIM_CMD_PATH%" (set "NEED_FIX=1" & echo   [!] .cmd shim 缺失)
+
+:: 验证 codex 命令是否可用
+codex --version >nul 2>&1
+if errorlevel 1 (set "NEED_FIX=1" & echo   [!] codex 命令不可用)
+
+if "%NEED_FIX%"=="1" (
+    echo   [FIX] 重建 Codex CLI shim（双格式）...
     (
     echo #!/bin/sh
     echo exec node "I:/npm/node_modules/@openai/codex/bin/codex.js" "$@"
@@ -108,10 +120,16 @@ if not exist "%SHIM_PATH%" (
     (
     echo @ECHO off
     echo node "I:\npm\node_modules\@openai\codex\bin\codex.js" %%*
-    ) > "%APPDATA%\npm\codex.cmd"
-    echo   [OK] Codex CLI shim 已创建
+    ) > "%SHIM_CMD_PATH%"
+    :: 验证修复
+    codex --version >nul 2>&1
+    if not errorlevel 1 (
+        echo   [OK] Codex CLI shim 已修复
+    ) else (
+        echo   [FAIL] Codex CLI shim 修复失败，请手动检查 I:\npm 安装
+    )
 ) else (
-    echo   [OK] Codex CLI shim 存在
+    echo   [OK] Codex CLI shim 正常（.sh + .cmd 双格式）
 )
 
 :: === 4. Codex 运行时配置同步 ===

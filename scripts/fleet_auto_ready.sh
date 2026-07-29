@@ -32,18 +32,45 @@ for PORT in 15721 15730; do
     fi
 done
 
-# ---- 2. Codex CLI shim 检查 ----
-SHIM_PATH="/c/Users/Administrator/AppData/Roaming/npm/codex"
-if [ ! -f "$SHIM_PATH" ]; then
-    echo "[!] Codex CLI shim 缺失，正在创建..."
-    cat > "$SHIM_PATH" << 'SHIM'
+# ---- 2. Codex CLI shim 检查（双格式） ----
+SHIM_DIR="/c/Users/Administrator/AppData/Roaming/npm"
+SHIM_FIXED=0
+
+# 检查 .sh shim
+if [ ! -f "$SHIM_DIR/codex" ]; then
+    echo "[!] .sh shim 缺失"
+    SHIM_FIXED=1
+fi
+# 检查 .cmd shim
+if [ ! -f "$SHIM_DIR/codex.cmd" ]; then
+    echo "[!] .cmd shim 缺失"
+    SHIM_FIXED=1
+fi
+# 验证 codex 命令可用
+if ! codex --version &>/dev/null; then
+    echo "[!] codex 命令不可用"
+    SHIM_FIXED=1
+fi
+
+if [ "$SHIM_FIXED" = "1" ]; then
+    echo "[FIX] 重建 Codex shim（双格式）..."
+    cat > "$SHIM_DIR/codex" << 'SHIM'
 #!/bin/sh
 exec node "I:/npm/node_modules/@openai/codex/bin/codex.js" "$@"
 SHIM
-    chmod +x "$SHIM_PATH"
-    echo "[OK] Codex shim 已创建"
+    cat > "$SHIM_DIR/codex.cmd" << 'CMDSHIM'
+@ECHO off
+node "I:\npm\node_modules\@openai\codex\bin\codex.js" %*
+CMDSHIM
+    chmod +x "$SHIM_DIR/codex"
+    if codex --version &>/dev/null; then
+        echo "[OK] Codex shim 已修复"
+    else
+        echo "[FAIL] Codex shim 修复失败"
+        ERRORS=$((ERRORS+1))
+    fi
 else
-    echo "[OK] Codex shim 存在"
+    echo "[OK] Codex shim 正常（双格式）"
 fi
 
 # ---- 3. Codex 配置一致性检查 ----
