@@ -1,0 +1,19 @@
+#!/bin/bash
+# claude-safe — 启动 Claude Code 前确保舰队就绪
+# 用法: claude-safe [claude-code-args...]
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJ_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo "$SCRIPT_DIR/..")"
+
+# 确保代理端口就绪
+for PORT in 15721; do
+    if ! netstat -ano 2>/dev/null | grep "LISTENING" | grep -q ":${PORT} "; then
+        echo "[claude-safe] 拉起 Anthropic Proxy ($PORT)..."
+        start //min "Fleet-15721" \
+            "C:/Users/Administrator/.workbuddy/binaries/python/versions/3.13.12/python.exe" \
+            "E:/龙虾AI主控中心/MCP服务/anthropic_proxy_15721.py"
+        sleep 3
+    fi
+done
+
+# 启动 Claude Code
+exec claude "$@"

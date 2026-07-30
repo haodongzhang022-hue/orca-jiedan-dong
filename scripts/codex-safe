@@ -1,0 +1,34 @@
+#!/bin/bash
+# codex-safe — 启动 Codex 前确保舰队就绪
+# 用法: codex-safe [codex-args...]
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# 1. 确保代理端口就绪
+for PORT in 15730; do
+    if ! netstat -ano 2>/dev/null | grep "LISTENING" | grep -q ":${PORT} "; then
+        echo "[codex-safe] 拉起 Codex Proxy ($PORT)..."
+        start //min "Fleet-15730" \
+            "C:/Users/Administrator/.workbuddy/binaries/python/versions/3.13.12/python.exe" \
+            "E:/龙虾AI主控中心/MCP服务/codex_tool_proxy.py"
+        sleep 3
+    fi
+done
+
+# 2. 确保 Codex shim 存在
+SHIM="/c/Users/Administrator/AppData/Roaming/npm/codex"
+if [ ! -f "$SHIM" ] || ! codex --version &>/dev/null; then
+    echo "[codex-safe] 重建 Codex shim..."
+    echo '#!/bin/sh' > "$SHIM"
+    echo 'exec node "I:/npm/node_modules/@openai/codex/bin/codex.js" "$@"' >> "$SHIM"
+    chmod +x "$SHIM"
+    echo '@ECHO off' > "${SHIM}.cmd"
+    echo 'node "I:\npm\node_modules\@openai\codex\bin\codex.js" %*' >> "${SHIM}.cmd"
+fi
+
+# 3. 同步 Codex 配置
+SRC="$HOME/.codex/config.toml"
+DST="$HOME/AppData/Roaming/Orca/codex-runtime-home/home/config.toml"
+[ -f "$SRC" ] && [ -d "$(dirname "$DST")" ] && cp "$SRC" "$DST" 2>/dev/null
+
+# 4. 启动 Codex
+exec codex "$@"
