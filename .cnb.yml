@@ -1,0 +1,17 @@
+# NPC 事件流水线配置 - 使用免费默认镜像 cnbcool/default-npc:latest
+# 参考: https://cnb.cool/set/npc-playground
+
+.npc_task: &npc_task
+  docker:
+    image: cnbcool/default-npc:latest
+  stages:
+    - name: npc go
+      type: npc:go
+
+codex:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task
+
+claude-code:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task
