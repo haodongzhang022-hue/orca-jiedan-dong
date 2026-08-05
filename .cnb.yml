@@ -1,9 +1,10 @@
-# NPC 事件流水线配置 - 使用免费默认镜像 cnbcool/default-npc:latest
+# NPC 事件流水线配置 - 使用 default-codebuddy-npc 镜像（内置DeepSeek-V4-Flash，免费）
 # 参考: https://cnb.cool/set/npc-playground
+# 注意: default-npc:latest 是裸镜像无模型，default-codebuddy-npc:latest 含内置模型
 
 .npc_task: &npc_task
   docker:
-    image: cnbcool/default-npc:latest
+    image: cnbcool/default-codebuddy-npc:latest
   stages:
     - name: npc go
       type: npc:go
