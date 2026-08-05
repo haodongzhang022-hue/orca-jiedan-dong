@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>龙虾AI数字人视频播放器</title>
+<style>
+  :root {
+    --bg: #0d0d15;
+    --surface: #181825;
+    --accent: #e74c3c;
+    --gold: #f39c12;
+    --text: #e0e0e0;
+    --muted: #888;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .app {
+    width: 100%;
+    max-width: 1000px;
+    padding: 24px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .logo {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #fff;
+    font-weight: bold;
+  }
+  .title-group h1 { font-size: 18px; font-weight: 600; }
+  .title-group span { font-size: 12px; color: var(--muted); }
+  .badge {
+    margin-left: auto;
+    background: rgba(243,156,18,0.15);
+    color: var(--gold);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid rgba(243,156,18,0.3);
+  }
+  .player-container {
+    position: relative;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  video {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+  }
+  .controls {
+    background: var(--surface);
+    border-radius: 0 0 12px 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .btn {
+    background: none; border: none; color: var(--text);
+    cursor: pointer; font-size: 18px; padding: 6px 10px;
+    border-radius: 6px; transition: background .2s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .btn:hover { background: rgba(255,255,255,0.08); }
+  .btn.accent { color: var(--gold); }
+  .progress-wrap {
+    flex: 1; min-width: 100px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  input[type="range"] {
+    flex:1; height:4px; -webkit-appearance:none;
+    background: rgba(255,255,255,0.12); border-radius:2px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    background: var(--gold); border-radius: 50%; cursor: pointer;
+  }
+  .time { font-size: 12px; color: var(--muted); min-width: 42px; text-align: center; }
+  .info-panel {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .info-card {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 16px 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .info-card h3 {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 8px; font-weight: 400;
+  }
+  .info-card p { font-size: 14px; line-height: 1.6; }
+  .tag {
+    display: inline-block;
+    background: rgba(231,76,60,0.12);
+    color: var(--accent);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-right: 6px;
+  }
+  .tag.blue { background: rgba(41,128,185,0.12); color: #2980b9; }
+  .order-meta {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+  }
+  .order-meta span { color: var(--muted); }
+  .order-meta strong { color: var(--gold); }
+  .drag-hint {
+    margin-top: 16px;
+    background: rgba(41,128,185,0.08);
+    border: 1px dashed rgba(41,128,185,0.3);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .drag-hint:hover { border-color: rgba(41,128,185,0.6); color: #2980b9; }
+  .drag-hint input { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">🐉</div>
+    <div class="title-group">
+      <h1>数字人视频播放器</h1>
+      <span>龙虾AI主控中心 · 企业微信接单群</span>
+    </div>
+    <div class="badge">ORD-20260804-002</div>
+  </div>
+
+  <div class="player-container">
+    <video id="video" src="双人口播_天气与波斯湾.mp4"></video>
+    <div class="controls">
+      <button class="btn" id="playBtn" title="播放/暂停">▶</button>
+      <button class="btn" id="restartBtn" title="重新播放">↺</button>
+      <div class="progress-wrap">
+        <span class="time" id="currentTime">00:00</span>
+        <input type="range" id="progressBar" value="0" min="0" max="100" step="0.1">
+        <span class="time" id="duration">00:00</span>
+      </div>
+      <button class="btn" id="muteBtn" title="静音">🔊</button>
+      <button class="btn" id="fullscreenBtn" title="全屏">⛶</button>
+      <button class="btn accent" id="downloadBtn" title="下载视频">⬇</button>
+    </div>
+  </div>
+
+  <div class="order-meta">
+    <span>订单号：<strong>ORD-20260804-002</strong></span>
+    <span>类型：<strong>双人口播</strong></span>
+    <span>时长：<strong>10秒</strong></span>
+    <span>成本：<strong>¥0.00</strong></span>
+    <span>状态：<strong style="color:#27ae60">已完成</strong></span>
+  </div>
+
+  <div class="info-panel">
+    <div class="info-card">
+      <h3>📋 播报内容</h3>
+      <p>
+        <span class="tag blue">0-5s</span> 北京今日&明日天气预报<br>
+        <span class="tag">5-10s</span> 波斯湾美伊对峙局势分析
+      </p>
+    </div>
+    <div class="info-card">
+      <h3>🎬 技术参数</h3>
+      <p>
+        分辨率：1280×720 | 编码：H.264+AAC<br>
+        渲染引擎：FFmpeg 8.1 | 成本：零积分
+      </p>
+    </div>
+  </div>
+
+  <div class="drag-hint" id="dropZone">
+    📂 拖拽其他视频到此处播放，或 <u>点击选择文件</u>
+    <input type="file" id="fileInput" accept="video/*">
+  </div>
+</div>
+
+<script>
+const video = document.getElementById('video');
+const playBtn = document.getElementById('playBtn');
+const restartBtn = document.getElementById('restartBtn');
+const progressBar = document.getElementById('progressBar');
+const currentTimeEl = document.getElementById('currentTime');
+const durationEl = document.getElementById('duration');
+const muteBtn = document.getElementById('muteBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+function fmt(t) {
+  const m = Math.floor(t / 60), s = Math.floor(t % 60);
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+video.addEventListener('loadedmetadata', () => {
+  durationEl.textContent = fmt(video.duration);
+  progressBar.max = 100;
+});
+
+video.addEventListener('timeupdate', () => {
+  currentTimeEl.textContent = fmt(video.currentTime);
+  if (video.duration) progressBar.value = (video.currentTime / video.duration) * 100;
+});
+
+progressBar.addEventListener('input', () => {
+  if (video.duration) video.currentTime = (progressBar.value / 100) * video.duration;
+});
+
+playBtn.addEventListener('click', () => {
+  if (video.paused) { video.play(); playBtn.textContent = '⏸'; }
+  else { video.pause(); playBtn.textContent = '▶'; }
+});
+video.addEventListener('play', () => { playBtn.textContent = '⏸'; });
+video.addEventListener('pause', () => { playBtn.textContent = '▶'; });
+video.addEventListener('ended', () => { playBtn.textContent = '↻'; });
+
+restartBtn.addEventListener('click', () => {
+  video.currentTime = 0;
+  video.play();
+});
+
+muteBtn.addEventListener('click', () => {
+  video.muted = !video.muted;
+  muteBtn.textContent = video.muted ? '🔇' : '🔊';
+});
+
+fullscreenBtn.addEventListener('click', () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    const container = document.querySelector('.player-container');
+    if (container.requestFullscreen) container.requestFullscreen();
+  }
+});
+
+downloadBtn.addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = video.src;
+  a.download = video.src.split('/').pop();
+  a.click();
+});
+
+// 拖拽播放
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = '#f39c12'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = 'rgba(41,128,185,0.3)'; });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.style.borderColor = 'rgba(41,128,185,0.3)';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) {
+    const url = URL.createObjectURL(file);
+    video.src = url;
+    video.load();
+    video.play();
+  }
+});
+fileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) {
+    video.src = URL.createObjectURL(file);
+    video.load();
+    video.play();
+  }
+});
+
+// 自动加载默认视频
+video.addEventListener('error', () => {
+  console.warn('默认视频加载失败，可拖拽其他视频到播放区域');
+});
+</script>
+</body>
+</html>

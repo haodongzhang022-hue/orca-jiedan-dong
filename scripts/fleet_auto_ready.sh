@@ -11,9 +11,22 @@ echo "========================================="
 echo "  龙虾舰队自动就绪检查 $(date '+%Y-%m-%d %H:%M:%S')"
 echo "========================================="
 
+# ---- 0. 守护进程检查（核心！彻底解决反复修复）----
+GUARDIAN_PY="E:/龙虾AI主控中心/MCP服务/fleet_guardian.py"
+if tasklist 2>/dev/null | grep python | awk '{print $2}' | while read pid; do
+    wmic process where "ProcessId=$pid" get CommandLine 2>/dev/null | grep -q "fleet_guardian"
+done | grep -q "true\|yes"; then
+    echo "[OK] 守护进程 fleet_guardian 运行中（自动管理15721/15730）"
+else
+    echo "[!] 守护进程未运行，正在启动..."
+    "C:/Users/Administrator/.workbuddy/binaries/python/versions/3.13.12/python.exe" "$GUARDIAN_PY" --daemon &
+    sleep 2
+    echo "[OK] 守护进程已启动"
+fi
+
 ERRORS=0
 
-# ---- 1. 代理端口检查 ----
+# ---- 1. 代理端口检查（守护进程会自动拉起，这里只做验证）----
 for PORT in 15721 15730; do
     if ! netstat -ano 2>/dev/null | grep "LISTENING" | grep -q ":${PORT} "; then
         echo "[!] 端口 $PORT 未运行，正在拉起..."

@@ -62,3 +62,5 @@ desktop.ini
 
 # 测试生成物（保留样本本身，不保留动态输出）
 tests/sample_course/out_*/
+
+worktrees/

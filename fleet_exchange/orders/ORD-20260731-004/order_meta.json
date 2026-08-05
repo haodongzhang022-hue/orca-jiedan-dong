@@ -1,0 +1,15 @@
+{
+  "order_id": "ORD-20260731-004",
+  "type": "ai_image",
+  "type_name": "AI生图",
+  "description": "礼盒包装效果图2张",
+  "price": 40.0,
+  "est_time": "10分钟",
+  "status": "new",
+  "created_at": "2026-07-31T17:18:22.936854",
+  "updated_at": "2026-07-31T17:18:22.936873",
+  "customer_info": {},
+  "versions": [],
+  "modifications": [],
+  "deliverables": []
+}

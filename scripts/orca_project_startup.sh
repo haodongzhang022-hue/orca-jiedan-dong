@@ -28,9 +28,9 @@ for PORT in 15721 15730; do
     else
         echo "  [FIX] 端口 $PORT 未运行，正在拉起..."
         if [ "$PORT" = "15721" ]; then
-            start //min "AutoRestore-15721" "$PYEXE" "$MCP_DIR/anthropic_proxy_15721.py"
+            cmd.exe /c start //min "AutoRestore-15721" "$PYEXE" "$MCP_DIR/anthropic_proxy_15721.py"
         elif [ "$PORT" = "15730" ]; then
-            start //min "AutoRestore-15730" "$PYEXE" "$MCP_DIR/codex_tool_proxy.py"
+            cmd.exe /c start //min "AutoRestore-15730" "$PYEXE" "$MCP_DIR/codex_tool_proxy.py"
         fi
         sleep 3
         if netstat -ano 2>/dev/null | grep "LISTENING" | grep -q ":${PORT} "; then

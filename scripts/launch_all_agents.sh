@@ -8,9 +8,9 @@ for PORT in 15721 15730; do
     if ! netstat -ano 2>/dev/null | grep "LISTENING" | grep -q ":${PORT} "; then
         echo "[FIX] 拉起端口 $PORT..."
         if [ "$PORT" = "15721" ]; then
-            start //min "Fleet-15721" "$PYEXE" "$MCP_DIR/anthropic_proxy_15721.py"
+            cmd.exe /c start //min "Fleet-15721" "$PYEXE" "$MCP_DIR/anthropic_proxy_15721.py"
         else
-            start //min "Fleet-15730" "$PYEXE" "$MCP_DIR/codex_tool_proxy.py"
+            cmd.exe /c start //min "Fleet-15730" "$PYEXE" "$MCP_DIR/codex_tool_proxy.py"
         fi
         sleep 3
     fi
