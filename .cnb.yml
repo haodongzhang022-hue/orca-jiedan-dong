@@ -1,6 +1,7 @@
 # NPC 事件流水线配置 - 使用 default-codebuddy-npc 镜像（内置DeepSeek-V4-Flash，免费）
 # 参考: https://cnb.cool/set/npc-playground
 # 注意: default-npc:latest 是裸镜像无模型，default-codebuddy-npc:latest 含内置模型
+# 关键修复: 需在 stage 级别通过 ai_model 显式指定模型，否则 NPC 不会调用 AI
 
 .npc_task: &npc_task
   docker:
@@ -8,6 +9,8 @@
   stages:
     - name: npc go
       type: npc:go
+      settings:
+        ai_model: deepseek-v4-flash
 
 codex:
   issue.comment@npc: *npc_task
