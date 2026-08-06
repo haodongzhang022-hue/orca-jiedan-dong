@@ -1,0 +1,39 @@
+{
+  "order_id": "ORD-20260806-001",
+  "type": "print_ppt_pack",
+  "type_name": "宣传单双面+12卡片+4PPT 综合物料包",
+  "source": "企业微信群「平面设计｜新人接单③群」截图OCR",
+  "description": "宣传单双面（正反面设计）+ 卡片12张 + PPT 4张",
+  "price": 512.0,
+  "est_time": "1天",
+  "status": "delivered",
+  "created_at": "2026-08-06T19:00:00",
+  "updated_at": "2026-08-06T19:40:00",
+  "customer_info": {
+    "contact": "客服赵敏",
+    "phone": "19151988012",
+    "channel": "企业微信群平面设计新人接单③群"
+  },
+  "deliverables": [
+    {
+      "item": "宣传单双面",
+      "files": [
+        "宣传单_正面_A5.svg/png",
+        "宣传单_背面_A5.svg/png"
+      ],
+      "status": "done"
+    },
+    {
+      "item": "卡片12张",
+      "files": "卡片01~12 各.svg+.png",
+      "status": "done"
+    },
+    {
+      "item": "PPT 4页",
+      "files": "品牌宣传PPT_4页_v1.pptx + 4页预览png",
+      "status": "done"
+    }
+  ],
+  "versions": [],
+  "modifications": []
+}

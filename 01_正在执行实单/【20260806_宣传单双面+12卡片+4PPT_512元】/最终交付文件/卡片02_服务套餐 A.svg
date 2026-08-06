@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1063" height="638" viewBox="0 0 1063 638">
+<defs>
+<style>
+@import url("file:///usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc");
+.t{font-family:"Noto Sans CJK SC";}
+</style>
+</defs>
+<rect width="1063" height="638" rx="36" fill="#FFFFFF"/><rect width="200" height="638" rx="36" fill="#0B3C5D"/><rect x="170" width="30" height="638" fill="#F39C12"/><circle cx="100" cy="180" r="60" fill="#F39C12"/><text x="100" y="196" text-anchor="middle" font-size="40" fill="#FFFFFF" class="t" font-weight="bold">LOGO</text><text x="100" y="420" text-anchor="middle" font-size="34" fill="#A8C4D8" class="t">NO.02</text><text x="280" y="220" font-size="72" fill="#0B3C5D" class="t" font-weight="bold">服务套餐 A</text><rect x="284" y="260" width="180" height="10" rx="5" fill="#F39C12"/><text x="280" y="340" font-size="44" fill="#5A5A5A" class="t">标准服务包</text><text x="280" y="420" font-size="34" fill="#8A8A8A" class="t">含基础设计服务 3 项</text><text x="280" y="560" font-size="30" fill="#A0A0A0" class="t">电话占位 · 地址占位 · www.example.com</text><circle cx="983" cy="80" r="90" fill="#E8E8E8"/><circle cx="983" cy="80" r="50" fill="#0B3C5D" opacity="0.15"/></svg>
