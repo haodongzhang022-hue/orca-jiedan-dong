@@ -33,3 +33,4 @@ changes:
   - 【v1.6.0·同步】脚手架模板同步 codex 路径B流水线 + Dockerfile 双 CLI 内置
   - 【v1.6.0·新增】scripts/one_click_npc_stack.sh 四角色栈一键自检（Codex/Hermes/Claude-Code 版本校验 + 8787 端口探活 + 基座锁定确认）
   - 【v1.6.0·修订】docs/claude_code_cloud_vs_local.md 更新四角色矩阵 + 全链路拓扑（claude-code/hermes/codex 路径B + lobster 路径A）
+  - 【v1.6.1·修订】Hermes 调度改版：全域模板全英文调度 → 全域模板调度（中文），强化多 Agent 任务编排（hermes/system_prompt.md、.cnb/settings.yml、config/orca、脚手架模板、docs 矩阵同步）

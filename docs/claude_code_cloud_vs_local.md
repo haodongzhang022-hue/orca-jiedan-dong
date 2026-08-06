@@ -10,7 +10,7 @@
 | 角色 | 召唤指令 | 运行路径 | 核心能力 | 基座约束 |
 |------|----------|----------|----------|----------|
 | **claude-code** | `@claude-code` | 路径B 自定义镜像容器 | 原版 Claude-Code CLI + 8787 协议适配层，MCP/Skill 全量加载，不蒸馏不裁剪 | 强制 `deepseek-v4-flash` 免费基座 |
-| **hermes** | `@hermes` | 路径B 自定义镜像容器 | GitHub 原生 `NousResearch/hermes-agent` CLI，全域模板全英文调度，多 Agent 任务编排 | 强制 `deepseek-v4-flash` 免费基座 |
+| **hermes** | `@hermes` | 路径B 自定义镜像容器 | GitHub 原生 `NousResearch/hermes-agent` CLI，全域模板调度（中文），多 Agent 任务编排 | 强制 `deepseek-v4-flash` 免费基座 |
 | **codex** | `@codex` | **路径B 自定义镜像容器**（自 v1.6.0 起由路径A 升级） | 原生 Codex CLI（`@openai/codex`），代码编写/文件读写/命令执行 | 强制 `deepseek-v4-flash` 免费基座 |
 | **lobster** | `@lobster` | 路径A（`npc:go` 轻量化兜底） | 龙虾专项技能调度、轻量化快速响应 | 强制 `deepseek-v4-flash` 免费基座 |
 
