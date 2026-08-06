@@ -1,20 +1,28 @@
-# NPC 事件流水线 — orca-jiedan 三级链式（deepseek-v4-flash 免费模型）
-# 参考: https://cnb.cool/set/npc-playground
-# settings 必须与 docker/stages 同级，不能嵌套在 stages 里
+# NPC 事件流水线 — orca-jiedan 自定义 NPC（codex / claude-code）
+# 参考: https://docs.cnb.cool/zh/build/npc.md + https://cnb.cool/cnb/cool/default-codebuddy-npc
+# 说明:
+#  1. 角色名（codex / claude-code）必须与 .cnb/settings.yml 中 npc.roles[].name 完全一致
+#  2. type: npc:go 内置任务，模型通过 options.model 传入（官方 internal-steps#npc 文档，所有事件下均生效）
+#  3. 默认镜像 default-codebuddy-npc 内置 CodeBuddy CLI / cnb-cli / Skills，零成本运行
 
 .npc_task: &npc_task
-  docker:
-    image: cnbcool/default-codebuddy-npc:latest
-  settings:
-    ai_model: deepseek-v4-flash
-  stages:
-    - name: npc go
-      type: npc:go
+  - docker:
+      image: cnbcool/default-codebuddy-npc:latest
+    stages:
+      - name: npc go
+        type: npc:go
+        options:
+          model: deepseek-v4-flash
 
 codex:
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
 
 claude-code:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task
+
+# 角色未显式匹配时（兜底），也允许走默认 NPC 行为
+$:
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
