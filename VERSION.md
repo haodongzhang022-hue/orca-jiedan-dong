@@ -1,5 +1,5 @@
 # 版本信息
-version: 1.5.0
+version: 1.6.0
 release_date: 2026-08-07
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
@@ -18,3 +18,10 @@ changes:
   - 【路径B·修订】镜像构建流水线变量修正：main.push 用 CNB_REPO_SLUG_LOWERCASE（NPC变量不注入）
   - 【路径B·修订】.ci/npc-full.yml NPC_MODEL 与 options.model 双保险强制锁定 deepseek-v4-flash
   - 【路径B·修订】脚手架模板 templates/cnb_npc_path_b_scaffold 补齐全部文件（Dockerfile/适配层/entrypoint/quota/docs）
+  - 【v1.6.0·新增】GitHub 原生 Hermes CLI（NousResearch/hermes-agent）接入 CNB NPC 舰队
+  - 【v1.6.0·新增】.ci/hermes.yml hermes 角色路径B流水线（@hermes 触发，独立容器执行）
+  - 【v1.6.0·新增】hermes/entrypoint.sh + adapters/hermes_entry.sh 原生 hermes 安装/入口
+  - 【v1.6.0·新增】.cnb/settings.yml 注册 hermes 角色（大脑层·战略调度人设）
+  - 【v1.6.0·修订】adapters/Dockerfile 内置 hermes CLI + claude/hermes 双入口
+  - 【v1.6.0·修订】镜像版本 1.5.0 → 1.6.0，构建/推送流水线同步
+  - 【v1.6.0·同步】templates/cnb_npc_path_b_scaffold 脚手架模板整体升级
