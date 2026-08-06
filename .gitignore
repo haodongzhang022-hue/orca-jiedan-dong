@@ -64,3 +64,5 @@ desktop.ini
 tests/sample_course/out_*/
 
 worktrees/
+
+nul
