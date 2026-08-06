@@ -58,38 +58,50 @@
     },
     {
       "id": "CNB_ClaudeCode_NPC",
-      "name": "Claude-Code云端NPC封装",
-      "version": "1.5.0",
+      "name": "CNB四角色NPC矩阵（claude-code/hermes/codex/lobster）",
+      "version": "1.6.0",
       "category": "龙虾舰队流水线 · CNB云原生NPC技能库",
-      "description": "把Claude-Code封装为CNB可@调用的自定义NPC，底层基座绑定CNB内置免费DeepSeek-V4-Flash，适配层转发Anthropic协议到CNB内置AI网关，支持额度监控降级与ORCA链式调用。",
+      "description": "把 Claude-Code / Hermes / Codex 封装为 CNB 可@调用的自定义 NPC（路径B 自定义镜像容器+原生 CLI 三件套），lobster 维持路径A 轻量化；四角色底层基座强制绑定 CNB 内置免费 DeepSeek-V4-Flash，适配层转发 Anthropic 协议到 CNB 内置 AI 网关，支持额度监控降级与 ORCA 链式调用。",
       "entry_script": "adapters/anthropic_to_cnb.py",
       "deploy_doc": "docs/Claude-Code_CNB_NPC一键复现部署说明.md",
-      "acceptance_report": "docs/验收报告_Claude-Code_CNB云端NPC_DeepSeekV4Flash_20260807.md",
+      "acceptance_report": "docs/四角色矩阵_验收报告_v1.6.0_20260807.md",
       "files": [
         ".cnb/settings.yml",
         ".cnb.yml",
         ".ci/npc-full.yml",
+        ".ci/hermes.yml",
+        ".ci/codex.yml",
         "adapters/anthropic_to_cnb.py",
         "adapters/Dockerfile",
+        "adapters/hermes_entry.sh",
         "claude/entrypoint.sh",
+        "hermes/entrypoint.sh",
         "scripts/quota_monitor.py",
+        "scripts/one_click_npc_stack.sh",
         "scripts/export_to_github_and_mirror.sh",
+        "scripts/archive_obsidian_v1.6.0.sh",
         "docs/claude_code_cloud_vs_local.md",
+        "docs/四角色矩阵_验收报告_v1.6.0_20260807.md",
+        "docs/双盘备份与Obsidian归档清单_v1.6.0.md",
         "templates/cnb_npc_path_b_scaffold/README.md",
         "claude/CNB_CLAUDE_CODE_INTEGRATION.md"
       ],
       "triggers": [
         "claude-code",
+        "hermes",
+        "codex",
+        "lobster",
         "云端NPC",
         "DeepSeek-V4-Flash",
-        "Anthropic适配"
+        "原生CLI",
+        "路径B"
       ],
       "base_model": "CNB内置免费DeepSeek-V4-Flash",
       "project_root": "E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目",
       "latest_case": {
         "issue": "TJF19770107/orca-jiedan#10",
         "date": "2026-08-07",
-        "result": "@claude-code触发成功，基座deepseek-v4-flash，PR#11"
+        "result": "四角色矩阵 v1.6.0 闭环：@claude-code/@codex 实测通过，基座 deepseek-v4-flash，AI用量 milli_credit=0，镜像 orca-jiedan:1.6.0 已推送"
       }
     }
   ]
