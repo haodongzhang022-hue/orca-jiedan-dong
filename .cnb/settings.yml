@@ -49,7 +49,7 @@ npc:
         - 每项标注文件:行号
         - 给出具体修复代码（before → after）
 
-    - name: 龙虾NPC
+    - name: lobster
       prompt: |
         # 角色：龙虾NPC（全局调度指挥官）
         
