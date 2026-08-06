@@ -1,0 +1,38 @@
+# 一键拉起云上Deepseek V4-Flash 标准版 · .gitignore
+# 运行时生成目录不提交
+
+# 运行时目录
+fleet_exchange/incoming/*
+fleet_exchange/accepted/*
+fleet_exchange/doing/*
+fleet_exchange/done/*
+fleet_exchange/results/*
+fleet_exchange/parsed/*
+fleet_exchange/logs/*
+!fleet_exchange/incoming/.gitkeep
+!fleet_exchange/accepted/.gitkeep
+!fleet_exchange/doing/.gitkeep
+!fleet_exchange/done/.gitkeep
+!fleet_exchange/results/.gitkeep
+!fleet_exchange/parsed/.gitkeep
+!fleet_exchange/logs/.gitkeep
+
+# 工作树（运行时生成）
+worktrees/
+
+# 本地环境
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 日志与输出
+logs/
+outputs/
+backups/
+snapshots/

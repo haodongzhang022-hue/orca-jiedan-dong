@@ -44,8 +44,9 @@ mkdir -p "$INCOMING_DIR"
 TASK_ID=$(date +%Y%m%d_%H%M%S)_0
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
-# 安全文件名（去除特殊字符）
-SAFE_TITLE=$(echo "$TASK_TITLE" | tr ' ' '_' | tr -cd '[:alnum:]_\u4e00-\u9fff')
+# 安全文件名（仅保留字母/数字/下划线，避免中文与特殊字符导致路径异常）
+SAFE_TITLE=$(echo "$TASK_TITLE" | tr ' ' '_' | tr -cd 'A-Za-z0-9_.-' | cut -c1-40)
+[ -z "$SAFE_TITLE" ] && SAFE_TITLE="task"
 
 # 生成 Markdown 任务卡
 TASK_FILE="$INCOMING_DIR/${TASK_ID}__Maris_${SAFE_TITLE}.md"

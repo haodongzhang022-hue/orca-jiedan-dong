@@ -30,6 +30,7 @@
 | `E:\...\fleet_exchange\` | `fleet_exchange/` | 任务交换区（四级流转） |
 | `E:\...\worktrees\` | `worktrees/` | 三工作树（hermes/codex/claude） |
 | `E:\...\templates\` | `templates/` | 输出模板（课程大纲、知识卡片等） |
+| `E:\...\templates\一键拉起云上Deepseek V4-Flash 标准版\` | `templates/一键拉起云上Deepseek V4-Flash 标准版/` | ★ **标准脚手架模板**（原 orca_fleet_scaffold_v1.4 改名），含 apply_scaffold 批量部署 + 一键拉起脚本 |
 | `E:\...\skills\` | `skills/` | 技能库（海报设计、画册排版、短视频等） |
 | `E:\...\tools\` | `tools/` | 工具集 |
 | `E:\...\msgbus\` | `msgbus/` | 消息总线（Agent 间通信） |
@@ -59,9 +60,10 @@
 | **项目自动就绪** | `E:\...\scripts\orca_project_startup.sh` | `scripts/orca_project_startup.sh` | Orca 打开项目时自动检查 |
 | **目录结构创建** | `E:\...\scripts\创建目录结构.sh` | `scripts/创建目录结构.sh` | 标准目录骨架一键创建 |
 | **目录结构创建(PS)** | `E:\...\scripts\创建目录结构.ps1` | `scripts/创建目录结构.ps1` | PowerShell 版本 |
-| **Maris调度分发** | `E:\...\scripts\maris_dispatch.sh` | `scripts/maris_dispatch.sh` | Maris 任务投递调度（**待创建**） |
-| **Maris文档生成** | `E:\...\scripts\maris_gen_readme.sh` | `scripts/maris_gen_readme.sh` | Maris 接入文档自动生成（**待创建**） |
-| **工作树批量初始化** | `E:\...\scripts\orca_init_worktrees.sh` | `scripts/orca_init_worktrees.sh` | 三工作树批量初始化（**待创建**） |
+| **Maris调度分发** | `E:\...\scripts\maris_dispatch.sh` | `scripts/maris_dispatch.sh` | ✅ Maris 任务投递调度（已就绪） |
+| **Maris文档生成** | `E:\...\scripts\maris_gen_readme.sh` | `scripts/maris_gen_readme.sh` | ✅ Maris 接入文档自动生成（已就绪） |
+| **工作树批量初始化** | `E:\...\scripts\orca_init_worktrees.sh` | `scripts/orca_init_worktrees.sh` | ✅ 三工作树批量初始化（已就绪） |
+| **流程图生成器** | `E:\...\scripts\gen_flow_diagram.py` | `scripts/gen_flow_diagram.py` | 协作链路 PNG 生成（Pillow） |
 
 ### 1.3 fleet_exchange 四级任务流转路径
 
@@ -90,11 +92,12 @@
 
 | 文件 | 本地路径 | 云端路径 | 状态 |
 |---|---|---|---|
-| `maris_dispatch.sh` | `E:\...\scripts\maris_dispatch.sh` | `scripts/maris_dispatch.sh` | ⚠️ **待创建**（模板见模块2） |
-| `maris_gen_readme.sh` | `E:\...\scripts\maris_gen_readme.sh` | `scripts/maris_gen_readme.sh` | ⚠️ **待创建**（模板见模块2） |
-| `orca_init_worktrees.sh` | `E:\...\scripts\orca_init_worktrees.sh` | `scripts/orca_init_worktrees.sh` | ⚠️ **待创建**（模板见模块2） |
-| `fleet_exchange/README.md` | `E:\...\fleet_exchange\README.md` | `fleet_exchange/README.md` | ⚠️ **待创建** |
-| `docs/Maris调度接入说明.md` | `E:\...\docs\Maris调度接入说明.md` | `docs/Maris调度接入说明.md` | ⚠️ **待创建** |
+| `maris_dispatch.sh` | `E:\...\scripts\maris_dispatch.sh` | `scripts/maris_dispatch.sh` | ✅ 已就绪（PR#5/Main 6ebbc38） |
+| `maris_gen_readme.sh` | `E:\...\scripts\maris_gen_readme.sh` | `scripts/maris_gen_readme.sh` | ✅ 已就绪（PR#5/Main 6ebbc38） |
+| `orca_init_worktrees.sh` | `E:\...\scripts\orca_init_worktrees.sh` | `scripts/orca_init_worktrees.sh` | ✅ 已就绪（PR#5/Main 6ebbc38） |
+| `fleet_exchange/README.md` | `E:\...\fleet_exchange\README.md` | `fleet_exchange/README.md` | ✅ 已就绪 |
+| `docs/Maris调度接入说明.md` | `E:\...\docs\Maris调度接入说明.md` | `docs/Maris调度接入说明.md` | ✅ 已就绪 |
+| `assets/diagram/orca_fleet_flow.png` | `E:\...\assets\diagram\orca_fleet_flow.png` | `assets/diagram/orca_fleet_flow.png` | ✅ 已就绪（协作链路图） |
 
 ### 1.5 关键配置文件路径
 
@@ -122,24 +125,27 @@
 
 ### 2.1 场景一：脚手架批量部署
 
-#### 单项目部署
+#### 标准脚手架批量部署（apply_scaffold.sh ★ 推荐）
+
+> 标准模板位于 `templates/一键拉起云上Deepseek V4-Flash 标准版/`（原 `orca_fleet_scaffold_v1.4` 改名），
+> `apply_scaffold.sh` 是模板内的一键批量部署入口：幂等（已存在文件一律 `[SKIP]` 不覆盖），自动补齐 `.cnb.yml` / `.cnb/settings.yml` / `.orca/setup.sh` / `CODEX.md` / `CLAUDE.md` / `scripts/*.sh` / `fleet_exchange/` 目录 / `scaffold_version`。
 
 <details>
 <summary>📋 一键复制 — 单项目部署（Git Bash）</summary>
 
 ```bash
-# 前置条件：已安装 Git Bash，已配置 CNB 账号
-# 执行效果：克隆仓库 + 创建标准目录骨架 + 初始化工作树
+# 前置条件：已安装 Git Bash，已克隆本仓库（含标准脚手架模板）
+# 执行效果：把标准脚手架部署到指定项目目录（幂等，不覆盖已有配置）
 
-# 1. 克隆仓库
-git clone https://cnb.cool/TJF19770107/orca-jiedan.git
-cd orca-jiedan
+# 1. 进入本仓库根目录
+cd E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目
 
-# 2. 创建标准目录骨架
-bash scripts/创建目录结构.sh
+# 2. 指定项目目录部署
+bash "templates/一键拉起云上Deepseek V4-Flash 标准版/scripts/apply_scaffold.sh" \
+    "E:/龙虾AI主控中心/我的AI分身/你的新项目"
 
-# 3. 验证目录结构
-ls -la fleet_exchange/ worktrees/ scripts/ config/
+# 3. 验证模板目录存在
+ls "templates/一键拉起云上Deepseek V4-Flash 标准版/scripts/"
 ```
 
 </details>
@@ -148,50 +154,42 @@ ls -la fleet_exchange/ worktrees/ scripts/ config/
 <summary>📋 一键复制 — 单项目部署（PowerShell）</summary>
 
 ```powershell
-# 前置条件：已安装 Git，已配置 CNB 账号
-# 执行效果：同上
+# 前置条件：已安装 Git，已克隆本仓库
+# 执行效果：同上（PowerShell 中调用 Git Bash 执行 apply_scaffold.sh）
 
-# 1. 克隆仓库
-git clone https://cnb.cool/TJF19770107/orca-jiedan.git
-cd orca-jiedan
+# 1. 进入本仓库根目录
+cd E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目
 
-# 2. 创建标准目录骨架
-powershell -ExecutionPolicy Bypass -File scripts\创建目录结构.ps1
+# 2. 用 Git Bash 执行部署
+bash "templates/一键拉起云上Deepseek V4-Flash 标准版/scripts/apply_scaffold.sh" "E:/龙虾AI主控中心/我的AI分身/你的新项目"
 
 # 3. 验证
-Test-Path fleet_exchange, worktrees, scripts, config
+Test-Path "templates/一键拉起云上Deepseek V4-Flash 标准版/scripts/apply_scaffold.sh"
 ```
 
 </details>
 
-#### 多项目批量部署
-
 <details>
-<summary>📋 一键复制 — 多项目批量部署（6个仓库）</summary>
+<summary>📋 一键复制 — 多项目批量部署（apply_scaffold 多目录）</summary>
 
 ```bash
-# 前置条件：已配置 CNB 账号
-# 执行效果：批量克隆龙虾舰队全部6个仓库
+# 前置条件：已克隆本仓库
+# 执行效果：一次部署多个项目（目录不存在自动跳过）
 
-REPOS=(
-  "orca-jiedan"       # 企业微信接单项目
-  "orca-wangpan"      # 网盘萃取项目
-  "orca-xianyu"       # 闲鱼自动化项目
-  "orca-quant-jiasheng" # 量化嘉盛策略
-  "orca-quant-binance"  # 量化币安策略
-  "orca"              # 主空仓（调度中枢）
-)
+bash "templates/一键拉起云上Deepseek V4-Flash 标准版/scripts/apply_scaffold.sh" \
+    "E:/龙虾AI主控中心/我的AI分身/CODEX量化策略20260615/币安/我的黑马策略" \
+    "E:/龙虾AI主控中心/我的AI分身/赛事预测分析系统" \
+    "E:/龙虾AI主控中心/我的AI分身/网盘课程资源知识萃取与沉淀体系建设"
 
+# 批量克隆 6 仓 + 部署（无标准模板时兜底写法）
+REPOS=(orca-jiedan orca-wangpan orca-xianyu orca-quant-jiasheng orca-quant-binance orca)
 for repo in "${REPOS[@]}"; do
   echo "=== 克隆 ${repo} ==="
-  git clone "https://cnb.cool/TJF19770107/${repo}.git"
-  cd "${repo}"
-  # 创建标准目录（如果脚本存在）
-  [ -f scripts/创建目录结构.sh ] && bash scripts/创建目录结构.sh
-  cd ..
+  git clone "https://cnb.cool/TJF19770107/${repo}.git" "E:/龙虾AI主控中心/我的AI分身/${repo}" 2>/dev/null
+  [ -f "E:/龙虾AI主控中心/我的AI分身/${repo}/scripts/创建目录结构.sh" ] && \
+    bash "E:/龙虾AI主控中心/我的AI分身/${repo}/scripts/创建目录结构.sh"
 done
-
-echo "✅ 全部6个仓库已部署完成"
+echo "✅ 全部仓库已部署完成"
 ```
 
 </details>
@@ -266,7 +264,7 @@ source scripts/fleet_ensure.sh
 # 2. 健康检查
 bash scripts/fleet_health_check.sh
 
-# 3. 生成 Maris 接入文档（待创建脚本）
+# 3. 生成 Maris 接入文档（已就绪脚本）
 bash scripts/maris_gen_readme.sh
 
 # 4. 生成 fleet_exchange/README.md
@@ -338,7 +336,7 @@ git log --oneline -1
 # 前置条件：Maris 已部署，fleet_exchange/incoming/ 目录存在
 # 执行效果：生成任务卡到 incoming/，触发 Codex 自动接单
 
-# 使用 maris_dispatch.sh（待创建脚本）
+# 使用 maris_dispatch.sh（已就绪脚本）
 bash scripts/maris_dispatch.sh \
   --type "文案" \
   --title "产品宣传文案" \
@@ -456,7 +454,7 @@ git commit -m "feat: 配置CNB云原生DeepSeek-V4-Flash NPC流水线"
 git push origin main
 
 # 步骤4：验证
-# 在 CNB 仓库 Issue 中评论：@codex 你好，请列出你的核心能力
+# 在 CNB 仓库 Issue 中评论：@TJF19770107/orca-jiedan(codex) 你好，请列出你的核心能力
 # 确认 NPC 正常响应
 ```
 
@@ -477,7 +475,7 @@ git push origin main
 | 流水线配置存在 | `cat .cnb.yml \| grep mtga` | 输出镜像地址 |
 | 角色人设存在 | `cat .cnb/settings.yml \| grep codex` | 输出 codex 角色 |
 | 代码已推送 | `git log --oneline -1` | 最新提交包含配置 |
-| NPC 响应 | Issue 评论 `@codex 你好` | NPC 回复 |
+| NPC 响应 | Issue 评论 `@TJF19770107/orca-jiedan(codex) 你好` | NPC 回复 |
 
 </details>
 
@@ -610,6 +608,11 @@ Maris 本地运行 maris_dispatch.sh
 
 ### 4.2 横向流程图
 
+> 📌 完整 PNG 图：`assets/diagram/orca_fleet_flow.png`（可用任何图片查看器打开）
+> 📌 Mermaid 源码：`assets/diagram/orca_fleet_flow.md`（可在 CNB/GitHub 在线渲染）
+
+![ORCA 舰队跨主体协作链路图](../assets/diagram/orca_fleet_flow.png)
+
 ```mermaid
 flowchart LR
     subgraph Maris本地
@@ -618,12 +621,12 @@ flowchart LR
 
     subgraph Codex执行层
         A -->|读取任务卡| B[fleet_exchange/doing/]
-        C[@npc/codex] -->|代码生成+脚本执行| B
+        C["@TJF19770107/orca-jiedan(codex)"] -->|代码生成+脚本执行| B
     end
 
     subgraph ClaudeCode审核层
         B -->|执行结果| D[fleet_exchange/done/]
-        E["@npc/claude-code"] -->|代码审计+质量校验| D
+        E["@TJF19770107/orca-jiedan(claude-code)"] -->|代码审计+质量校验| D
     end
 
     subgraph CodeBuddy终审层
@@ -654,10 +657,12 @@ flowchart LR
 
 | 召唤对象 | 格式 | 触发位置 | 生效前提 |
 |---------|------|---------|---------|
-| Codex NPC | `@codex` 或 `@npc/codex(Codex)` | Issue/PR 评论 | `.cnb.yml` 中 `codex` 角色已绑定 |
-| Claude Code NPC | `@claude-code` 或 `@npc/claude-code(Claude Code)` | Issue/PR 评论 | `.cnb.yml` 中 `claude-code` 角色已绑定 |
+| Codex NPC | `@TJF19770107/orca-jiedan(codex)` | Issue/PR 评论 | `.cnb.yml` 中 `codex` 角色已绑定 + 勾选「替我上班」 |
+| Claude Code NPC | `@TJF19770107/orca-jiedan(claude-code)` | Issue/PR 评论 | `.cnb.yml` 中 `claude-code` 角色已绑定 + 勾选「替我上班」 |
 | CodeBuddy | `@CodeBuddy` | Issue/PR 评论 | 系统内置 NPC，无需配置 |
-| 多 NPC 联动 | `@codex @claude-code` | Issue/PR 评论 | 两个角色均已配置 |
+| 多 NPC 联动 | `@TJF19770107/orca-jiedan(codex) @TJF19770107/orca-jiedan(claude-code)` | Issue/PR 评论 | 两个角色均已配置 |
+
+> ⚠️ **必须使用完整格式** `@TJF19770107/orca-jiedan(codex)`，简写 `@codex` / `@npc/codex` 平台不识别、不触发流水线。
 
 #### 消息同步至本地 ORCA 舰队的机制
 
@@ -679,7 +684,7 @@ flowchart LR
 > **Maris 执行自检清单** ✅
 > - [ ] 已理解四级流转：incoming → doing → done → results
 > - [ ] 已确认自身权责：仅投递任务卡，不越权执行/审核
-> - [ ] 已确认 @召唤格式：@codex / @claude-code / @CodeBuddy
+> - [ ] 已确认 @召唤格式：`@TJF19770107/orca-jiedan(codex)` / `@TJF19770107/orca-jiedan(claude-code)` / `@CodeBuddy`
 > - [ ] 已确认云端→本地同步方式：git pull
 > - [ ] 已确认 NPC 响应慢时的排查步骤
 
@@ -719,8 +724,8 @@ flowchart LR
 | **拉起MIMO** | `bash scripts/one_click_mimo_v25.sh` |
 | **推送代码** | `git add -A && git commit -m "xxx" && git push origin main` |
 | **拉取代码** | `git pull origin main` |
-| **@codex** | 在 Issue/PR 评论中输入 `@codex` |
-| **@claude-code** | 在 Issue/PR 评论中输入 `@claude-code` |
+| **@codex** | 在 Issue/PR 评论中输入 `@TJF19770107/orca-jiedan(codex)` |
+| **@claude-code** | 在 Issue/PR 评论中输入 `@TJF19770107/orca-jiedan(claude-code)` |
 | **@CodeBuddy** | 在 Issue/PR 评论中输入 `@CodeBuddy` |
 
 > **Maris 执行自检清单** ✅
@@ -738,7 +743,7 @@ flowchart LR
 |------|------|----------|---------|
 | **curl 抓取视频号失效** | 视频号反爬机制，Cookie 过期 | ① 手动在浏览器中打开视频号页面 ② 复制完整 Cookie ③ 重新执行 curl | `scripts/netdisk_stream_reader.py` |
 | **B站未登录抓取受限** | B站需登录才能访问高清视频 | ① 登录 B站 ② 导出 Cookie ③ 配置到 `~/.bilibili_cookies.txt` | `scripts/netdisk_stream_reader.py` |
-| **仓颉蒸馏需 Agent 介入** | 仓颉（Cangjie）语言蒸馏流程复杂，需人工审核 | ① 使用 Codex NPC 生成蒸馏脚本 ② 人工审核后执行 | `@codex 帮我写仓颉蒸馏脚本` |
+| **仓颉蒸馏需 Agent 介入** | 仓颉（Cangjie）语言蒸馏流程复杂，需人工审核 | ① 使用 Codex NPC 生成蒸馏脚本 ② 人工审核后执行 | `@TJF19770107/orca-jiedan(codex) 帮我写仓颉蒸馏脚本` |
 
 ### 6.2 常见故障速查表
 
@@ -804,16 +809,37 @@ bash scripts/fleet_health_check.sh
 
 ### Q2：如何从 MIMO 切换到 CNB 免费 DeepSeek V4-Flash？
 
-**需要修改的文件和字段**：
+**结论先行**：云端 NPC 已是 DeepSeek-V4-Flash 基座，无需大改；如需**显式锁定**模型（官方推荐做法），在 `.cnb.yml` 的 `npc:go` 任务 `options.model` 处声明即可。
 
-#### 文件1：`.cnb.yml`（云端 NPC 流水线）
+> 依据 CNB 官方文档《npc:go 参数说明》：`npc:go` 内置任务支持 `model` 参数（`options.model`），**不指定时使用平台默认模型**；`role`/`systemPrompt`/`userPrompt` 在 `issue.comment@npc` / `pull_request.comment@npc` 事件中会被自动忽略，无需配置。
+
+#### 文件1：`.cnb.yml`（云端 NPC 流水线 — 需要修改的字段）
 
 ```yaml
-# 当前配置（已正确，无需修改）
+# 当前配置（mtga 镜像已内置 V4-Flash，可直接用）
 .npc_task: &npc_task
   - stages:
       - name: npc respond
-        image: docker.cnb.cool/npc/mtga:latest   # ← 已是 DeepSeek-V4-Flash 镜像
+        image: docker.cnb.cool/npc/mtga:latest
+
+# ── 要显式锁定模型，请改成下面这样（二选一）──
+# 方式A：在 image 旁补 stages 并加 npc:go 的 options.model（官方 internal-steps#npc 参数）
+.npc_task: &npc_task
+  - docker:
+      image: docker.cnb.cool/npc/mtga:latest
+    stages:
+      - name: npc go
+        type: npc:go
+        options:
+          model: deepseek-v4-flash   # ← 官方字段：显式指定模型 ID
+
+# 方式B：直接使用标准模板（templates/一键拉起云上Deepseek V4-Flash 标准版/.cnb.yml）
+#   image: cnbcool/default-codebuddy-npc:latest
+#   stages:
+#     - name: npc go
+#       type: npc:go
+#       options:
+#         model: deepseek-v4-flash
 
 codex:
   issue.comment@npc: *npc_task
@@ -824,9 +850,9 @@ claude-code:
   pull_request.comment@npc: *npc_task
 ```
 
-**无需修改**，当前已配置为 DeepSeek-V4-Flash 镜像。
+> ⚠️ 历史教训（仓库提交记录）：`settings: ai_model:` 写在 stages 内/外都有兼容问题，官方正确的写法是 **`type: npc:go` 的 `options.model`**。若沿用当前 mtga 镜像，也可不写 model（平台默认即 V4-Flash），但显式声明更稳妥。
 
-#### 文件2：`.cnb/settings.yml`（NPC 角色人设）
+#### 文件2：`.cnb/settings.yml`（NPC 角色人设 — 无需修改）
 
 ```yaml
 # 当前配置（已正确，无需修改）
@@ -842,9 +868,9 @@ npc:
         ...
 ```
 
-**无需修改**，人设已配置。
+> 角色名必须与 `.cnb.yml` 顶层 key（codex / claude-code）完全一致，否则 @ 不生效。
 
-#### 文件3：`config/model_config.yaml`（本地 Agent 推理后端）
+#### 文件3：`config/model_config.yaml`（本地 Agent 推理后端 — 仅本地链路用）
 
 ```yaml
 # 当前配置
@@ -858,7 +884,7 @@ openai:
   model: "deepseek-v4-flash"
 ```
 
-**注意**：本地 Agent 切换到 DeepSeek 官方 API 需要 API Key 和充值。**推荐保持 Ollama 本地 + CNB 云原生双链路并行**。
+**注意**：本地 Agent 切换到 DeepSeek 官方 API 需要 API Key 和充值。**推荐保持 Ollama 本地 + CNB 云原生双链路并行**（CNB 云原生零本地占用，本地 Ollama 负责离线/多模态旁路）。
 
 #### 文件4：`config/fleet_profiles/official_ds.env`（云原生舰队档案）
 
@@ -869,7 +895,7 @@ MODEL_NAME=deepseek-v4-flash
 FREE_UNTIL=2026-12-31
 ```
 
-**总结**：**云端 NPC 已切换到 DeepSeek-V4-Flash，无需额外修改**。本地 Agent 推荐保持 Ollama 本地链路不变。
+**总结**：**云端 NPC 已切换到 DeepSeek-V4-Flash**，本地 Agent 推荐保持 Ollama 本地链路不变。想要显式锁定模型，只需按文件1方式A在 `.cnb.yml` 的 `options.model` 填 `deepseek-v4-flash`。
 
 ### Q3：切换后对已有功能的影响？
 
@@ -893,13 +919,15 @@ FREE_UNTIL=2026-12-31
 | 项目 | 版本/值 |
 |------|--------|
 | 说明书版本 | V1.0 |
-| 关联 PR | PR#5 |
+| 关联 PR | PR#5（Maris 标准件合并节点）+ 本次修订（模板/PNG/命令修正） |
 | 基座模型 | CNB 免费 DeepSeek-V4-Flash |
-| NPC 镜像 | `docker.cnb.cool/npc/mtga:latest` |
+| NPC 镜像 | `docker.cnb.cool/npc/mtga:latest`（模板另有 `cnbcool/default-codebuddy-npc:latest` 方案） |
 | 免费期限 | 至 2026-12-31 |
 | 本地 Agent 基座 | Ollama + MIMO V2.5 Pro |
+| 协作链路图 | `assets/diagram/orca_fleet_flow.png`（PNG）+ `orca_fleet_flow.md`（Mermaid） |
+| 标准脚手架模板 | `templates/一键拉起云上Deepseek V4-Flash 标准版/`（v1.4.1） |
 | 仓库地址 | `https://cnb.cool/TJF19770107/orca-jiedan` |
 
 ---
 
-*文档生成：Codex（代码执行官）| ORCA 舰队运维接入总说明书 V1.0 | 2026-08-06*
+*文档生成：Codex（代码执行官）| 修订：CodeBuddy | ORCA 舰队运维接入总说明书 V1.0 | 2026-08-06*
