@@ -14,3 +14,7 @@ codex:
 claude-code:
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
+
+龙虾NPC:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task
