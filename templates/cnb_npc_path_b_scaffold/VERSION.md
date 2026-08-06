@@ -25,3 +25,9 @@ changes:
   - 【v1.6.0·修订】adapters/Dockerfile 内置 hermes CLI + claude/hermes 双入口
   - 【v1.6.0·修订】镜像版本 1.5.0 → 1.6.0，构建/推送流水线同步
   - 【v1.6.0·同步】templates/cnb_npc_path_b_scaffold 脚手架模板整体升级
+  - 【v1.6.0·新增】原生 Codex CLI（@openai/codex，bin=codex.js，linux-x64 二进制）打包进镜像
+  - 【v1.6.0·新增】.ci/codex.yml codex 角色路径B流水线（@codex 触发，独立容器执行）
+  - 【v1.6.0·修订】codex 角色从路径A（$ 兜底 npc:go 轻量化）升级为路径B（自定义镜像+原生完整 CLI）
+  - 【v1.6.0·修订】路径B 三个角色（claude-code/hermes/codex）maxTurns 24 → 60，修复
+    "Agent aborted: reached maxTurns limit (24)" 导致 @claude-code/@hermes 执行失败问题
+  - 【v1.6.0·同步】脚手架模板同步 codex 路径B流水线 + Dockerfile 双 CLI 内置

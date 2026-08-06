@@ -25,10 +25,10 @@
 | **额度监控** | 无 | 镜像内置 `quota_monitor.py`（80% 告警 / 95% 降档保护） |
 | **冷启动速度** | 快（轻量化） | 较慢（镜像体积更大，容器冷启动耗时） |
 | **可移植性** | 与 CNB 平台耦合 | 与本地 Docker 使用逻辑完全对齐，可在容器内部署 MCP Server |
-| **触发方式** | `@codex` / `@lobster` 等其它角色 | `@claude-code` |
+| **触发方式** | `@lobster` 等其它角色 | `@claude-code` / `@codex` / `@hermes`（原生 CLI 三件套） |
 
-> **切换说明**：本仓库 `.cnb.yml` 中 `claude-code` 角色顶层 key 覆盖 `$` 兜底 ——
-> `@claude-code` 自动走路径B，其余角色走路径A，两套模式并存、无需改配置即切换。
+> **切换说明**：本仓库 `.cnb.yml` 中 `claude-code` / `codex` / `hermes` 角色顶层 key 覆盖 `$` 兜底 ——
+> 三个角色自动走路径B（自定义镜像容器 + 原生完整 CLI），其余角色（如 `@lobster`）走路径A，两套模式并存、无需改配置即切换。
 
 ---
 
