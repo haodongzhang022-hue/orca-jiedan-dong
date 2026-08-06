@@ -1,17 +1,36 @@
-# NPC 事件流水线 — orca-jiedan 三级链式（免费 mtga 社区镜像）
-# 参考: https://cnb.cool/set/npc-playground
-# mtga = docker.cnb.cool/npc/mtga:latest = 以鹅传鹅-Pro，社区免费 NPC 镜像
+# =============================================================================
+# NPC 事件流水线 — orca-jiedan 三级链式（claude-code / codex）
+# 基座：CNB 内置免费 DeepSeek-V4-Flash（npc:go 的 options.model 显式绑定）
+# 触发：Issue/PR 评论中 @claude-code / @codex → 自动拉起 AI Agent 并回写评论
+# 参考：https://docs.cnb.cool/zh/build/npc.md
+#       https://cnb.cool/set/npc-playground
+# 安全：本文件不包含任何密钥；模型鉴权通过 CNB 流水线环境变量注入
+# =============================================================================
 
+# ---- 公共 NPC 任务模板 ----
+# options.model 显式绑定 CNB 内置免费 deepseek-v4-flash，确保不落到外部付费模型
+# options.maxTurns 限制 Agent 轮次防失控；contextWindow 与模型对齐（128k）
 .npc_task: &npc_task
-  - stages:
-      - name: npc respond
-        image: docker.cnb.cool/npc/mtga:latest
+  - docker:
+      # 平台默认 NPC 运行镜像（免费，内置 cnb-cli / skills 等运行时）
+      image: cnbcool/default-npc:latest
+    env:
+      # 供适配层/监控脚本使用（非 CNB_ 保留前缀）
+      NPC_MODEL: deepseek-v4-flash
+      REASONING_EFFORT: high
+    stages:
+      - name: npc go
+        type: npc:go
+        options:
+          # 显式绑定 CNB 内置免费 DeepSeek-V4-Flash 基座
+          model: deepseek-v4-flash
+          maxTurns: 12
+          contextWindow: "128k"
 
-codex:
-  issue.comment@npc: *npc_task
-  pull_request.comment@npc: *npc_task
-
-claude-code:
+# ---- NPC 事件绑定（$ 兜底分支：所有已定义角色共用此流水线）----
+# 角色在 .cnb/settings.yml 中定义：claude-code、codex
+# 平台按角色名顶层 key 或 $ 兜底加载；$ 保证未单独配置的角色也走本流水线
+$:
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
 

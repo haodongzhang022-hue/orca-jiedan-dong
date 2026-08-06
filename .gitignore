@@ -50,8 +50,13 @@ __pycache__/
 .env
 .env.*
 secrets.yaml
+secrets.yml
 *.key
 *.pem
+# 额度监控状态与导出包
+.quota_state.json
+quota.env
+artifacts/
 
 # 系统文件
 .DS_Store
