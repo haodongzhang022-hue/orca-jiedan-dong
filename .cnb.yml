@@ -1,15 +1,11 @@
-# NPC 事件流水线 — orca-jiedan 三级链式（deepseek-v4-flash 免费模型）
+# NPC 事件流水线 — orca-jiedan 三级链式（免费 mtga 社区镜像）
 # 参考: https://cnb.cool/set/npc-playground
-# settings 必须与 docker/stages 同级，不能嵌套在 stages 里
+# mtga = docker.cnb.cool/npc/mtga:latest = 以鹅传鹅-Pro，社区免费 NPC 镜像
 
 .npc_task: &npc_task
-  docker:
-    image: cnbcool/default-codebuddy-npc:latest
-  settings:
-    ai_model: deepseek-v4-flash
-  stages:
-    - name: npc go
-      type: npc:go
+  - stages:
+      - name: npc respond
+        image: docker.cnb.cool/npc/mtga:latest
 
 codex:
   issue.comment@npc: *npc_task
