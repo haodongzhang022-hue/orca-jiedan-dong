@@ -31,13 +31,17 @@ if [ -z "${CNB_REPO_SLUG:-}" ]; then
 fi
 
 # ---- 2. 组装可发布源码包（过滤密钥）----
-rm -rf "$STAGING" && mkdir -p "$STAGING/adapters" "$STAGING/scripts" "$STAGING/.cnb" "$STAGING/docs"
+rm -rf "$STAGING" && mkdir -p "$STAGING/adapters" "$STAGING/scripts" "$STAGING/.cnb" "$STAGING/.ci" "$STAGING/claude" "$STAGING/docs"
 
 echo "==> 复制 Claude-Code 适配层与配置"
 cp adapters/anthropic_to_cnb.py        "$STAGING/adapters/"
+cp adapters/Dockerfile                 "$STAGING/adapters/"
 cp scripts/quota_monitor.py            "$STAGING/scripts/"
+cp claude/entrypoint.sh                "$STAGING/claude/entrypoint.sh" 2>/dev/null || true
+cp .ci/npc-full.yml                    "$STAGING/.ci/npc-full.yml" 2>/dev/null || true
 cp .cnb/settings.yml                   "$STAGING/.cnb/settings.yml"
 cp .cnb.yml                            "$STAGING/.cnb.yml"
+cp docs/claude_code_cloud_vs_local.md  "$STAGING/docs/" 2>/dev/null || true
 cp README.md                           "$STAGING/README.md" 2>/dev/null || true
 
 echo "==> 生成可复用部署说明"
@@ -46,9 +50,18 @@ cat > "$STAGING/DEPLOY.md" <<'MD'
 
 ## 仓库结构
 - `.cnb/settings.yml` — NPC 角色（claude-code / codex）定义
-- `.cnb.yml`          — NPC 事件流水线（issue/pr 评论 @ 触发，npc:go + model=deepseek-v4-flash）
+- `.cnb.yml`          — 主流水线（路径A：$ 兜底 npc:go + 镜像构建 + include）
+- `.ci/npc-full.yml`  — 路径B：claude-code 角色自定义镜像容器流水线
+- `adapters/Dockerfile` — 路径B 自定义镜像（完整 Claude-Code CLI + 适配层 + 额度监控）
 - `adapters/anthropic_to_cnb.py` — Claude-Code Anthropic 协议 → CNB 内置 AI 网关转发层
-- `scripts/quota_monitor.py`     — 免费额度监控与降级保护
+- `claude/entrypoint.sh` — 容器入口（额度监控 + 适配层 8787 + Claude-Code CLI）
+- `scripts/quota_monitor.py` — 免费额度监控与降级保护
+- `docs/claude_code_cloud_vs_local.md` — A/B 双模式对比文档
+
+## 双路径说明
+- **路径A（默认）**：`@codex`/`@lobster` 等角色 → `$` 兜底 `npc:go` 轻量化运行时
+- **路径B（增强）**：`@claude-code` → 自定义镜像拉起独立容器，完整原版 Claude-Code CLI
+  + 适配层监听 127.0.0.1:8787，不蒸馏、不裁剪原生 MCP/插件/Skill
 
 ## 部署步骤
 1. 将本目录内容推送到 GitHub 私有仓库（git init; git add .; git commit; git push）
@@ -59,9 +72,13 @@ cat > "$STAGING/DEPLOY.md" <<'MD'
    - `REASONING_EFFORT` = high （low/high/max 三档）
    - `QUOTA_LIMIT`      = 1600（每月免费核时，按需调整）
    - `QUOTA_USED`       = 0
-4. 在 Issue / PR 评论 `@claude-code` 触发 NPC，适配层自动把 Claude-Code 的
-   Anthropic 请求转成 OpenAI 协议打到 CNB 内置 DeepSeek-V4-Flash 网关。
-5. 额度接近 80%/95% 时，quota_monitor.py 输出告警/降级建议。
+4. 构建并推送路径B 自定义镜像（或直接使用制品库已有镜像）：
+   ```bash
+   docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
+   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+   ```
+5. 在 Issue / PR 评论 `@claude-code` 触发路径B，`@codex` 等其它角色触发路径A。
+6. 额度接近 80%/95% 时，quota_monitor.py 输出告警/降级建议。
 
 ## 安全红线
 - 任何 API Key / Token 只放 CNB 流水线环境变量或 secrets 仓库，绝不提交 git。
