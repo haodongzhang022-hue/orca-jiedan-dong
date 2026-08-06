@@ -29,7 +29,7 @@
         options:
           # ⭐ 双保险：options.model 同样显式绑定免费基座，防止落到其它模型
           model: deepseek-v4-flash
-          maxTurns: 24
+          maxTurns: 60
           contextWindow: "128k"
 
 # ---- claude-code 角色：路径B（覆盖 $ 兜底的路径A）----

@@ -49,15 +49,22 @@ npc:
         4. 产出物遵循 E盘/G盘 分层规范
 
     # ------------------------------------------------------------------ #
-    # 角色二：codex —— Codex 代码执行官（ORCA 链式 @npc/codex 节点）
+    # 角色二：codex —— Codex 代码执行官（原生完整 CLI @openai/codex · 路径B）
+    # 触发方式：Issue / PR 评论中 @codex（或 @TJF19770107/orca-jiedan(codex)）
+    # 底层：官方 npm 包 @openai/codex（bin=codex.js，linux-x64 二进制），经路径B
+    #       自定义镜像容器接入，模型端点指向 CNB 内置免费 DeepSeek-V4-Flash 网关
+    #       （不调用外部付费 API）
     # ------------------------------------------------------------------ #
     - name: codex
-      slogan: Codex 代码执行官 · CNB 免费 DeepSeek-V4-Flash 基座
+      slogan: Codex 代码执行官 · 原生完整 CLI · CNB 免费 DeepSeek-V4-Flash 基座
       prompt: |
-        # 角色：Codex（代码执行官 · 云端分身）
+        # 角色：Codex（代码执行官 · 原生完整 CLI）
         
         你是 Codex 的 CNB 云端分身，orca-jiedan 仓库的首席代码工程师。
         底层基座为 **CNB 内置免费 DeepSeek-V4-Flash**。
+        
+        > 执行引擎：官方 npm 包 `@openai/codex`（bin=`codex.js`，内含 linux-x64 二进制，
+        > 真·原生完整 CLI），经路径B自定义镜像容器接入 CNB NPC 舰队，不蒸馏、不裁剪原生能力。
         
         ## 核心能力
         - Python/Node.js/Shell 脚本编写与调试

@@ -51,14 +51,21 @@ RUN chmod +x /usr/local/bin/anthropic_to_cnb.py
 COPY scripts/quota_monitor.py /usr/local/bin/quota_monitor.py
 RUN chmod +x /usr/local/bin/quota_monitor.py
 
-# ---- 5. 原生 Hermes CLI（GitHub NousResearch/hermes-agent · 大脑层引擎）----
+# ---- 5. 原生 Codex CLI（@openai/codex · 真·原生完整 CLI）----
+# 官方 npm 包 @openai/codex（bin=codex.js，内含 linux-x64 二进制），可直接打包进镜像。
+RUN npm install -g @openai/codex || \
+    (echo "[Dockerfile] @openai/codex 安装失败，尝试 pnpm/二进制回退" \
+     && npm install -g codex-cli 2>/dev/null || true)
+RUN codex --version 2>/dev/null | head -1 || true
+
+# ---- 6. 原生 Hermes CLI（GitHub NousResearch/hermes-agent · 大脑层引擎）----
 # 通过 adapters/hermes_entry.sh 安装（pip install hermes-agent 或官方 install.sh）
 COPY adapters/hermes_entry.sh /usr/local/bin/hermes_entry.sh
 RUN chmod +x /usr/local/bin/hermes_entry.sh \
     && bash /usr/local/bin/hermes_entry.sh || true
 RUN hermes --version 2>/dev/null | head -1 || true
 
-# ---- 6. 容器入口：拉起适配层 + Claude-Code CLI / Hermes 服务 ----
+# ---- 7. 容器入口：拉起适配层 + Claude-Code CLI / Codex / Hermes 服务 ----
 COPY claude/entrypoint.sh /usr/local/bin/claude-npc-entrypoint.sh
 RUN chmod +x /usr/local/bin/claude-npc-entrypoint.sh
 
@@ -67,7 +74,7 @@ RUN chmod +x /usr/local/bin/hermes-npc-entrypoint.sh
 
 WORKDIR /workspace
 
-# ---- 7. 默认环境（鉴权全部来自运行环境变量注入，镜像零硬编码密钥）----
+# ---- 8. 默认环境（鉴权全部来自运行环境变量注入，镜像零硬编码密钥）----
 ENV ANTHROPIC_BASE_URL=http://127.0.0.1:8787
 ENV ADAPTER_HOST=127.0.0.1
 ENV ADAPTER_PORT=8787
@@ -76,7 +83,7 @@ ENV REASONING_EFFORT=high
 ENV QUOTA_LIMIT=1600
 EXPOSE 8787
 
-# ---- 8. 容器入口（ENTRYPOINT + CMD 组合）----
+# ---- 9. 容器入口（ENTRYPOINT + CMD 组合）----
 # 设计说明：
 #   - NPC 事件由平台 npc:go 内置任务在【本镜像容器】内驱动，评论内容自动作为 prompt；
 #   - 为使容器内始终有可用的协议适配层（127.0.0.1:8787，Anthropic → CNB 内置网关），
