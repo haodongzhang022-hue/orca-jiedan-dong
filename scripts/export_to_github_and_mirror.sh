@@ -31,37 +31,50 @@ if [ -z "${CNB_REPO_SLUG:-}" ]; then
 fi
 
 # ---- 2. 组装可发布源码包（过滤密钥）----
-rm -rf "$STAGING" && mkdir -p "$STAGING/adapters" "$STAGING/scripts" "$STAGING/.cnb" "$STAGING/.ci" "$STAGING/claude" "$STAGING/docs"
+rm -rf "$STAGING" && mkdir -p "$STAGING/adapters" "$STAGING/scripts" "$STAGING/.cnb" "$STAGING/.ci" "$STAGING/claude" "$STAGING/hermes" "$STAGING/docs"
 
-echo "==> 复制 Claude-Code 适配层与配置"
+echo "==> 复制四角色 NPC 适配层与配置（claude-code / hermes / codex / lobster）"
 cp adapters/anthropic_to_cnb.py        "$STAGING/adapters/"
 cp adapters/Dockerfile                 "$STAGING/adapters/"
+cp adapters/hermes_entry.sh            "$STAGING/adapters/" 2>/dev/null || true
 cp scripts/quota_monitor.py            "$STAGING/scripts/"
+cp scripts/one_click_npc_stack.sh      "$STAGING/scripts/" 2>/dev/null || true
+cp scripts/archive_obsidian_v1.6.0.sh  "$STAGING/scripts/" 2>/dev/null || true
 cp claude/entrypoint.sh                "$STAGING/claude/entrypoint.sh" 2>/dev/null || true
+cp hermes/entrypoint.sh                "$STAGING/hermes/entrypoint.sh" 2>/dev/null || true
+cp hermes/CLI_INTEGRATION.md           "$STAGING/hermes/" 2>/dev/null || true
 cp .ci/npc-full.yml                    "$STAGING/.ci/npc-full.yml" 2>/dev/null || true
+cp .ci/hermes.yml                      "$STAGING/.ci/hermes.yml" 2>/dev/null || true
+cp .ci/codex.yml                       "$STAGING/.ci/codex.yml" 2>/dev/null || true
 cp .cnb/settings.yml                   "$STAGING/.cnb/settings.yml"
 cp .cnb.yml                            "$STAGING/.cnb.yml"
 cp docs/claude_code_cloud_vs_local.md  "$STAGING/docs/" 2>/dev/null || true
+cp docs/四角色矩阵_验收报告_v1.6.0_20260807.md "$STAGING/docs/" 2>/dev/null || true
+cp docs/双盘备份与Obsidian归档清单_v1.6.0.md  "$STAGING/docs/" 2>/dev/null || true
 cp README.md                           "$STAGING/README.md" 2>/dev/null || true
 
 echo "==> 生成可复用部署说明"
 cat > "$STAGING/DEPLOY.md" <<'MD'
-# CNB NPC 一键复现部署说明（Claude-Code × DeepSeek-V4-Flash 免费基座）
+# CNB NPC 四角色矩阵一键复现部署说明（claude-code / hermes / codex × DeepSeek-V4-Flash 免费基座）
 
 ## 仓库结构
-- `.cnb/settings.yml` — NPC 角色（claude-code / codex）定义
+- `.cnb/settings.yml` — NPC 四角色（claude-code / hermes / codex / lobster）定义
 - `.cnb.yml`          — 主流水线（路径A：$ 兜底 npc:go + 镜像构建 + include）
 - `.ci/npc-full.yml`  — 路径B：claude-code 角色自定义镜像容器流水线
-- `adapters/Dockerfile` — 路径B 自定义镜像（完整 Claude-Code CLI + 适配层 + 额度监控）
-- `adapters/anthropic_to_cnb.py` — Claude-Code Anthropic 协议 → CNB 内置 AI 网关转发层
-- `claude/entrypoint.sh` — 容器入口（额度监控 + 适配层 8787 + Claude-Code CLI）
+- `.ci/hermes.yml`    — 路径B：hermes 角色自定义镜像容器流水线（GitHub 原生 Hermes CLI）
+- `.ci/codex.yml`     — 路径B：codex 角色自定义镜像容器流水线（原生 @openai/codex CLI）
+- `adapters/Dockerfile` — 路径B 自定义镜像（Claude-Code/Codex/Hermes 三 CLI + 适配层 + 额度监控）
+- `adapters/anthropic_to_cnb.py` — Anthropic 协议 → CNB 内置 AI 网关转发层
+- `claude/entrypoint.sh` / `hermes/entrypoint.sh` — 容器入口
 - `scripts/quota_monitor.py` — 免费额度监控与降级保护
-- `docs/claude_code_cloud_vs_local.md` — A/B 双模式对比文档
+- `scripts/one_click_npc_stack.sh` — 四角色栈一键自检
+- `docs/claude_code_cloud_vs_local.md` — A/B 双模式对比 + 四角色矩阵
 
 ## 双路径说明
-- **路径A（默认）**：`@codex`/`@lobster` 等角色 → `$` 兜底 `npc:go` 轻量化运行时
-- **路径B（增强）**：`@claude-code` → 自定义镜像拉起独立容器，完整原版 Claude-Code CLI
-  + 适配层监听 127.0.0.1:8787，不蒸馏、不裁剪原生 MCP/插件/Skill
+- **路径A（默认）**：`@lobster` 角色 → `$` 兜底 `npc:go` 轻量化运行时
+- **路径B（增强）**：`@claude-code` / `@hermes` / `@codex` → 自定义镜像拉起独立容器，
+  完整原版 Claude-Code CLI + 原生 Codex CLI + GitHub 原生 Hermes CLI，适配层监听 127.0.0.1:8787，
+  不蒸馏、不裁剪原生 MCP/插件/Skill
 
 ## 部署步骤
 1. 将本目录内容推送到 GitHub 私有仓库（git init; git add .; git commit; git push）
@@ -74,10 +87,10 @@ cat > "$STAGING/DEPLOY.md" <<'MD'
    - `QUOTA_USED`       = 0
 4. 构建并推送路径B 自定义镜像（或直接使用制品库已有镜像）：
    ```bash
-   docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
-   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+   docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0 .
+   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
    ```
-5. 在 Issue / PR 评论 `@claude-code` 触发路径B，`@codex` 等其它角色触发路径A。
+5. 在 Issue / PR 评论 `@claude-code` / `@hermes` / `@codex` 触发路径B，`@lobster` 触发路径A。
 6. 额度接近 80%/95% 时，quota_monitor.py 输出告警/降级建议。
 
 ## 安全红线

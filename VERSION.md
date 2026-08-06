@@ -33,3 +33,9 @@ changes:
   - 【v1.6.0·同步】脚手架模板同步 codex 路径B流水线 + Dockerfile 双 CLI 内置
   - 【v1.6.0·新增】scripts/one_click_npc_stack.sh 四角色栈一键自检（Codex/Hermes/Claude-Code 版本校验 + 8787 端口探活 + 基座锁定确认）
   - 【v1.6.0·修订】docs/claude_code_cloud_vs_local.md 更新四角色矩阵 + 全链路拓扑（claude-code/hermes/codex 路径B + lobster 路径A）
+  - 【v1.6.0·闭环】Issue#10 分阶段执行验收：PR#13/14/15 合并 + 镜像 orca-jiedan:1.6.0 构建推送（cnb-e88 success）
+  - 【v1.6.0·闭环】实测证据：@claude-code（cnb-1mo）AI用量审计 39请求/milli_credit=0；@codex（cnb-4b5）触发 success，基座 deepseek-v4-flash
+  - 【v1.6.0·新增】docs/四角色矩阵_验收报告_v1.6.0_20260807.md 分阶段执行闭环验收报告
+  - 【v1.6.0·新增】docs/双盘备份与Obsidian归档清单_v1.6.0.md + scripts/archive_obsidian_v1.6.0.sh（E/G双盘+Obsidian 归档）
+  - 【v1.6.0·修订】skill_registry.json CNB_ClaudeCode_NPC 1.5.0 → 1.6.0（四角色矩阵）
+  - 【v1.6.0·修订】scripts/export_to_github_and_mirror.sh 版本 1.5.0→1.6.0 + 四角色栈复制（hermes/codex 资产入库）
