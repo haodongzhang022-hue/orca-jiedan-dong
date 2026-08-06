@@ -55,6 +55,38 @@
         "免费文生图",
         "SVG本地渲染"
       ]
+    },
+    {
+      "id": "CNB_ClaudeCode_NPC",
+      "name": "Claude-Code云端NPC封装",
+      "version": "1.5.0",
+      "category": "龙虾舰队流水线 · CNB云原生NPC技能库",
+      "description": "把Claude-Code封装为CNB可@调用的自定义NPC，底层基座绑定CNB内置免费DeepSeek-V4-Flash，适配层转发Anthropic协议到CNB内置AI网关，支持额度监控降级与ORCA链式调用。",
+      "entry_script": "adapters/anthropic_to_cnb.py",
+      "deploy_doc": "docs/Claude-Code_CNB_NPC一键复现部署说明.md",
+      "acceptance_report": "docs/验收报告_Claude-Code_CNB云端NPC_DeepSeekV4Flash_20260807.md",
+      "files": [
+        ".cnb/settings.yml",
+        ".cnb.yml",
+        "adapters/anthropic_to_cnb.py",
+        "adapters/Dockerfile",
+        "scripts/quota_monitor.py",
+        "scripts/export_to_github_and_mirror.sh",
+        "claude/CNB_CLAUDE_CODE_INTEGRATION.md"
+      ],
+      "triggers": [
+        "claude-code",
+        "云端NPC",
+        "DeepSeek-V4-Flash",
+        "Anthropic适配"
+      ],
+      "base_model": "CNB内置免费DeepSeek-V4-Flash",
+      "project_root": "E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目",
+      "latest_case": {
+        "issue": "TJF19770107/orca-jiedan#10",
+        "date": "2026-08-07",
+        "result": "@claude-code触发成功，基座deepseek-v4-flash，PR#11"
+      }
     }
   ]
 }

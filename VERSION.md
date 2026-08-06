@@ -1,12 +1,12 @@
 # 版本信息
-version: 1.4.1
-release_date: 2026-08-06
-base_model: CNB免费DeepSeek-V4-Flash (MoE 284B/激活13B)
+version: 1.5.0
+release_date: 2026-08-07
+base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
-  - 基座切换：mimo-v2.5-pro → deepseek-v4-flash
-  - 拆分双架构：本地Ollama链路 + CNB云原生链路
-  - 新增NPC蒸馏指南
-  - 全仓库批量基座更新（6仓）
-  - 旧版脚手架归档
-  - orca主空仓初始化CNB配置
+  - Claude-Code封装为CNB云端NPC（@claude-code触发）
+  - 接口适配层 adapters/anthropic_to_cnb.py：Anthropic协议→CNB内置AI网关
+  - npc:go options.model=deepseek-v4-flash 显式绑定免费基座
+  - 额度监控与降级保护 scripts/quota_monitor.py（1600核时/月）
+  - GitHub私有仓库导出包 + E盘/G盘镜像清单脚本
+  - Issue#10 实测通过：@claude-code 唤起Agent完成文件创建+PR提交+评论回写
