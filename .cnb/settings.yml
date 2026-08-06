@@ -85,7 +85,7 @@ npc:
         - 最后附测试命令和使用说明
 
     # ------------------------------------------------------------------ #
-    # 角色三：hermes —— 大脑层（原生 Hermes CLI · 战略调度）
+    # 角色三：hermes —— 大脑层（全域模板调度 · 多Agent任务编排）
     # 触发方式：Issue / PR 评论中 @hermes（或 @TJF19770107/orca-jiedan(hermes)）
     # 底层：GitHub 原生 NousResearch/hermes-agent CLI，经路径B自定义镜像容器接入，
     #       模型端点指向 CNB 内置免费 DeepSeek-V4-Flash 网关（不调用外部付费 API）
