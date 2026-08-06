@@ -2,7 +2,7 @@ model = "mimo-v2.5-pro"
 model_reasoning_effort = "high"
 disable_response_storage = true
 windows_wsl_setup_acknowledged = true
-OPENAI_API_KEY = "tp-cs3zbef7vhc75lcpsw9x7pau27mjftwhqnovn5zrq2d0puft"
+OPENAI_API_KEY = "${CODEX_API_KEY:-tp-placeholder-set-CODEX_API_KEY-env}"
 OPENAI_BASE_URL = "http://127.0.0.1:15730/v1"
 CODEX_MODEL = "mimo-v2.5-pro"
 
@@ -164,7 +164,7 @@ env_key = "OLLAMA_API_KEY"
 [model_providers.xiaomi-mimo]
 name = "MiMo V2.5 Pro"
 base_url = "http://127.0.0.1:15730/v1"
-api_key = "tp-cs3zbef7vhc75lcpsw9x7pau27mjftwhqnovn5zrq2d0puft"
+api_key = "${CODEX_API_KEY:-tp-placeholder-set-CODEX_API_KEY-env}"
 wire_api = "chat"
 
 [profiles.docker-ollama-gemma4]

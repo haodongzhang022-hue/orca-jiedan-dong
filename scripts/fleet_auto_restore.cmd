@@ -1,12 +1,19 @@
 @echo off
 chcp 65001 >nul 2>&1
 setlocal
+rem ============================================================================
+rem 龙虾舰队 · 自动恢复 v2.0（安全版）
+rem 不包含任何密钥明文；Codex api_key 一律从环境变量 CODEX_API_KEY 读取，
+rem 未设置时回退到占位符（真实 key 严禁写入本脚本/仓库）
+rem ============================================================================
 title [龙虾舰队] 自动恢复 v2.0
 
 set "PYEXE=C:\Users\Administrator\.workbuddy\binaries\python\versions\3.13.12\python.exe"
 set "MCP_DIR=E:\龙虾AI主控中心\MCP服务"
 set "CODEX_CONFIG=%USERPROFILE%\.codex\config.toml"
 set "PROJECT=E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目"
+set "CODEX_API_KEY=%CODEX_API_KEY%"
+if not defined CODEX_API_KEY set "CODEX_API_KEY=tp-placeholder-set-CODEX_API_KEY-env"
 
 echo ============================================
 echo  🦞 龙虾舰队 · 自动恢复 v2.0
@@ -79,7 +86,7 @@ echo [model_providers.mimo-v2.5-pro]
 echo name = "MiMo V2.5 Pro (via Proxy)"
 echo wire_api = "chat"
 echo base_url = "http://127.0.0.1:15730/v1"
-echo api_key = "tp-cs3zbef7vhc75lcpsw9x7pau27mjftwhqnovn5zrq2d0puft"
+echo api_key = "%CODEX_API_KEY%"
 echo.
 echo [features]
 echo js_repl = false
