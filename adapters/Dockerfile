@@ -5,6 +5,8 @@
 #   将【完整原版 Claude-Code CLI】装入 NPC 运行镜像（不蒸馏、不裁剪原生
 #   MCP/插件/Skill 能力），并把 Claude-Code 原生 Anthropic 请求通过
 #   adapters/anthropic_to_cnb.py 转发到 CNB 内置免费 DeepSeek-V4-Flash 网关。
+#   同时内置【GitHub 原生 Hermes CLI（NousResearch/hermes-agent）】供 @hermes
+#   大脑层角色使用（路径B 容器模式，模型端点同样指向 CNB 免费基座）。
 #
 # 与路径A（npc:go 内置蒸馏轻量化 NPC）的区别：
 #   - 路径A：CNB 平台封装好的轻量化简化小程序，开箱即用、速度快
@@ -12,8 +14,8 @@
 #            独立容器执行单元，原生 MCP/插件/Skill 全部保留
 #
 # 构建与推送（在 CNB 流水线中执行，见 .cnb.yml main.push 镜像构建块）：
-#   docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
-#   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+#   docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0 .
+#   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
 #
 # 然后在 .cnb.yml 的 claude-code 角色（路径B）docker.image 中引用该镜像。
 #
@@ -49,13 +51,23 @@ RUN chmod +x /usr/local/bin/anthropic_to_cnb.py
 COPY scripts/quota_monitor.py /usr/local/bin/quota_monitor.py
 RUN chmod +x /usr/local/bin/quota_monitor.py
 
-# ---- 5. 容器入口：拉起适配层 + Claude-Code CLI 服务 ----
+# ---- 5. 原生 Hermes CLI（GitHub NousResearch/hermes-agent · 大脑层引擎）----
+# 通过 adapters/hermes_entry.sh 安装（pip install hermes-agent 或官方 install.sh）
+COPY adapters/hermes_entry.sh /usr/local/bin/hermes_entry.sh
+RUN chmod +x /usr/local/bin/hermes_entry.sh \
+    && bash /usr/local/bin/hermes_entry.sh || true
+RUN hermes --version 2>/dev/null | head -1 || true
+
+# ---- 6. 容器入口：拉起适配层 + Claude-Code CLI / Hermes 服务 ----
 COPY claude/entrypoint.sh /usr/local/bin/claude-npc-entrypoint.sh
 RUN chmod +x /usr/local/bin/claude-npc-entrypoint.sh
 
+COPY hermes/entrypoint.sh /usr/local/bin/hermes-npc-entrypoint.sh
+RUN chmod +x /usr/local/bin/hermes-npc-entrypoint.sh
+
 WORKDIR /workspace
 
-# ---- 6. 默认环境（鉴权全部来自运行环境变量注入，镜像零硬编码密钥）----
+# ---- 7. 默认环境（鉴权全部来自运行环境变量注入，镜像零硬编码密钥）----
 ENV ANTHROPIC_BASE_URL=http://127.0.0.1:8787
 ENV ADAPTER_HOST=127.0.0.1
 ENV ADAPTER_PORT=8787
@@ -64,12 +76,14 @@ ENV REASONING_EFFORT=high
 ENV QUOTA_LIMIT=1600
 EXPOSE 8787
 
-# ---- 7. 容器入口（ENTRYPOINT + CMD 组合）----
+# ---- 8. 容器入口（ENTRYPOINT + CMD 组合）----
 # 设计说明：
 #   - NPC 事件由平台 npc:go 内置任务在【本镜像容器】内驱动，评论内容自动作为 prompt；
 #   - 为使容器内始终有可用的协议适配层（127.0.0.1:8787，Anthropic → CNB 内置网关），
 #     ENTRYPOINT 在后台拉起适配层并保持前台存活，npc:go 在同一容器内执行 AI 任务时
 #     可随时通过 ANTHROPIC_BASE_URL=http://127.0.0.1:8787 接入原版 Claude-Code CLI 能力；
-#   - 后续如改为 shell 直接驱动 Claude-Code CLI，同样复用该适配层，无需改镜像。
+#   - @claude-code → claude 入口（claude-npc-entrypoint.sh）
+#   - @hermes     → hermes 入口（hermes-npc-entrypoint.sh，原生 hermes CLI）
+#   - 默认入口保持 claude 适配层（兼容既有 claude-code 角色）。
 ENTRYPOINT ["/usr/local/bin/claude-npc-entrypoint.sh"]
 CMD ["python3", "/usr/local/bin/anthropic_to_cnb.py"]

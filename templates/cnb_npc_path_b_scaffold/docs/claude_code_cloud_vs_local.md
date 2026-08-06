@@ -1,6 +1,6 @@
 # Claude-Code 云端 NPC：路径A vs 路径B（双模式对比）
 
-> 版本：1.5.0 | 基座：CNB 内置免费 DeepSeek-V4-Flash（有效期至 2026-12-31，每月 1600 核时）
+> 版本：1.6.0 | 基座：CNB 内置免费 DeepSeek-V4-Flash（有效期至 2026-12-31，每月 1600 核时）
 > 仓库：`TJF19770107/orca-jiedan` | 适用：`@claude-code` 云端 NPC 增强部署
 
 ---
@@ -17,7 +17,7 @@
 | 维度 | 路径A（默认，已启用） | 路径B（增强，本次落地） |
 |------|----------------------|------------------------|
 | **运行形态** | CNB 内置 `npc:go` 轻量化运行时 | 自定义 Docker 镜像 + 独立容器实例 |
-| **镜像** | 平台默认 `cnbcool/default-npc:latest` | 自定义 `adapters/Dockerfile` 构建 → `claude-code-full:1.5.0` |
+| **镜像** | 平台默认 `cnbcool/default-npc:latest` | 自定义 `adapters/Dockerfile` 构建 → `claude-code-full:1.6.0` |
 | **Claude-Code 能力** | 平台蒸馏/裁剪过，部分原生 MCP/插件丢失 | **完整原版 CLI**，不蒸馏、不裁剪原生 MCP/插件/Skill |
 | **任务执行单元** | 内置 Agent，单容器内跑完 | 每次 `@claude-code` 触发 → 拉起独立容器实例，一次任务一容器 |
 | **协议适配层** | 无（平台内部处理） | 容器内 `anthropic_to_cnb.py` 监听 `127.0.0.1:8787`，Anthropic→CNB 网关转译 |
@@ -39,7 +39,7 @@
    │
    ▼
 CNB NPC 事件流水线（.cnb.yml → claude-code 角色 → 路径B）
-   │  docker: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+   │  docker: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.6.0
    ▼
 ┌─────────────────────────── 自定义镜像容器 ───────────────────────────┐
 │  claude/entrypoint.sh（容器 ENTRYPOINT，后台拉起 + 前台存活）         │
@@ -115,8 +115,8 @@ claude-code:
 ### 5.2 镜像构建/推送（`.cnb.yml` `main.push`）
 
 ```bash
-docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
-docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0 .
+docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
 ```
 
 仅当 `adapters/Dockerfile`、`adapters/anthropic_to_cnb.py`、
@@ -183,6 +183,6 @@ docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
 - [x] 额度监控 `quota_monitor.py` 正常工作（80% 告警 / 95% 降档，只降级不切付费模型）
 
 > ⏳ **待 CI 实测**：PR 合入 main 后，`main.push` 镜像构建流水线自动构建并推送
-> `claude-code-full:1.5.0` 到制品库；随后在 Issue 评论 `@claude-code` 触发路径B 容器
+> `claude-code-full:1.6.0` 到制品库；随后在 Issue 评论 `@claude-code` 触发路径B 容器
 > 验证 8787 监听与基座为 `deepseek-v4-flash`。
 > 龙虾五步法闭环：本文档已录入 Git；本地 E盘/G盘 镜像、Obsidian 知识库按四化迭代流程归档。

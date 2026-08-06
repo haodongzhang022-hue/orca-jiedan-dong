@@ -17,7 +17,7 @@
       # 自定义镜像（完整原版 Claude-Code CLI + 适配层 + 额度监控）
       # 由 .cnb.yml main.push 镜像构建流水线构建并推送至制品库
       # ⭐ 强制基座锁定：CNB 内置免费 deepseek-v4-flash（有效期至 2026-12-31，1600核时/月免费配额）
-      image: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+      image: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.6.0
     env:
       # 鉴权与模型参数全部环境变量注入（镜像零硬编码）
       NPC_MODEL: deepseek-v4-flash        # ⭐强制锁定CNB内置免费基座，禁止默认切换付费模型

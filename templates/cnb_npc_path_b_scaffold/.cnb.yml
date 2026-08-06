@@ -17,9 +17,10 @@
 # 详见 docs/claude_code_cloud_vs_local.md。
 # =============================================================================
 
-# ---- 路径B 角色配置（claude-code 角色名顶层 key，随 include 合并）----
+# ---- 路径B 角色配置（claude-code / hermes 角色名顶层 key，随 include 合并）----
 include:
   - .ci/npc-full.yml
+  - .ci/hermes.yml
 
 # ---- 路径A 公共 NPC 任务模板（$ 兜底：所有未单独配置的角色）----
 # options.model 显式绑定 CNB 内置免费 deepseek-v4-flash，确保不落到外部付费模型
@@ -50,7 +51,7 @@ $:
   pull_request.comment@npc: *npc_task
 
 # ---- 路径B 镜像构建/推送流水线（main.push 触发，构建自定义 NPC 镜像）----
-# 产物：制品库镜像 ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+# 产物：制品库镜像 ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
 # 注意：
 #   - push 事件下 CNB_NPC_SLUG_LOWERCASE 不注入（仅 NPC 事件），必须用 CNB_REPO_SLUG_LOWERCASE
 #   - 同仓库自定义 NPC 时 CNB_REPO_SLUG_LOWERCASE == CNB_NPC_SLUG_LOWERCASE，镜像引用两侧一致
@@ -63,15 +64,17 @@ main:
       ifModify:
         - adapters/Dockerfile
         - adapters/anthropic_to_cnb.py
+        - adapters/hermes_entry.sh
         - scripts/quota_monitor.py
         - claude/entrypoint.sh
+        - hermes/entrypoint.sh
       stages:
         - name: build npc full image
           script: |
             docker build \
               -f adapters/Dockerfile \
-              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0 \
               .
         - name: push npc full image
           script: |
-            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
