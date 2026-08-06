@@ -31,3 +31,5 @@ changes:
   - 【v1.6.0·修订】路径B 三个角色（claude-code/hermes/codex）maxTurns 24 → 60，修复
     "Agent aborted: reached maxTurns limit (24)" 导致 @claude-code/@hermes 执行失败问题
   - 【v1.6.0·同步】脚手架模板同步 codex 路径B流水线 + Dockerfile 双 CLI 内置
+  - 【v1.6.0·新增】scripts/one_click_npc_stack.sh 四角色栈一键自检（Codex/Hermes/Claude-Code 版本校验 + 8787 端口探活 + 基座锁定确认）
+  - 【v1.6.0·修订】docs/claude_code_cloud_vs_local.md 更新四角色矩阵 + 全链路拓扑（claude-code/hermes/codex 路径B + lobster 路径A）

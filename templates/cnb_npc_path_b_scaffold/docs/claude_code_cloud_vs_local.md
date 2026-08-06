@@ -1,7 +1,47 @@
 # Claude-Code 云端 NPC：路径A vs 路径B（双模式对比）
 
 > 版本：1.6.0 | 基座：CNB 内置免费 DeepSeek-V4-Flash（有效期至 2026-12-31，每月 1600 核时）
-> 仓库：`TJF19770107/orca-jiedan` | 适用：`@claude-code` 云端 NPC 增强部署
+> 仓库：`TJF19770107/orca-jiedan` | 适用：四角色云端 NPC 增强部署
+
+---
+
+## 〇、四角色矩阵（v1.6.0 最终版）
+
+| 角色 | 召唤指令 | 运行路径 | 核心能力 | 基座约束 |
+|------|----------|----------|----------|----------|
+| **claude-code** | `@claude-code` | 路径B 自定义镜像容器 | 原版 Claude-Code CLI + 8787 协议适配层，MCP/Skill 全量加载，不蒸馏不裁剪 | 强制 `deepseek-v4-flash` 免费基座 |
+| **hermes** | `@hermes` | 路径B 自定义镜像容器 | GitHub 原生 `NousResearch/hermes-agent` CLI，全域模板全英文调度，多 Agent 任务编排 | 强制 `deepseek-v4-flash` 免费基座 |
+| **codex** | `@codex` | **路径B 自定义镜像容器**（自 v1.6.0 起由路径A 升级） | 原生 Codex CLI（`@openai/codex`），代码编写/文件读写/命令执行 | 强制 `deepseek-v4-flash` 免费基座 |
+| **lobster** | `@lobster` | 路径A（`npc:go` 轻量化兜底） | 龙虾专项技能调度、轻量化快速响应 | 强制 `deepseek-v4-flash` 免费基座 |
+
+> **升级说明**：codex 角色自 v1.6.0 起从路径A（`npc:go` 轻量化兜底）升级为路径B（自定义镜像 + 原生完整 Codex CLI），
+> 与 claude-code / hermes 组成「原生 CLI 三件套」；lobster 维持路径A 轻量化模式不变，不强行迁移路径B。
+
+---
+
+## 全链路运行拓扑
+
+```
+Issue/PR 评论区触发 @对应角色
+          │
+          ▼
+.cnb.yml 路由分发 → 对应 .ci/*.yml 专属流水线
+          │
+          ▼
+拉取统一镜像 ${CNB_DOCKER_REGISTRY}/orca-claude-code-full:1.6.0（内置三类原生 CLI）
+          │
+          ▼
+独立隔离容器并行启动（容器内网各自监听 127.0.0.1:8787，端口互不冲突）
+          │
+          ▼
+适配层 anthropic_to_cnb.py 协议转译 → CNB 内置 AI 网关
+          │
+          ▼
+统一免费基座 deepseek-v4-flash（额度监控自动降级、禁止跳转外部付费 API）
+          │
+          ▼
+任务结果回写 Issue 评论、日志归档、Obsidian 知识库四化迭代入库
+```
 
 ---
 
