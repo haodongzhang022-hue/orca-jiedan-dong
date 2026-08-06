@@ -12,8 +12,8 @@
 #            独立容器执行单元，原生 MCP/插件/Skill 全部保留
 #
 # 构建与推送（在 CNB 流水线中执行，见 .cnb.yml main.push 镜像构建块）：
-#   docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0 .
-#   docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+#   docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
+#   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
 #
 # 然后在 .cnb.yml 的 claude-code 角色（路径B）docker.image 中引用该镜像。
 #
@@ -64,5 +64,12 @@ ENV REASONING_EFFORT=high
 ENV QUOTA_LIMIT=1600
 EXPOSE 8787
 
-# 默认启动适配层（Claude-Code 通过 ANTHROPIC_BASE_URL=http://127.0.0.1:8787 接入）
+# ---- 7. 容器入口（ENTRYPOINT + CMD 组合）----
+# 设计说明：
+#   - NPC 事件由平台 npc:go 内置任务在【本镜像容器】内驱动，评论内容自动作为 prompt；
+#   - 为使容器内始终有可用的协议适配层（127.0.0.1:8787，Anthropic → CNB 内置网关），
+#     ENTRYPOINT 在后台拉起适配层并保持前台存活，npc:go 在同一容器内执行 AI 任务时
+#     可随时通过 ANTHROPIC_BASE_URL=http://127.0.0.1:8787 接入原版 Claude-Code CLI 能力；
+#   - 后续如改为 shell 直接驱动 Claude-Code CLI，同样复用该适配层，无需改镜像。
+ENTRYPOINT ["/usr/local/bin/claude-npc-entrypoint.sh"]
 CMD ["python3", "/usr/local/bin/anthropic_to_cnb.py"]

@@ -14,3 +14,7 @@ changes:
   - 【路径B】.ci/npc-full.yml claude-code角色流水线（覆盖$兜底，独立容器执行）
   - 【路径B】adapters/Dockerfile 构建镜像 + main.push 自动构建推送流水线
   - 【路径B】docs/claude_code_cloud_vs_local.md A/B双模式对比文档
+  - 【路径B·修订】Dockerfile 改为 ENTRYPOINT+CMD：容器启动后台拉起适配层监听 127.0.0.1:8787
+  - 【路径B·修订】镜像构建流水线变量修正：main.push 用 CNB_REPO_SLUG_LOWERCASE（NPC变量不注入）
+  - 【路径B·修订】.ci/npc-full.yml NPC_MODEL 与 options.model 双保险强制锁定 deepseek-v4-flash
+  - 【路径B·修订】脚手架模板 templates/cnb_npc_path_b_scaffold 补齐全部文件（Dockerfile/适配层/entrypoint/quota/docs）

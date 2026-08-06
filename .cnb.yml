@@ -50,8 +50,11 @@ $:
   pull_request.comment@npc: *npc_task
 
 # ---- 路径B 镜像构建/推送流水线（main.push 触发，构建自定义 NPC 镜像）----
-# 产物：制品库镜像 ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
-# 注意：仅在 Dockerfile / 适配层 / quota_monitor / entrypoint 变更时重新构建
+# 产物：制品库镜像 ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
+# 注意：
+#   - push 事件下 CNB_NPC_SLUG_LOWERCASE 不注入（仅 NPC 事件），必须用 CNB_REPO_SLUG_LOWERCASE
+#   - 同仓库自定义 NPC 时 CNB_REPO_SLUG_LOWERCASE == CNB_NPC_SLUG_LOWERCASE，镜像引用两侧一致
+#   - 仅在 Dockerfile / 适配层 / quota_monitor / entrypoint 变更时重新构建
 main:
   push:
     - name: build-npc-full-image
@@ -67,8 +70,8 @@ main:
           script: |
             docker build \
               -f adapters/Dockerfile \
-              -t ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0 \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 \
               .
         - name: push npc full image
           script: |
-            docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0

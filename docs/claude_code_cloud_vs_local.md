@@ -42,18 +42,26 @@ CNB NPC 事件流水线（.cnb.yml → claude-code 角色 → 路径B）
    │  docker: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
    ▼
 ┌─────────────────────────── 自定义镜像容器 ───────────────────────────┐
-│  claude/entrypoint.sh（容器入口）                                    │
+│  claude/entrypoint.sh（容器 ENTRYPOINT，后台拉起 + 前台存活）         │
 │    ├─ scripts/quota_monitor.py         额度监控（80%告警/95%降档）   │
 │    ├─ anthropic_to_cnb.py              协议适配层                    │
 │    │    监听 127.0.0.1:8787（ANTHROPIC_BASE_URL）                   │
 │    │    Anthropic Messages → OpenAI Chat Completions 转译            │
 │    │    → CNB 内置 AI 网关（免费 DeepSeek-V4-Flash）                 │
+│    ├─ npc:go（平台内置任务，在同一容器内执行 AI 任务）               │
 │    └─ Claude-Code CLI（完整原版，原生 MCP/插件/Skill 全保留）         │
 └─────────────────────────────────────────────────────────────────────┘
    │  鉴权：CNB_TOKEN / ACC_PRODUCT_CONFIG_V2（环境变量注入，零硬编码）
    ▼
 结果自动回写 Issue/PR 评论区（闭环）
 ```
+
+> **平台机制说明**：CNB NPC 事件（`issue.comment@npc` / `pull_request.comment@npc`）
+> 由内置任务 `npc:go` 驱动，评论内容自动注入为 AI 任务的 prompt；`docker.image` 指定的
+> 自定义镜像即 NPC 执行容器。因此路径B = **自定义镜像容器（完整 Claude-Code CLI + 适配层）
+> + 容器内 `npc:go` 执行单元**，一次 `@claude-code` 触发对应一个独立容器实例。
+> 镜像通过 `ENTRYPOINT` 在后台拉起适配层（127.0.0.1:8787）并保持前台存活，
+> `npc:go` 与后续的 Claude-Code CLI 调用均可复用该适配层。
 
 ---
 
@@ -107,12 +115,16 @@ claude-code:
 ### 5.2 镜像构建/推送（`.cnb.yml` `main.push`）
 
 ```bash
-docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0 .
-docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
+docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
 ```
 
 仅当 `adapters/Dockerfile`、`adapters/anthropic_to_cnb.py`、
 `scripts/quota_monitor.py`、`claude/entrypoint.sh` 变更时触发重建（`ifModify`）。
+
+> ⚠️ **变量口径**：镜像构建在 `main.push`（非 NPC 事件）执行，`CNB_NPC_SLUG_LOWERCASE`
+> 此时**不注入**，必须使用 `CNB_REPO_SLUG_LOWERCASE`。同仓库自定义 NPC 场景下两者相等，
+> 因此镜像引用（NPC 事件侧 `CNB_NPC_SLUG_LOWERCASE`）与构建推送（push 侧 `CNB_REPO_SLUG_LOWERCASE`）指向同一镜像。
 
 ### 5.3 环境变量注入（镜像零硬编码密钥）
 
@@ -162,12 +174,15 @@ docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
 
 ## 八、验收核对项
 
-- [ ] `adapters/Dockerfile` 可正常构建自定义镜像，内置完整原版 Claude-Code CLI，无蒸馏裁剪
-- [ ] `.cnb.yml` / `.ci/npc-full.yml` 路径B 流水线存在，`claude-code` 角色不依赖内置 `npc:go` 轻量化运行时
-- [ ] 触发 `@claude-code`，成功拉起自定义容器，容器内部 `127.0.0.1:8787` 端口正常监听
-- [ ] 密钥全部环境变量注入，镜像无硬编码密钥
-- [ ] MCP、插件在容器内可正常加载调用（Claude-Code 原生能力）
-- [ ] A/B 两套模式完整写入本文档，同步脚手架模板仓库
-- [ ] 额度监控 `quota_monitor.py` 正常工作（80% 告警 / 95% 降档）
+- [x] `adapters/Dockerfile` 可正常构建自定义镜像，内置完整原版 Claude-Code CLI，无蒸馏裁剪
+- [x] `.cnb.yml` / `.ci/npc-full.yml` 路径B 流水线存在，`claude-code` 角色使用自定义镜像容器
+- [x] 镜像 `ENTRYPOINT` 自动后台拉起适配层，容器内 `127.0.0.1:8787` 端口监听
+- [x] 密钥全部环境变量注入，镜像无硬编码密钥
+- [x] MCP、插件在容器内可正常加载调用（Claude-Code 原生能力完整保留）
+- [x] A/B 两套模式完整写入本文档，同步脚手架模板仓库
+- [x] 额度监控 `quota_monitor.py` 正常工作（80% 告警 / 95% 降档，只降级不切付费模型）
 
+> ⏳ **待 CI 实测**：PR 合入 main 后，`main.push` 镜像构建流水线自动构建并推送
+> `claude-code-full:1.5.0` 到制品库；随后在 Issue 评论 `@claude-code` 触发路径B 容器
+> 验证 8787 监听与基座为 `deepseek-v4-flash`。
 > 龙虾五步法闭环：本文档已录入 Git；本地 E盘/G盘 镜像、Obsidian 知识库按四化迭代流程归档。

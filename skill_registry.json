@@ -68,10 +68,14 @@
       "files": [
         ".cnb/settings.yml",
         ".cnb.yml",
+        ".ci/npc-full.yml",
         "adapters/anthropic_to_cnb.py",
         "adapters/Dockerfile",
+        "claude/entrypoint.sh",
         "scripts/quota_monitor.py",
         "scripts/export_to_github_and_mirror.sh",
+        "docs/claude_code_cloud_vs_local.md",
+        "templates/cnb_npc_path_b_scaffold/README.md",
         "claude/CNB_CLAUDE_CODE_INTEGRATION.md"
       ],
       "triggers": [

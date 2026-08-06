@@ -74,8 +74,8 @@ cat > "$STAGING/DEPLOY.md" <<'MD'
    - `QUOTA_USED`       = 0
 4. 构建并推送路径B 自定义镜像（或直接使用制品库已有镜像）：
    ```bash
-   docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0 .
-   docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+   docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
+   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
    ```
 5. 在 Issue / PR 评论 `@claude-code` 触发路径B，`@codex` 等其它角色触发路径A。
 6. 额度接近 80%/95% 时，quota_monitor.py 输出告警/降级建议。

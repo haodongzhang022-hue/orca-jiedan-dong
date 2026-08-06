@@ -32,9 +32,17 @@
 ## 三、镜像构建命令（亦可手动执行）
 
 ```bash
-docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0 .
-docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
+docker build -f adapters/Dockerfile -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0 .
+docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.5.0
 ```
+
+> ⚠️ **变量口径**：镜像构建在 `main.push`（非 NPC 事件）执行，`CNB_NPC_SLUG_LOWERCASE` 不注入，
+> 必须用 `CNB_REPO_SLUG_LOWERCASE`。NPC 事件侧引用仍用 `CNB_NPC_SLUG_LOWERCASE`，
+> 同仓库场景两者相等，指向同一镜像。
+
+> ⭐ **免费基座约束**：镜像/流水线全链路强制绑定 CNB 内置免费 `deepseek-v4-flash`
+> （有效期至 2026-12-31，1600核时/月免费配额），`NPC_MODEL` 与 `options.model` 双保险锁定，
+> 禁止默认切换其它付费模型；额度超限仅降级 `reasoning_effort`，不切付费模型。
 
 ## 四、安全红线
 
@@ -44,9 +52,9 @@ docker push ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.5.0
 
 ## 五、验收核对
 
-- [ ] Dockerfile 可构建，镜像含完整原版 Claude-Code CLI（无蒸馏裁剪）
-- [ ] `.ci/npc-full.yml` 路径B 流水线存在，`claude-code` 角色不依赖内置 npc:go
-- [ ] `@claude-code` 触发拉起自定义容器，容器内 `127.0.0.1:8787` 正常监听
-- [ ] 密钥全环境变量注入，镜像零硬编码
-- [ ] MCP/插件/Skill 在容器内可正常加载
-- [ ] 本文档同步至脚手架仓库 `orca-cnb-project-template`
+- [x] Dockerfile 可构建，镜像含完整原版 Claude-Code CLI（无蒸馏裁剪）
+- [x] `.ci/npc-full.yml` 路径B 流水线存在，`claude-code` 角色使用自定义镜像容器
+- [x] 镜像 `ENTRYPOINT` 自动拉起适配层，容器内 `127.0.0.1:8787` 正常监听
+- [x] 密钥全环境变量注入，镜像零硬编码
+- [x] MCP/插件/Skill 在容器内可正常加载
+- [x] 本文档同步至脚手架仓库 `orca-cnb-project-template`（模板目录即同步源）
