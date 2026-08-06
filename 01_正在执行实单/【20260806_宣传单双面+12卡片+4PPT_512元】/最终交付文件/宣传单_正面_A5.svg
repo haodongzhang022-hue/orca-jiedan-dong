@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1748" height="2480" viewBox="0 0 1748 2480">
+<defs>
+<style>
+@import url("file:///usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc");
+.t{font-family:"Noto Sans CJK SC";}
+</style>
+</defs>
+<rect width="1748" height="2480" fill="#FFFFFF"/>
+<rect width="1748" height="820" fill="#0B3C5D"/>
+<circle cx="1500" cy="180" r="240" fill="#F39C12" opacity="0.15"/>
+<circle cx="130" cy="700" r="160" fill="#F39C12" opacity="0.2"/>
+<text x="874" y="330" text-anchor="middle" font-size="150" fill="#FFFFFF" class="t" font-weight="bold">企业品牌宣传单</text>
+<text x="874" y="460" text-anchor="middle" font-size="52" fill="#A8C4D8" class="t" letter-spacing="8">PROFESSIONAL BUSINESS BROCHURE</text>
+<rect x="674" y="520" width="400" height="12" fill="#F39C12" rx="6"/>
+<text x="874" y="650" text-anchor="middle" font-size="64" fill="#FFFFFF" class="t">品牌实力 · 专业服务 · 值得信赖</text>
+<text x="874" y="740" text-anchor="middle" font-size="40" fill="#A8C4D8" class="t">品牌信息占位 —— 请替换为客户真实名称</text>
+<rect x="180" y="1050" width="420" height="330" rx="20" fill="#E8E8E8"/>
+<text x="390" y="1160" text-anchor="middle" font-size="90" fill="#F39C12" class="t" font-weight="bold">01</text>
+<text x="390" y="1250" text-anchor="middle" font-size="48" fill="#0B3C5D" class="t" font-weight="bold">专业品质</text>
+<text x="390" y="1315" text-anchor="middle" font-size="30" fill="#5A5A5A" class="t">标准化流程，品质稳定可靠</text>
+<rect x="700" y="1050" width="420" height="330" rx="20" fill="#E8E8E8"/>
+<text x="910" y="1160" text-anchor="middle" font-size="90" fill="#F39C12" class="t" font-weight="bold">02</text>
+<text x="910" y="1250" text-anchor="middle" font-size="48" fill="#0B3C5D" class="t" font-weight="bold">高效交付</text>
+<text x="910" y="1315" text-anchor="middle" font-size="30" fill="#5A5A5A" class="t">快速响应，按时交付成果</text>
+<rect x="1220" y="1050" width="420" height="330" rx="20" fill="#E8E8E8"/>
+<text x="1430" y="1160" text-anchor="middle" font-size="90" fill="#F39C12" class="t" font-weight="bold">03</text>
+<text x="1430" y="1250" text-anchor="middle" font-size="48" fill="#0B3C5D" class="t" font-weight="bold">贴心服务</text>
+<text x="1430" y="1315" text-anchor="middle" font-size="30" fill="#5A5A5A" class="t">全程沟通，售后无忧</text>
+<rect x="374" y="1580" width="1000" height="120" rx="60" fill="#F39C12"/>
+<text x="874" y="1664" text-anchor="middle" font-size="56" fill="#FFFFFF" class="t" font-weight="bold">立即咨询 · 获取专属方案</text>
+<rect x="374" y="1800" width="1000" height="300" rx="20" fill="#E8E8E8"/>
+<text x="874" y="1880" text-anchor="middle" font-size="36" fill="#5A5A5A" class="t">联系电话：138-0000-0000（占位）</text>
+<text x="874" y="1940" text-anchor="middle" font-size="36" fill="#5A5A5A" class="t">地址：XX省XX市XX区XX路XX号（占位）</text>
+<text x="874" y="2000" text-anchor="middle" font-size="36" fill="#5A5A5A" class="t">邮箱：contact@example.com（占位）</text>
+<rect y="2340" width="1748" height="140" fill="#0B3C5D"/>
+<text x="874" y="2425" text-anchor="middle" font-size="32" fill="#A8C4D8" class="t">设计版式演示稿 · 占位文案待替换 · 原创设计</text>
+<g stroke="#C0C0C0" stroke-width="2" fill="none">
+<rect x="20" y="20" width="1708" height="2440"/>
+</g>
+</svg>
