@@ -1,9 +1,14 @@
 # 版本信息
-version: 1.6.0
-release_date: 2026-08-07
+version: 1.7.0
+release_date: 2026-08-08
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
+  - 【AutoGPT融合】Issue#10 新任务：AutoGPT 融合 ORCA 全链路，升级自主智能体能力（版本 1.6.1 → 1.7.0）
+  - 【AutoGPT融合】scripts/auto_gpt_orca_bridge.py 桥接脚本（AutoGPT×四大赛道，密钥零硬编码）
+  - 【AutoGPT融合】templates/autogpt/lobster_five_step_autogpt_template.yaml 五步法可视化拖拽模板
+  - 【AutoGPT融合】scripts/auto_gpt_trigger_config.py 定时触发器配置（schtasks 同步 G 盘）
+  - 【AutoGPT融合】docs/AutoGPT融合ORCA全链路验收文档.md + SelfLearn_Record.md 自我净化闭环
   - Claude-Code封装为CNB云端NPC（@claude-code触发）
   - 接口适配层 adapters/anthropic_to_cnb.py：Anthropic协议→CNB内置AI网关
   - npc:go options.model=deepseek-v4-flash 显式绑定免费基座
