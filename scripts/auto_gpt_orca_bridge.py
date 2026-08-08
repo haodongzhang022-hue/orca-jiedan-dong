@@ -70,7 +70,7 @@ WORKFLOW_REGISTRY = {
     "企业接单": {
         "entry": SCRIPTS_DIR / "maris_dispatch.sh",
         "desc": "外部客户需求一键丢入 → 自动拆解需求→成本报价→方案生成→交付归档（替代手动 CNB Issue）",
-        "args_template": ["--type", "{type}", "--title", "{title}", "--desc", "{desc}"],
+        "args_template": ["--type", "{type}", "--title", "{title}", "--desc", "{desc}", "--priority", "{priority}", "--deadline", "{deadline}"],
     },
     "闲鱼自动化": {
         "entry": SCRIPTS_DIR / "auto_xianyu_scheduler.py",
@@ -147,6 +147,9 @@ def dispatch(task_input: str, workflow: str, verbose: bool = False) -> int:
     os.makedirs(str(FLEET_IN), exist_ok=True)
     task_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_AG"
     task_card = FLEET_IN / f"{task_id}__AutoGPT_{workflow or 'generic'}.md"
+    # 结构化拆解：AutoGPT 把需求要素抽成清单，防止整单误判（如海报误判为纯色背景）
+    elements = _parse_elements(task_data)
+    elem_lines = "\n".join(f"- {k}: {v}" for k, v in elements.items() if v)
     task_card.write_text(
         f"# 任务卡：{task_data.get('title', 'AutoGPT 调度任务')}\n\n"
         f"- 任务ID: {task_id}\n"
@@ -155,7 +158,8 @@ def dispatch(task_input: str, workflow: str, verbose: bool = False) -> int:
         f"- 创建时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
         f"- 优先级: {task_data.get('priority', '中')}\n\n"
         f"## 需求\n{task_data.get('description', task_input)}\n\n"
-        f"## 要求\n- 中文输出\n- 按 ORCA 全链路标准交付\n",
+        f"## AutoGPT 结构化拆解清单（先核验再出稿）\n{elem_lines}\n\n"
+        f"## 要求\n- 中文输出\n- 按 ORCA 全链路标准交付\n- 成品必须对齐需求要素清单，杜绝需求误判\n",
         encoding="utf-8",
     )
     _log(f"任务卡已落地: {task_card}")
@@ -195,13 +199,21 @@ def dispatch(task_input: str, workflow: str, verbose: bool = False) -> int:
 
 
 def _parse_task(task_input: str) -> dict:
-    """解析任务输入：优先 JSON，其次 Markdown frontmatter，最后纯文本。"""
+    """解析任务输入：优先 JSON，其次 Markdown frontmatter，最后纯文本。
+    归一化字段：requirement/desc/description → description，priority/deadline 原样保留。
+    """
     s = task_input.strip()
     if s.startswith("{") or s.startswith("["):
         try:
             data = json.loads(s)
             if isinstance(data, list):
                 data = data[0] if data else {}
+            data = dict(data)
+            # 关键：requirement/desc/description 统一归一到 description，避免要素漏传
+            if "requirement" in data and "description" not in data:
+                data["description"] = data.pop("requirement")
+            if "desc" in data and "description" not in data:
+                data["description"] = data.pop("desc")
             return data
         except json.JSONDecodeError:
             pass
@@ -211,17 +223,72 @@ def _parse_task(task_input: str) -> dict:
     return {"title": title, "description": s[:2000], "priority": "中"}
 
 
+def _parse_elements(task_data: dict) -> dict:
+    """AutoGPT 结构化需求拆解：从任务 JSON 中抽取设计要素清单。
+    关键防线：防止整张海报被误判为纯色背景等局部特征。
+    """
+    desc = task_data.get("description") or task_data.get("requirement") or ""
+    d = str(desc)
+    elements = {}
+    # 直接字段优先
+    for key in ("插画", "文案", "文字", "配色", "装饰", "尺寸", "交付格式", "工期", "风格", "主视觉"):
+        v = task_data.get(key)
+        if v:
+            elements[key] = str(v)
+    # 从需求描述中按关键词抽取（存在即登记，供人工核验）
+    kw_map = {
+        "人物": "古风人物插画",
+        "插画": "人物/古风插画",
+        "灯笼": "灯笼装饰",
+        "烟花": "烟花装饰",
+        "书法": "书法标题（金榜题名大字）",
+        "红": "红调主视觉",
+        "国风": "国风喜庆版式",
+        "CDR": "可编辑 CDR 源文件",
+        "海报": "完整海报（图文结构）",
+        "版式": "版式排版",
+    }
+    for kw, label in kw_map.items():
+        if kw in d and label not in elements.values():
+            elements.setdefault(label.split("（")[0], label)
+    if not elements:
+        elements["需求原文"] = d[:200]
+    return elements
+
+
 def _build_cmd(entry: Path, args_tpl: list, task_data: dict) -> list:
-    """按参数模板组装命令；模板占位符缺省则直接传任务标题。"""
+    """按参数模板组装命令；模板占位符缺省则直接传任务标题。
+    flag(--xx) 与占位符({xx})成对处理：值缺省时跳过整对，避免出现悬空 flag。
+    """
     cmd = [str(entry)]
     if not args_tpl:
         cmd.append(task_data.get("title", ""))
         return [c for c in cmd if c]
-    for tpl in args_tpl:
-        key = tpl.strip("{}")
-        val = task_data.get(key, task_data.get("title", ""))
-        if val:
-            cmd.append(tpl if "{" not in tpl else val)
+
+    def _val(key: str) -> str:
+        # desc 占位符优先取 description，其次 requirement，再回退标题
+        if key in ("desc", "description"):
+            return task_data.get("description") or task_data.get("requirement") or task_data.get("title", "")
+        # 优先级/工期缺省时不传（由下游默认值兜底），避免误把标题当工期
+        if key in ("priority", "deadline"):
+            return task_data.get(key, "")
+        return task_data.get(key, task_data.get("title", ""))
+
+    i = 0
+    while i < len(args_tpl):
+        tpl = args_tpl[i]
+        # flag + 占位符成对（如 --desc {desc}）
+        if tpl.startswith("--") and i + 1 < len(args_tpl) and "{" in args_tpl[i + 1]:
+            val = _val(args_tpl[i + 1].strip("{}"))
+            if val:
+                cmd.append(tpl)
+                cmd.append(val)
+            i += 2
+        else:
+            val = _val(tpl.strip("{}"))
+            if val:
+                cmd.append(tpl if "{" not in tpl else val)
+            i += 1
     return cmd
 
 
