@@ -90,30 +90,40 @@ workflow_presets:
   闲鱼自动化:
     nodes: ["node_1_backup", "node_2_diagnose", "node_3_execute", "node_4_verify", "node_5_archive"]
     entry: "auto_xianyu_scheduler.py"
+    config: "config/autogpt/xianyu_config.yaml"
+    actions: ["post", "reply", "stats", "crawler_poll"]
     bridge_cmd: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow 闲鱼自动化 --task <定时上架/客服回复>"
   量化策略:
     nodes: ["node_1_backup", "node_2_diagnose", "node_3_execute", "node_4_verify", "node_5_archive"]
     entry: "quant_scheduler.py"
+    config: "config/autogpt/quant_config.yaml"
+    actions: ["dual_check", "binance", "jiasheng", "marvis_verify"]
     bridge_cmd: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow 量化策略 --task <币安/嘉盛巡检>"
 
-# ---------- 定时触发器预设（同步 G 盘 schtasks 同步任务） ----------
+# ---------- 定时触发器预设（调度参数统一在 config/autogpt/triggers.yaml） ----------
+# 注意：本段仅做面板展示预设，实际调度参数（cron/schedule_human/params）
+#      统一以 config/autogpt/triggers.yaml 为准，供 Marvis 本地部署消费。
 triggers:
   闲鱼定时上架:
     schedule: "0 9 * * *"
     workflow: "闲鱼自动化"
-    action: "上架巡检 + 客服回复 + 数据统计"
+    action: "post"
+    desc: "上架巡检 + 客服回复 + 数据统计"
   凭证过期巡检:
     schedule: "0 0 * * *"
     workflow: "通用"
-    action: "凭证过期巡检（CNB Token / GH PAT / Cookie）→ 自动告警"
+    action: "credential_check"
+    desc: "凭证过期巡检（CNB Token / GH PAT / Cookie）→ 自动告警"
   量化双仓巡检:
     schedule: "*/30 * * * *"
     workflow: "量化策略"
-    action: "币安/嘉盛双仓巡检 + Marvis 三端一致性校验"
+    action: "dual_check"
+    desc: "币安/嘉盛双仓巡检 + Marvis 三端一致性校验"
   爬虫静默轮询:
     schedule: "*/10 * * * *"
     workflow: "闲鱼自动化"
-    action: "爬虫静默轮询 + 风控限速逻辑（自动降频）"
+    action: "crawler_poll"
+    desc: "爬虫静默轮询 + 风控限速逻辑（自动降频）"
 
 # ---------- 半云半端说明 ----------
 architecture:

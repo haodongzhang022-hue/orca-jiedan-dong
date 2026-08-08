@@ -1,9 +1,10 @@
 # 《AutoGPT 融合 ORCA 全链路验收文档》
 
 > 归属：炼虚合道接单体系 · AutoGPT 融合改造（Issue #10 任务）
-> 版本：v1.0.0 ｜ 日期：2026-08-08
+> 版本：v1.1.0 ｜ 日期：2026-08-08
 > 作者：CodeBuddy（CNB 云原生交付）
 > 基座：CNB 内置免费 DeepSeek-V4-Flash（MoE 284B/激活13B，有效期至 2026-12-31）
+> 说明：v1.1.0 纳入第二轮迭代（闲鱼/量化赛道入口脚本补齐、触发器脚本重构为仅配置解析+校验、云端产物交付清单）
 
 ---
 
@@ -101,31 +102,72 @@ python scripts/auto_gpt_trigger_config.py dryrun   # 预演
 `docs/AutoGPT融合ORCA全链路验收文档.md` 及以下文件纳入同步范围：
 - `scripts/auto_gpt_orca_bridge.py`
 - `scripts/auto_gpt_trigger_config.py`
+- `scripts/auto_xianyu_scheduler.py`
+- `scripts/quant_scheduler.py`
 - `templates/autogpt/lobster_five_step_autogpt_template.yaml`
+- `config/autogpt/triggers.yaml` + `xianyu_config.yaml` + `quant_config.yaml`
+- `local_job_queue.json`（云端→本机任务清单）
+- `docs/云端产物交付清单.md`
 - `SelfLearn_Record.md`
 
 > 同步脚本：`scripts/export_to_github_and_mirror.sh`（E/G 双盘 + Obsidian + CNB 五大仓库）
 
-## 七、验收核对项
+## 七、第二轮迭代（Issue #10 · 云端容器内交付）
+
+> 边界（用户强制约定）：云端只做容器内工作，不操作 Windows 本地系统；不生成直接执行 schtasks、访问 E:\、读写本地 Obsidian 的执行逻辑；只产出源码/脚本/yaml/文档，全部提交 PR #21。Marvis 在本地拉取仓库文件后做本机执行。
+
+### 7.1 第二轮新增/维护产出物
+
+| # | 文件 | 变更 | 说明 |
+|---|------|------|------|
+| 1 | `scripts/auto_gpt_orca_bridge.py` | 维护 | 桥接核心确认：网盘萃取/企业接单链路保持实测可用逻辑不变；闲鱼/量化入口补齐 `--action` 参数模板 + `config` 引用 |
+| 2 | `scripts/auto_xianyu_scheduler.py` | **新增** | 闲鱼自动化完整业务源码（定时上架/客服回复/数据统计/爬虫轮询+风控限速），不含 schtasks |
+| 3 | `scripts/quant_scheduler.py` | **新增** | 嘉盛/币安双仓巡检业务源码（余额/持仓/挂单/回撤告警/Marvis 三端一致性校验），不含 schtasks |
+| 4 | `templates/autogpt/lobster_five_step_autogpt_template.yaml` | 维护 | 四赛道预设补充 actions/config；触发器预设与 triggers.yaml 对齐（action 改为结构化值） |
+| 5 | `scripts/auto_gpt_trigger_config.py` | **重构** | 仅封装配置解析+参数校验；**移除 schtasks install/uninstall/dryrun 执行代码**；新增 `validate/export/show` 子命令，输出结构化任务清单 JSON |
+| 6 | `config/autogpt/triggers.yaml` | **新增** | 触发器配置统一入口（cron/schedule_human/workflow/params） |
+| 7 | `config/autogpt/xianyu_config.yaml` | **新增** | 闲鱼赛道业务参数（时间窗/批次/限速/风控） |
+| 8 | `config/autogpt/quant_config.yaml` | **新增** | 量化赛道业务参数（双仓/阈值/三端校验/回撤） |
+| 9 | `local_job_queue.json` | **新增** | ⭐ 云端→本机任务清单：task_name/file_path/params 统一标记，供 Marvis 本地部署消费 |
+| 10 | `docs/云端产物交付清单.md` | **新增** | 说明哪些文件需 Marvis 本机部署执行 |
+
+### 7.2 触发器脚本重构要点
+
+旧版 `auto_gpt_trigger_config.py` 直接生成并调用 schtasks（`install/uninstall/dryrun`）。重构后：
+
+- ✅ 仅封装配置解析 + 参数校验（`validate`）
+- ✅ 输出结构化任务清单 JSON 到 `local_job_queue.json`（`export`）
+- ✅ 触发器参数/调度配置统一在 `config/autogpt/triggers.yaml`
+- ❌ 已移除：schtasks /create、/delete、/sc 等全部直接执行代码
+
+```bash
+python scripts/auto_gpt_trigger_config.py validate   # 校验触发器配置
+python scripts/auto_gpt_trigger_config.py export     # 生成 local_job_queue.json
+python scripts/auto_gpt_trigger_config.py list       # 查看触发器摘要
+```
+
+## 八、验收核对项
 
 - [x] 桥接脚本可运行（`status` / `dispatch` / `trigger` 三子命令验证）
 - [x] 模板 YAML 通过解析校验（pyyaml safe_load）
-- [x] 触发器脚本可生成 schtasks 命令（dryrun 验证）
+- [x] 触发器脚本重构为仅配置解析+参数校验，输出结构化任务清单 JSON（validate/export 验证）
+- [x] `local_job_queue.json` 已生成，标记 4 个待本地执行任务（task_name/file_path/params）
+- [x] 闲鱼/量化赛道入口脚本补齐（`auto_xianyu_scheduler.py` / `quant_scheduler.py`）
 - [x] 密钥零硬编码，全部环境变量注入
 - [x] 不改动现有 NPC 链式链路（Issue→codex→claude→CodeBuddy 保持原样）
+- [x] 不含任何 schtasks 创建命令 / E 盘 / 本地 Obsidian 访问逻辑（仅含配置与业务逻辑）
 - [ ] 本地 AutoGPT 私有化部署（`E:\龙虾AI主控中心\AutoGPT-Agent`，需在本地 Windows 执行）
-- [ ] 闲鱼/量化赛道入口脚本补齐（`auto_xianyu_scheduler.py` / `quant_scheduler.py` 待补）
-- [ ] G 盘 schtasks 同步 + Obsidian 录入（按四化迭代在本地执行）
+- [ ] G 盘 schtasks 同步 + Obsidian 录入（按 local_job_queue.json 由 Marvis 本地执行）
 
-## 八、龙虾五步法闭环
+## 九、龙虾五步法闭环
 
 | 五步法 | 本任务对应 |
 |--------|-----------|
 | Step1 精准备份 | 梳理现有 ORCA 全链路/四大赛道/五步法模板/环境变量体系 |
 | Step2 根因诊断 | 识别 AutoGPT 融合点：上层调度入口 + 四大赛道映射 + 触发器 |
-| Step3 无命令不执行 | 交付 4 项产出物（桥接/模板/触发器/验收文档） |
-| Step4 验证修复 | pyyaml 校验 / 脚本语法检查 / dryrun 预演 / status 健康检查 |
-| Step5 沉淀归档 | SelfLearn_Record.md + VERSION.md + docs 入库 + PR 提交 |
+| Step3 无命令不执行 | 第二轮交付：闲鱼/量化入口脚本 + 触发器配置解析重构 + 云端产物交付清单 |
+| Step4 验证修复 | pyyaml 校验 / 脚本语法检查 / validate+export 预演 / status 健康检查 |
+| Step5 沉淀归档 | SelfLearn_Record.md + VERSION.md + docs 入库 + PR #21 提交 |
 
 ---
 

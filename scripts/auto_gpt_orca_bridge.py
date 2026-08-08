@@ -47,6 +47,7 @@ from pathlib import Path
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
+CONFIG_DIR = PROJECT_ROOT / "config" / "autogpt"
 FLEET_DIR = PROJECT_ROOT / "fleet_exchange"
 FLEET_IN = FLEET_DIR / "incoming"
 FLEET_DOING = FLEET_DIR / "doing"
@@ -74,12 +75,14 @@ WORKFLOW_REGISTRY = {
     "闲鱼自动化": {
         "entry": SCRIPTS_DIR / "auto_xianyu_scheduler.py",
         "desc": "定时上架/客服回复/数据统计 → AutoGPT 触发器 + 爬虫风控限速逻辑",
-        "args_template": [],
+        "args_template": ["--action", "{action}"],
+        "config": CONFIG_DIR / "xianyu_config.yaml",
     },
     "量化策略": {
         "entry": SCRIPTS_DIR / "quant_scheduler.py",
         "desc": "币安/嘉盛双仓巡检、策略回测定时调度 → 联动 Marvis 三端一致性校验",
-        "args_template": [],
+        "args_template": ["--action", "{action}"],
+        "config": CONFIG_DIR / "quant_config.yaml",
     },
 }
 
