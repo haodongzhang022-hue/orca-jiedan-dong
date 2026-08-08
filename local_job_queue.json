@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-08T20:30:00Z",
+  "generated_at": "2026-08-08T22:25:57.552133",
   "generated_by": "CodeBuddy CNB云端NPC (scripts/auto_gpt_trigger_config.py export)",
   "source_config": "config/autogpt/triggers.yaml",
   "scheduler": {
     "name": "Windows Task Scheduler",
     "note": "触发器参数（频率/时间/工作流）由 config/autogpt/triggers.yaml 统一定义，本文件仅含结构化任务清单，不含任何 schtasks 命令；由 Marvis 在本机按 params 部署。"
   },
-  "note": "本文件标记需要 Marvis 在本机部署执行的任务。所有 task 仅提供参数，不含 Windows 计划任务创建命令。",
+  "note": "本文件标记需要 Marvis 在本机部署执行的任务。所有 task 仅提供参数，不含 Windows 计划任务创建命令。 含一次性落地任务 jinbang45_poster_delivery（云端拆单→Marvis本机落地闭环）。",
   "jobs": [
     {
       "task_name": "xianyu_daily_post",
@@ -54,6 +54,20 @@
         "workflow": "闲鱼自动化",
         "action": "crawler_poll",
         "desc": "爬虫静默轮询 + 风控限速逻辑（自动降频）"
+      }
+    },
+    {
+      "task_name": "jinbang45_poster_delivery",
+      "file_path": "scripts/gen_jinbang_guofeng_poster.py",
+      "params": {
+        "trigger_name": "AG_Jinbang_Poster_45",
+        "cron": "once",
+        "schedule_human": "一次性：客户确认后落地（2026-08-08 当晚订单）",
+        "workflow": "企业接单",
+        "action": "poster_delivery",
+        "desc": "金榜题名升学宴海报45元订单：Marvis 本机协同——替换宴设信息占位符、SVG转CDR、交付客户",
+        "task_id": "20260808_222347_AG",
+        "requirement_checklist": "红调主视觉/古风人物插画/灯笼烟花装饰/金榜题名书法大字/版式排版/CDR源文件/当晚交付"
       }
     }
   ]

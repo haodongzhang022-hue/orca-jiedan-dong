@@ -1,0 +1,231 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+金榜题名升学宴完整国风海报生成器（Hermes · AutoGPT 拆单后出稿）
+归属：orca-jiedan · 45元订单（20260808）· CNB 内置免费 DeepSeek-V4-Flash 基座
+用途：按 AutoGPT 结构化拆解清单产出图文结构完整的国风升学宴海报
+      - 红调主视觉 / 古风人物插画 / 灯笼烟花装饰 / 金榜题名书法大字 / 版式排版
+      - SVG 矢量源文件（CorelDRAW 可打开/导入，兼容导出 CDR）
+      - cairosvg 渲染 PNG 预览
+"""
+import os
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+OUT_DIR = PROJECT_ROOT / "01_正在执行实单" / "【20260808_背景图设计_类似参考_45元】"
+SVG_DIR = OUT_DIR / "工程源文件"
+PREVIEW_DIR = OUT_DIR / "最终交付文件"
+
+W, H = 1080, 1350  # 竖版海报（升学宴 / 背景图通用）
+
+SVG_TPL = """<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
+  <defs>
+    <!-- 红调主视觉渐变 -->
+    <linearGradient id="gMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A0100F"/>
+      <stop offset="35%" stop-color="#C41E1A"/>
+      <stop offset="70%" stop-color="#E03A1D"/>
+      <stop offset="100%" stop-color="#F59A3C"/>
+    </linearGradient>
+    <!-- 顶部金色光晕 -->
+    <radialGradient id="rGlow" cx="50%" cy="8%" r="60%">
+      <stop offset="0%" stop-color="#FFE9A8" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#FFC964" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FFC964" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 书法标题鎏金渐变 -->
+    <linearGradient id="gGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="45%" stop-color="#FFD968"/>
+      <stop offset="100%" stop-color="#DBA120"/>
+    </linearGradient>
+    <!-- 人物主体红褐 -->
+    <linearGradient id="gFig" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F2C98F"/>
+      <stop offset="100%" stop-color="#C98A4B"/>
+    </linearGradient>
+    <!-- 灯笼渐变 -->
+    <linearGradient id="gLantern" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF5A2A"/>
+      <stop offset="50%" stop-color="#E82015"/>
+      <stop offset="100%" stop-color="#B01008"/>
+    </linearGradient>
+    <!-- 柔光滤镜 -->
+    <filter id="fb" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+    <filter id="fs" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <!-- 背景：红调主视觉 -->
+  <rect x="0" y="0" width="{W}" height="{H}" fill="url(#gMain)"/>
+  <rect x="0" y="0" width="{W}" height="{H}" fill="url(#rGlow)"/>
+
+  <!-- 中央暖光 -->
+  <circle cx="540" cy="640" r="320" fill="#FFD8A0" opacity="0.14" filter="url(#fb)"/>
+
+  <!-- ============ 顶部烟花装饰 ============ -->
+  <g id="fireworks" stroke="#FFE9A8" stroke-width="2.5" fill="none" opacity="0.9">
+    <!-- 左侧烟花 -->
+    <path d="M150,120 l30,-48 M150,120 l52,-14 M150,120 l38,38 M150,120 l-10,52 M150,120 l-52,10 M150,120 l-40,-36 M150,120 l8,-52 M150,120 l60,-18 M150,120 l-64,8 M150,120 l-30,50"/>
+    <circle cx="150" cy="120" r="6" fill="#FFF3C4" stroke="none"/>
+    <!-- 右侧烟花 -->
+    <path d="M930,110 l32,-46 M930,110 l50,-18 M930,110 l40,36 M930,110 l-8,52 M930,110 l-52,12 M930,110 l-42,-34 M930,110 l6,-52 M930,110 l62,-14 M930,110 l-64,6 M930,110 l-28,50"/>
+    <circle cx="930" cy="110" r="6" fill="#FFF3C4" stroke="none"/>
+    <!-- 中心小礼花 -->
+    <path d="M540,70 l22,-30 M540,70 l34,-6 M540,70 l24,24 M540,70 l-2,34 M540,70 l-30,16 M540,70 l-26,-20 M540,70 l4,-32 M540,70 l38,-4 M540,70 l-40,2 M540,70 l-16,32"/>
+    <circle cx="540" cy="70" r="4.5" fill="#FFF3C4" stroke="none"/>
+  </g>
+  <!-- 烟花星点 -->
+  <g fill="#FFE9A8">
+    <circle cx="120" cy="200" r="2.5" opacity="0.8"/>
+    <circle cx="200" cy="90" r="2" opacity="0.7"/>
+    <circle cx="90" cy="140" r="2" opacity="0.6"/>
+    <circle cx="975" cy="180" r="2.5" opacity="0.8"/>
+    <circle cx="890" cy="80" r="2" opacity="0.7"/>
+    <circle cx="1010" cy="130" r="2" opacity="0.6"/>
+    <circle cx="520" cy="140" r="2" opacity="0.7"/>
+    <circle cx="560" cy="130" r="2" opacity="0.6"/>
+  </g>
+
+  <!-- ============ 灯笼装饰（左右对称） ============ -->
+  <g id="lanterns">
+    <!-- 左灯笼 -->
+    <g transform="translate(120,290)">
+      <rect x="-2" y="-70" width="4" height="60" fill="#F5C56B"/>
+      <rect x="-2" y="-70" width="4" height="60" fill="#F5C56B" opacity="0"/>
+      <path d="M-34,-10 h68 a34,46 0 0 1 0,92 h-68 a34,46 0 0 1 0,-92 Z" fill="url(#gLantern)"/>
+      <ellipse cx="0" cy="36" rx="30" ry="10" fill="#B01008"/>
+      <rect x="-18" y="40" width="36" height="26" fill="#E82015"/>
+      <path d="M-10,66 l20,0 M0,66 l8,30 M-8,66 l-8,30" stroke="#F5C56B" stroke-width="2.5" fill="none"/>
+      <line x1="-34" y1="-12" x2="34" y2="-12" stroke="#FFD968" stroke-width="4"/>
+      <line x1="-34" y1="-10" x2="34" y2="-10" stroke="#FFD968" stroke-width="0" opacity="0"/>
+      <ellipse cx="0" cy="-8" rx="36" ry="8" fill="#DBA120"/>
+      <text x="0" y="6" font-family="WenQuanYi Zen Hei" font-size="26" fill="#FFF3C4" text-anchor="middle">禧</text>
+      <path d="M-8,96 l0,34 M0,96 l0,34 M8,96 l0,34" stroke="#F5C56B" stroke-width="2" fill="none"/>
+      <circle cx="0" cy="132" r="5" fill="#F5C56B"/>
+    </g>
+    <!-- 右灯笼 -->
+    <g transform="translate(960,290)">
+      <rect x="-2" y="-70" width="4" height="60" fill="#F5C56B"/>
+      <path d="M-34,-10 h68 a34,46 0 0 1 0,92 h-68 a34,46 0 0 1 0,-92 Z" fill="url(#gLantern)"/>
+      <ellipse cx="0" cy="36" rx="30" ry="10" fill="#B01008"/>
+      <rect x="-18" y="40" width="36" height="26" fill="#E82015"/>
+      <path d="M-10,66 l20,0 M0,66 l8,30 M-8,66 l-8,30" stroke="#F5C56B" stroke-width="2.5" fill="none"/>
+      <line x1="-34" y1="-12" x2="34" y2="-12" stroke="#FFD968" stroke-width="4"/>
+      <ellipse cx="0" cy="-8" rx="36" ry="8" fill="#DBA120"/>
+      <text x="0" y="6" font-family="WenQuanYi Zen Hei" font-size="26" fill="#FFF3C4" text-anchor="middle">福</text>
+      <path d="M-8,96 l0,34 M0,96 l0,34 M8,96 l0,34" stroke="#F5C56B" stroke-width="2" fill="none"/>
+      <circle cx="0" cy="132" r="5" fill="#F5C56B"/>
+    </g>
+  </g>
+
+  <!-- ============ 顶部横幅区 ============ -->
+  <!-- 金榜题名 书法大字（横幅） -->
+  <g id="banner">
+    <rect x="200" y="300" width="680" height="150" rx="18" fill="#8A0E0C" stroke="#FFD968" stroke-width="5"/>
+    <rect x="214" y="314" width="652" height="122" rx="12" fill="none" stroke="#FFE9A8" stroke-width="2"/>
+    <text x="540" y="408" font-family="WenQuanYi Zen Hei" font-size="118" font-weight="bold"
+          fill="url(#gGold)" stroke="#8A4A00" stroke-width="2" text-anchor="middle">金榜题名</text>
+  </g>
+
+  <!-- 副标题：升学宴 -->
+  <g id="subtitle">
+    <text x="540" y="560" font-family="WenQuanYi Zen Hei" font-size="88" font-weight="bold"
+          fill="#FFF3C4" stroke="#B01008" stroke-width="2" text-anchor="middle">升学宴</text>
+    <text x="540" y="616" font-family="WenQuanYi Zen Hei" font-size="30" fill="#FFE9A8" text-anchor="middle">恭贺金榜题名 · 前程似锦</text>
+  </g>
+
+  <!-- ============ 古风人物插画（居中） ============ -->
+  <g id="figure" transform="translate(540,780)">
+    <!-- 祥云底座 -->
+    <g fill="#FFE9A8" opacity="0.85">
+      <ellipse cx="-70" cy="150" rx="70" ry="22"/>
+      <ellipse cx="0" cy="158" rx="84" ry="26"/>
+      <ellipse cx="70" cy="150" rx="70" ry="22"/>
+      <ellipse cx="-40" cy="140" rx="46" ry="16"/>
+      <ellipse cx="40" cy="140" rx="46" ry="16"/>
+    </g>
+    <!-- 长袍 -->
+    <path d="M-52,60 C-56,120 -58,150 -52,158 L52,158 C58,150 56,120 52,60 Z" fill="url(#gFig)"/>
+    <!-- 衣襟/腰带 -->
+    <path d="M-8,60 L0,120 L8,60 Z" fill="#B01008"/>
+    <rect x="-46" y="118" width="92" height="10" rx="4" fill="#DBA120"/>
+    <!-- 玉带结 -->
+    <circle cx="0" cy="123" r="7" fill="#FFD968"/>
+    <!-- 右袖（执卷） -->
+    <path d="M52,80 C84,90 96,120 86,140 C76,158 52,150 48,126 C46,112 48,92 52,80 Z" fill="#E8B87F"/>
+    <!-- 左袖（背手） -->
+    <path d="M-52,80 C-84,90 -96,116 -86,136 C-76,154 -52,148 -48,124 C-46,110 -48,92 -52,80 Z" fill="#E8B87F"/>
+    <!-- 卷轴（金榜） -->
+    <rect x="52" y="108" width="52" height="22" rx="3" fill="#FFF3C4" stroke="#DBA120" stroke-width="2"/>
+    <line x1="60" y1="119" x2="96" y2="119" stroke="#C41E1A" stroke-width="2"/>
+    <!-- 头部 -->
+    <circle cx="0" cy="8" r="42" fill="#F2C98F"/>
+    <!-- 发髻 -->
+    <circle cx="0" cy="-38" r="16" fill="#3A2410"/>
+    <path d="M-18,-26 C-30,-40 -22,-58 -6,-56 C-18,-48 -14,-34 -18,-26 Z" fill="#3A2410"/>
+    <path d="M18,-26 C30,-40 22,-58 6,-56 C18,-48 14,-34 18,-26 Z" fill="#3A2410"/>
+    <!-- 发簪 -->
+    <rect x="-2" y="-62" width="34" height="5" rx="2" fill="#DBA120" transform="rotate(-18,0,-58)"/>
+    <circle cx="30" cy="-66" r="5" fill="#FF5A2A"/>
+    <!-- 状元帽 -->
+    <path d="M-40,-26 L-34,-52 L34,-52 L40,-26 Z" fill="#B01008" stroke="#DBA120" stroke-width="2.5"/>
+    <rect x="-42" y="-22" width="84" height="8" rx="3" fill="#DBA120"/>
+    <path d="M0,-52 L0,-70 M0,-70 L-16,-80 M0,-70 L16,-80" stroke="#FFD968" stroke-width="3" fill="none"/>
+    <circle cx="0" cy="-82" r="6" fill="#FF5A2A"/>
+    <!-- 五官 -->
+    <path d="M-16,-2 Q-10,8 -4,-2" stroke="#5A3210" stroke-width="2.5" fill="none"/>
+    <path d="M4,-2 Q10,8 16,-2" stroke="#5A3210" stroke-width="2.5" fill="none"/>
+    <path d="M-8,20 Q0,30 8,20" stroke="#5A3210" stroke-width="2.5" fill="none"/>
+    <circle cx="-26" cy="-16" r="3" fill="#5A3210"/>
+    <circle cx="26" cy="-16" r="3" fill="#5A3210"/>
+    <!-- 腮红 -->
+    <circle cx="-26" cy="2" r="8" fill="#E85A3A" opacity="0.35"/>
+    <circle cx="26" cy="2" r="8" fill="#E85A3A" opacity="0.35"/>
+  </g>
+
+  <!-- ============ 信息区（时间/地点/主办） ============ -->
+  <g id="info" transform="translate(540,1120)">
+    <line x1="-360" y1="0" x2="-150" y2="0" stroke="#FFE9A8" stroke-width="2"/>
+    <circle cx="-120" cy="0" r="6" fill="#FFD968"/>
+    <line x1="150" y1="0" x2="360" y2="0" stroke="#FFE9A8" stroke-width="2"/>
+    <circle cx="120" cy="0" r="6" fill="#FFD968"/>
+    <text x="0" y="40" font-family="WenQuanYi Zen Hei" font-size="30" fill="#FFF3C4" text-anchor="middle">宴设时间：2026年8月 吉日良辰</text>
+    <text x="0" y="92" font-family="WenQuanYi Zen Hei" font-size="30" fill="#FFF3C4" text-anchor="middle">宴设地点：××大酒店 宴会厅</text>
+    <text x="0" y="144" font-family="WenQuanYi Zen Hei" font-size="26" fill="#FFE9A8" text-anchor="middle">恭请 亲朋好友 共赴盛宴 · 同贺金榜</text>
+  </g>
+
+  <!-- 底部祥云装饰 -->
+  <g fill="#FFE9A8" opacity="0.5">
+    <ellipse cx="180" cy="1320" rx="120" ry="20"/>
+    <ellipse cx="300" cy="1330" rx="90" ry="16"/>
+    <ellipse cx="880" cy="1320" rx="120" ry="20"/>
+    <ellipse cx="760" cy="1330" rx="90" ry="16"/>
+  </g>
+</svg>
+"""
+
+
+def main():
+    os.makedirs(SVG_DIR, exist_ok=True)
+    os.makedirs(PREVIEW_DIR, exist_ok=True)
+    svg_path = SVG_DIR / "金榜题名升学宴海报_国风版.svg"
+    svg_path.write_text(SVG_TPL.format(W=W, H=H), encoding="utf-8")
+    print(f"[OK] SVG 源文件已生成: {svg_path}")
+
+    # cairosvg 渲染 PNG 预览
+    try:
+        import cairosvg
+        png_path = PREVIEW_DIR / "预览_金榜题名升学宴海报_国风版.png"
+        cairosvg.svg2png(url=str(svg_path), write_to=str(png_path), output_width=W, output_height=H)
+        print(f"[OK] PNG 预览已渲染: {png_path}")
+    except Exception as e:  # noqa: BLE001
+        print(f"[WARN] cairosvg 渲染失败（不影响 SVG 交付）: {e}")
+
+
+if __name__ == "__main__":
+    main()
