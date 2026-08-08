@@ -1,0 +1,58 @@
+# ============================================================
+# 闲鱼自动化赛道业务配置
+# 归属：AutoGPT 融合 ORCA 全链路（Issue #10 · 第二迭代）
+# 用途：供 scripts/auto_xianyu_scheduler.py 读取
+# 说明：仅业务参数配置，不含任何 Windows 计划任务调用逻辑。
+#       所有敏感凭证（Cookie/Token）从环境变量读取，禁止硬编码在本文件。
+# ============================================================
+
+xianyu:
+  # 平台访问基础参数
+  platform: "闲鱼"
+  base_url: "https://www.goofish.com"
+  # 登录态来源：优先环境变量 XIANYU_COOKIE；缺省时走 DPAPI 解密复用现有 Cookie 体系
+  cookie_source: "env_or_dpapi"
+
+  # 每日定时上架动作
+  post:
+    enabled: true
+    default_duration_days: 30      # 默认商品有效期（天）
+    max_items_per_batch: 20        # 单批次最大上架数（配合风控限速）
+    batch_interval_seconds: 60     # 批次间隔（秒），避免触发平台风控
+    publish_time_window: ["09:00", "21:00"]  # 允许自动上架的时间窗
+
+  # 客服自动回复
+  customer_service:
+    enabled: true
+    reply_interval_seconds: 30     # 回复间隔（秒），模拟真人节奏
+    max_replies_per_hour: 60       # 每小时最大自动回复数（风控保护）
+    keywords_path: "config/autogpt/xianyu_reply_keywords.json"  # 关键词→回复话术库
+
+  # 数据统计
+  stats:
+    enabled: true
+    report_dir: "reports/xianyu"   # 统计报告输出目录（相对项目根）
+    export_daily: true             # 每日导出数据统计
+
+  # 爬虫静默轮询（AG_Crawler_Poll 触发器使用）
+  crawler:
+    poll_interval_minutes: 10      # 与 triggers.yaml 中 AG_Crawler_Poll 保持一致
+    rate_limit_per_minute: 20      # 每分钟请求上限（风控限速）
+    auto_throttle: true            # 检测到风险时自动降频（2x 间隔）
+    keywords_monitor:
+      enabled: true
+      watch_words: ["设计", "海报", "画册", "短视频", "PPT", "接单"]
+
+  # 风控保护
+  risk_control:
+    enabled: true
+    max_actions_per_day: 200       # 单日最大动作数（上架+回复+浏览合计）
+    block_on_frequent_fail: 5      # 连续失败 N 次进入冷却
+    cooldown_minutes: 30           # 冷却时长（分钟）
+    user_agent_rotate: true        # UA 轮换
+
+  # 输出产物
+  output:
+    task_card_dir: "fleet_exchange/incoming"   # 任务卡落地目录（复用 Maris 格式）
+    result_dir: "fleet_exchange/results"       # 执行结果落地目录
+    log_dir: "logs/xianyu"

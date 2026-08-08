@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-08-08T20:30:00Z",
+  "generated_by": "CodeBuddy CNB云端NPC (scripts/auto_gpt_trigger_config.py export)",
+  "source_config": "config/autogpt/triggers.yaml",
+  "scheduler": {
+    "name": "Windows Task Scheduler",
+    "note": "触发器参数（频率/时间/工作流）由 config/autogpt/triggers.yaml 统一定义，本文件仅含结构化任务清单，不含任何 schtasks 命令；由 Marvis 在本机按 params 部署。"
+  },
+  "note": "本文件标记需要 Marvis 在本机部署执行的任务。所有 task 仅提供参数，不含 Windows 计划任务创建命令。",
+  "jobs": [
+    {
+      "task_name": "xianyu_daily_post",
+      "file_path": "scripts/auto_xianyu_scheduler.py",
+      "params": {
+        "trigger_name": "AG_Xianyu_Post",
+        "cron": "0 9 * * *",
+        "schedule_human": "每日 09:00",
+        "workflow": "闲鱼自动化",
+        "action": "post",
+        "desc": "闲鱼定时上架 + 客服回复 + 数据统计"
+      }
+    },
+    {
+      "task_name": "credential_daily_check",
+      "file_path": "scripts/auto_gpt_orca_bridge.py",
+      "params": {
+        "trigger_name": "AG_Credential_Check",
+        "cron": "0 0 * * *",
+        "schedule_human": "每日 00:00",
+        "workflow": "通用",
+        "action": "credential_check",
+        "desc": "凭证过期巡检（CNB Token / GH PAT / Cookie）"
+      }
+    },
+    {
+      "task_name": "quant_dual_check",
+      "file_path": "scripts/quant_scheduler.py",
+      "params": {
+        "trigger_name": "AG_Quant_DualCheck",
+        "cron": "*/30 * * * *",
+        "schedule_human": "每 30 分钟",
+        "workflow": "量化策略",
+        "action": "dual_check",
+        "desc": "币安/嘉盛双仓巡检 + Marvis 三端一致性校验"
+      }
+    },
+    {
+      "task_name": "xianyu_crawler_poll",
+      "file_path": "scripts/auto_xianyu_scheduler.py",
+      "params": {
+        "trigger_name": "AG_Crawler_Poll",
+        "cron": "*/10 * * * *",
+        "schedule_human": "每 10 分钟",
+        "workflow": "闲鱼自动化",
+        "action": "crawler_poll",
+        "desc": "爬虫静默轮询 + 风控限速逻辑（自动降频）"
+      }
+    }
+  ]
+}

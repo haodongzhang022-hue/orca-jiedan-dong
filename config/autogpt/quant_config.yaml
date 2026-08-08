@@ -1,0 +1,63 @@
+# ============================================================
+# 量化策略赛道业务配置（嘉盛 / 币安 双仓巡检）
+# 归属：AutoGPT 融合 ORCA 全链路（Issue #10 · 第二迭代）
+# 用途：供 scripts/quant_scheduler.py 读取
+# 说明：仅业务参数配置，不含任何 Windows 计划任务调用逻辑。
+#       所有密钥（Binance API Key/Secret、嘉盛凭证等）从环境变量读取，禁止硬编码。
+# ============================================================
+
+quant:
+  # 双仓定义
+  exchanges:
+    binance:
+      name: "币安"
+      type: "crypto"
+      base_url: "https://api.binance.com"
+      # API 凭证一律从环境变量读取（BINANCE_API_KEY / BINANCE_API_SECRET）
+      api_key_env: "BINANCE_API_KEY"
+      api_secret_env: "BINANCE_API_SECRET"
+      check_spot: true          # 现货账户巡检
+      check_futures: false      # 合约账户巡检（按需开启）
+      watch_symbols: ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+      max_position_pct: 0.30    # 单标的仓位上限 30%
+
+    jiasheng:
+      name: "嘉盛"
+      type: "forex"
+      base_url: "https://portal.forex.com"
+      # 凭证从环境变量读取（JIASHENG_TOKEN / JIASHENG_ACCOUNT）
+      api_token_env: "JIASHENG_TOKEN"
+      account_id_env: "JIASHENG_ACCOUNT"
+      watch_symbols: ["XAUUSD", "EURUSD", "GBPUSD", "USDJPY"]
+      max_position_pct: 0.20    # 单品种仓位上限 20%
+
+  # 双仓巡检动作（AG_Quant_DualCheck 触发器使用）
+  dual_check:
+    enabled: true
+    default_interval_minutes: 30   # 与 triggers.yaml AG_Quant_DualCheck 保持一致
+    check_balance: true            # 账户余额/净值巡检
+    check_positions: true          # 持仓巡检
+    check_orders: true             # 挂单巡检
+    alert_on_anomaly: true         # 异常告警（写入结果目录）
+    max_drawdown_pct: 0.10         # 最大回撤阈值 10%（超出触发告警）
+
+  # Marvis 三端一致性校验
+  marvis_verify:
+    enabled: true
+    verify_balance: true           # 校验行情端/账户端/记录端 三方余额一致
+    verify_positions: true         # 校验三方持仓一致
+    tolerance_ratio: 0.005         # 允许误差 0.5%
+
+  # 策略回测
+  backtest:
+    enabled: false                 # 默认关闭，按需开启
+    data_dir: "data/backtest"
+    symbols: ["BTCUSDT", "XAUUSD"]
+    initial_capital: 10000
+
+  # 输出产物
+  output:
+    report_dir: "reports/quant"    # 巡检报告输出目录
+    result_dir: "fleet_exchange/results"   # 结果落地目录（供 Marvis 消费）
+    log_dir: "logs/quant"
+    state_file: "logs/quant/state.json"    # 断点/上次巡检状态
