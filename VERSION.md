@@ -4,6 +4,9 @@ release_date: 2026-08-08
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
+  - 【AutoGPT融合·第三轮·云端技能仓库】Issue#10 应答：AutoGPT 可云端直接接单（实测 dispatch 企业接单 rc=0）；云端技能仓库落地为 skills/autogpt_orca_bridge/SKILL.md + skill_registry.json 注册 autogpt_orca_bridge（v1.0.0）
+  - 【AutoGPT融合·第三轮】云端实测：python3 scripts/auto_gpt_orca_bridge.py dispatch --workflow 企业接单 成功落地任务卡 fleet_exchange/incoming/20260808_203243_AG__AutoGPT_企业接单.md
+  - 【AutoGPT融合·第三轮】边界明确：云端只产出源码/脚本/任务卡，AutoGPT 本地面板（E:/龙虾AI主控中心/AutoGPT-Agent）与 Windows 计划任务由 Marvis 本机执行
   - 【AutoGPT融合·第二轮】Issue#10 云端容器内交付：新增闲鱼/量化两赛道入口脚本 + 触发器脚本重构为仅配置解析+校验 + 云端产物交付清单（v1.7.0 → 1.7.1）
   - 【AutoGPT融合·第二轮】scripts/auto_xianyu_scheduler.py 闲鱼自动化业务源码（定时上架/客服回复/数据统计/爬虫轮询+风控限速，不含 schtasks）
   - 【AutoGPT融合·第二轮】scripts/quant_scheduler.py 嘉盛/币安双仓巡检业务源码（余额/持仓/挂单/回撤告警/Marvis 三端一致性校验，不含 schtasks）

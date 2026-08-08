@@ -103,6 +103,32 @@
         "date": "2026-08-07",
         "result": "四角色矩阵 v1.6.0 闭环：@claude-code/@codex 实测通过，基座 deepseek-v4-flash，AI用量 milli_credit=0，镜像 orca-jiedan:1.6.0 已推送"
       }
+    },
+    {
+      "id": "autogpt_orca_bridge",
+      "name": "AutoGPT接单桥接",
+      "version": "1.0.0",
+      "category": "龙虾舰队流水线 · 商单接单技能库",
+      "description": "AutoGPT融合ORCA全链路接单：自然语言任务→四赛道映射（网盘萃取/企业接单/闲鱼自动化/量化策略）→任务卡落地fleet_exchange→调度ORCA工作流。云端可跑，密钥零硬编码，本地AutoGPT面板由Marvis部署。",
+      "entry_script": "scripts/auto_gpt_orca_bridge.py",
+      "skill_path": "skills/autogpt_orca_bridge/SKILL.md",
+      "config_files": [
+        "config/autogpt/triggers.yaml",
+        "config/autogpt/xianyu_config.yaml",
+        "config/autogpt/quant_config.yaml"
+      ],
+      "templates": [
+        "templates/autogpt/lobster_five_step_autogpt_template.yaml"
+      ],
+      "local_exec_by": "Marvis（本机）",
+      "tags": [
+        "AutoGPT",
+        "接单",
+        "自然语言调度",
+        "四赛道",
+        "fleet_exchange",
+        "四化闭环"
+      ]
     }
   ]
 }
