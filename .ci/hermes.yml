@@ -29,7 +29,10 @@
         options:
           # ⭐ 双保险：options.model 同样显式绑定免费基座，防止落到其它模型
           model: deepseek-v4-flash
-          maxTurns: 60
+          # 跨仓库编排类任务（合并PR→等构建→逐仓克隆验收→触发NPC）单次会消耗大量轮次，
+          # 60 轮仍会触发 "Agent aborted: reached maxTurns limit"（构建 cnb-p0o-1jvgj2pvt 实证），
+          # 上调至 100 避免编排中途被截断；单仓轻任务不受影响
+          maxTurns: 100
           contextWindow: "128k"
 
 # ---- hermes 角色：路径B（覆盖 $ 兜底的路径A）----

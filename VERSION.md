@@ -40,3 +40,7 @@ changes:
   - 【v1.6.0·修订】skill_registry.json CNB_ClaudeCode_NPC 1.5.0 → 1.6.0（四角色矩阵）
   - 【v1.6.0·修订】scripts/export_to_github_and_mirror.sh 版本 1.5.0→1.6.0 + 四角色栈复制（hermes/codex 资产入库）
   - 【v1.6.1·修订】Hermes 调度改版：全域模板全英文调度 → 全域模板调度（中文），强化多 Agent 任务编排（hermes/system_prompt.md、.cnb/settings.yml、config/orca、脚手架模板、docs 矩阵同步）
+  - 【v1.6.1·修复】路径B 三角色（claude-code/hermes/codex）maxTurns 60 → 100：跨仓库编排任务
+    （合并PR→等镜像构建→逐仓克隆验收→触发NPC）单次消耗轮次超 60，构建 cnb-p0o-1jvgj2pvt 实证
+    "Agent aborted: reached maxTurns limit (60)"；脚手架模板同步
+  - 【v1.6.1·修复】docs/claude_code_cloud_vs_local.md 补充 maxTurns 调优说明

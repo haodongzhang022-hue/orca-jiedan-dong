@@ -30,9 +30,10 @@
           # ⭐ 双保险：options.model 同样显式绑定免费基座，防止落到其它模型
           model: deepseek-v4-flash
           # ⭐ 高轮次：本镜像体积大、冷启动慢，且原版 CLI 工具调用轮次较多，
-          #    24 轮已多次触发 "Agent aborted: reached maxTurns limit"，
-          #    上调至 60 避免 Agent 中途被截断
-          maxTurns: 60
+          #    24 轮已多次触发 "Agent aborted: reached maxTurns limit"；
+          #    跨仓库编排（合并PR→等构建→逐仓验收）60 轮仍不够（cnb-p0o-1jvgj2pvt 实证），
+          #    上调至 100 避免 Agent 中途被截断
+          maxTurns: 100
           contextWindow: "128k"
 
 # ---- codex 角色：路径B（覆盖 $ 兜底的路径A）----
