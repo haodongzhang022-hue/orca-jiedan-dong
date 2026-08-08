@@ -32,6 +32,7 @@
 #        [--branch-prefix auto/deploy-cnb-npc] [--commit] [--push] [--dry-run]
 #   --repo      只下发指定单仓库（可多次）
 #   --repos     一次下发多个仓库（空格分隔）
+#   --token     CNB 访问令牌（跨仓库写权限；git push 与 PR 创建均使用，规避 CI 临时令牌仓库限制）
 #   --template  母模板目录（默认 templates/cnb_npc_path_b_scaffold）
 #   --image-tag 镜像 tag 覆盖（默认 1.6.0；母模板硬编码 1.6.0 会在写入时全部替换）
 #   --owner     CNB 组织/用户（默认 TJF19770107）
@@ -48,6 +49,7 @@ OWNER="TJF19770107"
 TEMPLATE="${ROOT}/templates/cnb_npc_path_b_scaffold"
 IMAGE_TAG="1.6.0"
 BRANCH_PREFIX="auto/deploy-cnb-npc"
+TOKEN=""
 DEFAULT_REPOS=(orca-quant-binance orca-quant-jiasheng orca-xianyu orca-wangpan)
 REPOS=()
 DO_COMMIT=0
@@ -83,6 +85,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --repo)       REPOS+=("$2"); shift 2 ;;
     --repos)      for r in $2; do REPOS+=("$r"); done; shift 2 ;;
+    --token)      TOKEN="$2"; shift 2 ;;
     --template)   TEMPLATE="$2"; shift 2 ;;
     --image-tag)  IMAGE_TAG="$2"; shift 2 ;;
     --owner)      OWNER="$2"; shift 2 ;;
@@ -105,6 +108,11 @@ log()  { printf '==> %s\n' "$*"; }
 ok()   { printf '  ✅ %s\n' "$*"; }
 warn() { printf '  ⚠️  %s\n' "$*"; }
 fail() { printf '  ❌ %s\n' "$*"; }
+
+# 令牌模式：git push 与 PR 创建走用户令牌（跨仓库写权限），规避 CI 临时令牌仓库限制
+if [ -n "${TOKEN}" ]; then
+  warn "检测到 --token：git push 与 PR 创建将使用用户令牌（跨仓库写权限）"
+fi
 
 # ---- 工具：明文密钥扫描（tp-* / sk-* 常见形态）----
 # $1=扫描目录  $2=描述
@@ -247,13 +255,19 @@ for REPO in "${REPOS[@]}"; do
            --quiet ) \
       && ok "提交完成"
     if [ "$DO_PUSH" -eq 1 ]; then
+      GIT_PUSH_URL="https://cnb.cool/${SLUG}.git"
+      if [ -n "${TOKEN}" ]; then
+        GIT_PUSH_URL="https://oauth2:${TOKEN}@cnb.cool/${SLUG}.git"
+        git -C "${CLONE_DIR}" remote set-url origin "${GIT_PUSH_URL}"
+      fi
       if ( cd "${CLONE_DIR}" && git push -u origin "${BRANCH}" >/dev/null 2>&1 ); then
         ok "推送完成: ${BRANCH}"
         if command -v cnb >/dev/null 2>&1; then
-          cnb pulls post-pull --repo "${SLUG}" --base "$(cd "${CLONE_DIR}" && git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|origin/||' || echo main)" \
-            --head "${BRANCH}" \
-            --title "feat: CNB NPC 路径B 脚手架下发（四角色）" \
-            --body "四角色栈（claude-code/hermes/codex 路径B + lobster 路径A）脚手架下发
+          if [ -n "${TOKEN}" ]; then
+            env CNB_TOKEN="${TOKEN}" cnb pulls post-pull --repo "${SLUG}" --base "$(cd "${CLONE_DIR}" && git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|origin/||' || echo main)" \
+              --head "${BRANCH}" \
+              --title "feat: CNB NPC 路径B 脚手架下发（四角色）" \
+              --body "四角色栈（claude-code/hermes/codex 路径B + lobster 路径A）脚手架下发
 
 - .cnb.yml 路径A \$ 兜底 + include + main.push 镜像构建
 - .ci/{npc-full,hermes,codex}.yml 路径B 自定义镜像容器
@@ -261,7 +275,21 @@ for REPO in "${REPOS[@]}"; do
 - scripts/one_click_npc_stack.sh 四角色自检
 - 镜像 tag: ${IMAGE_TAG}；基座锁定 deepseek-v4-flash（免费）
 - 密钥红线：下发前后均已扫描，零明文" \
-            >/dev/null 2>&1 && ok "PR 已创建" || warn "PR 创建失败（可手动创建）"
+              >/dev/null 2>&1 && ok "PR 已创建" || warn "PR 创建失败（可手动创建）"
+          else
+            cnb pulls post-pull --repo "${SLUG}" --base "$(cd "${CLONE_DIR}" && git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|origin/||' || echo main)" \
+              --head "${BRANCH}" \
+              --title "feat: CNB NPC 路径B 脚手架下发（四角色）" \
+              --body "四角色栈（claude-code/hermes/codex 路径B + lobster 路径A）脚手架下发
+
+- .cnb.yml 路径A \$ 兜底 + include + main.push 镜像构建
+- .ci/{npc-full,hermes,codex}.yml 路径B 自定义镜像容器
+- .cnb/settings.yml 四角色定义
+- scripts/one_click_npc_stack.sh 四角色自检
+- 镜像 tag: ${IMAGE_TAG}；基座锁定 deepseek-v4-flash（免费）
+- 密钥红线：下发前后均已扫描，零明文" \
+              >/dev/null 2>&1 && ok "PR 已创建" || warn "PR 创建失败（可手动创建）"
+          fi
         else
           warn "未检测到 cnb-cli，跳过 PR 创建"
         fi
