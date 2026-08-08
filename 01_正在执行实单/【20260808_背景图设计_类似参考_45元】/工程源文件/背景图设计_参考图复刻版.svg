@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <!-- 参考图复刻：大色块 + 红橙渐变 -->
+    <linearGradient id="gMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C2201A"/>
+      <stop offset="45%" stop-color="#E14B1F"/>
+      <stop offset="100%" stop-color="#F98F3A"/>
+    </linearGradient>
+    <linearGradient id="gDeep" x1="0%" y1="0%" x2="60%" y2="100%">
+      <stop offset="0%" stop-color="#8F1410"/>
+      <stop offset="100%" stop-color="#B02A16"/>
+    </linearGradient>
+    <radialGradient id="rGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#FFD8A0" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#FF9A4D" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#F0702A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rWhite" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="fb" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="80"/>
+    </filter>
+    <filter id="fs" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="35"/>
+    </filter>
+  </defs>
+
+  <!-- 底部大面积暖渐变底 -->
+  <rect width="1080" height="1350" fill="url(#gMain)"/>
+  <!-- 左侧深红大色块（参考图主体） -->
+  <path d="M0,120 L420,60 L360,820 L0,900 Z" fill="url(#gDeep)" opacity="0.92"/>
+  <path d="M0,120 L420,60 L360,820 L0,900 Z" fill="#FFFFFF" opacity="0.06" filter="url(#fb)"/>
+  <!-- 右上橙红光区 -->
+  <ellipse cx="940" cy="300" rx="420" ry="360" fill="url(#rGlow)" filter="url(#fb)"/>
+  <!-- 中央高光 -->
+  <ellipse cx="600" cy="760" rx="420" ry="300" fill="url(#rWhite)" opacity="0.35" filter="url(#fb)"/>
+
+  <!-- 大虚化光斑层（参考图氛围） -->
+  <g filter="url(#fb)" opacity="0.85">
+    <circle cx="240" cy="300" r="220" fill="#E0451E" opacity="0.5"/>
+    <circle cx="880" cy="520" r="250" fill="#FF7A2E" opacity="0.4"/>
+    <circle cx="520" cy="1120" r="280" fill="#FFB066" opacity="0.45"/>
+    <circle cx="150" cy="1180" r="200" fill="#D83A1C" opacity="0.5"/>
+    <circle cx="950" cy="1100" r="230" fill="#8F1410" opacity="0.55"/>
+  </g>
+
+  <!-- 小柔光颗粒 -->
+  <g filter="url(#fs)" opacity="0.7">
+    <circle cx="200" cy="480" r="65" fill="#FFE0C0" opacity="0.5"/>
+    <circle cx="860" cy="650" r="70" fill="#FFF3E6" opacity="0.45"/>
+    <circle cx="700" cy="220" r="55" fill="#FFC98F" opacity="0.5"/>
+    <circle cx="400" cy="1280" r="80" fill="#FFE8C9" opacity="0.4"/>
+  </g>
+
+  <!-- 品牌信息槽位（白色分隔线） -->
+  <g opacity="0.95">
+    <rect x="360" y="600" width="360" height="5" rx="2.5" fill="#FFFFFF" opacity="0.9"/>
+    <rect x="280" y="830" width="520" height="5" rx="2.5" fill="#FFFFFF" opacity="0.9"/>
+    <rect x="280" y="950" width="520" height="4" rx="2" fill="#FFFFFF" opacity="0.45"/>
+  </g>
+
+  <!-- 四角装饰 -->
+  <path d="M0,0 L90,0 L0,90 Z" fill="#FFFFFF" opacity="0.1"/>
+  <path d="M1080,0 L990,0 L1080,90 Z" fill="#FFFFFF" opacity="0.1"/>
+  <path d="M0,1350 L90,1350 L0,1260 Z" fill="#FFFFFF" opacity="0.1"/>
+  <path d="M1080,1350 L990,1350 L1080,1260 Z" fill="#FFFFFF" opacity="0.1"/>
+</svg>
