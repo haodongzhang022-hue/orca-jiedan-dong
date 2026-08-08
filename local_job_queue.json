@@ -6,7 +6,7 @@
     "name": "Windows Task Scheduler",
     "note": "触发器参数（频率/时间/工作流）由 config/autogpt/triggers.yaml 统一定义，本文件仅含结构化任务清单，不含任何 schtasks 命令；由 Marvis 在本机按 params 部署。"
   },
-  "note": "本文件标记需要 Marvis 在本机部署执行的任务。所有 task 仅提供参数，不含 Windows 计划任务创建命令。 含一次性落地任务 jinbang45_poster_delivery（云端拆单→Marvis本机落地闭环）。",
+  "note": "本文件标记需要 Marvis 在本机部署执行的任务。含金榜题名45元订单：客户信息落地（TJF/2026-08-09 01:18/北京）→ 云端已出稿，Marvis 本地转CDR交付 + 可复用模板沉淀完成。",
   "jobs": [
     {
       "task_name": "xianyu_daily_post",
@@ -68,6 +68,20 @@
         "desc": "金榜题名升学宴海报45元订单：Marvis 本机协同——替换宴设信息占位符、SVG转CDR、交付客户",
         "task_id": "20260808_222347_AG",
         "requirement_checklist": "红调主视觉/古风人物插画/灯笼烟花装饰/金榜题名书法大字/版式排版/CDR源文件/当晚交付"
+      }
+    },
+    {
+      "task_name": "jinbang45_customer_info_landing",
+      "file_path": "scripts/jinbang_poster_reuse.py",
+      "params": {
+        "trigger_name": "AG_Jinbang_Customer_Landing",
+        "cron": "once",
+        "schedule_human": "一次性：客户真实信息落地（2026-08-09 凌晨 · 姓名TJF/时间2026年8月9日01:18/地点北京）",
+        "workflow": "企业接单",
+        "action": "poster_delivery",
+        "desc": "金榜题名升学宴海报45元订单·客户信息落地：替换txt_姓名/txt_时间/txt_地点三占位符为真实值，输出SVG+PNG+CDR交付文件+客户交付说明；沉淀可复用模板（templates/jinbang_poster + scripts/jinbang_poster_reuse.py）",
+        "task_id": "20260808_230405_AG",
+        "requirement_checklist": "人物v2验收/姓名TJF/时间2026年8月9日01:18/地点北京/SVG源文件/CDR可编辑/PNG预览/交付说明/可复用模板"
       }
     }
   ]

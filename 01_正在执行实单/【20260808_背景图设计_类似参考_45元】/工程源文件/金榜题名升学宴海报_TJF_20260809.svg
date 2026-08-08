@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  金榜题名升学宴海报 · 国风版 v2
+  订单：【20260808_背景图设计_类似参考_45元】
+  说明：
+  1. 全部矢量图形（无栅格位图），SVG 可直接在 CorelDRAW 中打开并另存导出 CDR。
+  2. 全部图层分组（<g id="layer_...">），CDR 打开后按组管理、可整体移动/调色。
+  3. 全部文字为可编辑 <text>，姓名/时间/地点集中在「可编辑文字」图层，直接改字即可换下一单。
+  4. 不使用 SVG filter/CSS 依赖，仅用渐变+透明度，保证 CDR 兼容性。
+  5. 本版本核心修正：人物由简易卡通小人替换为【古风状元人物】（乌纱帽展脚 + 红袍玉带 + 金榜卷轴 + 祥云底座）。
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" xml:lang="zh-CN">
+  <defs>
+    <!-- 红调主视觉渐变（红橙暖色） -->
+    <linearGradient id="gMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A0100F"/>
+      <stop offset="35%" stop-color="#C41E1A"/>
+      <stop offset="70%" stop-color="#E03A1D"/>
+      <stop offset="100%" stop-color="#F59A3C"/>
+    </linearGradient>
+    <!-- 顶部金色光晕（纯透明度叠加，无滤镜） -->
+    <radialGradient id="rGlow" cx="50%" cy="6%" r="55%">
+      <stop offset="0%" stop-color="#FFE9A8" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#FFC964" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FFC964" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 书法标题鎏金渐变 -->
+    <linearGradient id="gGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C4"/>
+      <stop offset="45%" stop-color="#FFD968"/>
+      <stop offset="100%" stop-color="#DBA120"/>
+    </linearGradient>
+    <!-- 人物袍服大红渐变 -->
+    <linearGradient id="gRobe" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D1291C"/>
+      <stop offset="55%" stop-color="#B01008"/>
+      <stop offset="100%" stop-color="#8A0E0C"/>
+    </linearGradient>
+    <!-- 人物肤色渐变 -->
+    <linearGradient id="gSkin" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FADFB0"/>
+      <stop offset="100%" stop-color="#E8B87F"/>
+    </linearGradient>
+    <!-- 灯笼渐变 -->
+    <linearGradient id="gLantern" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF5A2A"/>
+      <stop offset="50%" stop-color="#E82015"/>
+      <stop offset="100%" stop-color="#B01008"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ================================================================
+       Layer 1 · 背景层（红橙渐变 + 光晕 + 中央暖光）
+       ================================================================ -->
+  <g id="layer_背景">
+    <rect x="0" y="0" width="1080" height="1350" fill="url(#gMain)"/>
+    <rect x="0" y="0" width="1080" height="1350" fill="url(#rGlow)"/>
+    <!-- 中央暖光（用多层透明度圆模拟柔光，兼容 CDR） -->
+    <circle cx="540" cy="660" r="360" fill="#FFD8A0" opacity="0.12"/>
+    <circle cx="540" cy="660" r="230" fill="#FFD8A0" opacity="0.10"/>
+    <circle cx="540" cy="660" r="120" fill="#FFE9B8" opacity="0.12"/>
+  </g>
+
+  <!-- ================================================================
+       Layer 2 · 顶部装饰层（烟花 + 星点 + 灯笼）
+       ================================================================ -->
+  <g id="layer_顶部装饰">
+    <!-- 烟花 -->
+    <g id="fireworks" stroke="#FFE9A8" stroke-width="2.5" fill="none" opacity="0.9">
+      <path d="M150,120 l30,-48 M150,120 l52,-14 M150,120 l38,38 M150,120 l-10,52 M150,120 l-52,10 M150,120 l-40,-36 M150,120 l8,-52 M150,120 l60,-18 M150,120 l-64,8 M150,120 l-30,50"/>
+      <path d="M930,110 l32,-46 M930,110 l50,-18 M930,110 l40,36 M930,110 l-8,52 M930,110 l-52,12 M930,110 l-42,-34 M930,110 l6,-52 M930,110 l62,-14 M930,110 l-64,6 M930,110 l-28,50"/>
+      <path d="M540,70 l22,-30 M540,70 l34,-6 M540,70 l24,24 M540,70 l-2,34 M540,70 l-30,16 M540,70 l-26,-20 M540,70 l4,-32 M540,70 l38,-4 M540,70 l-40,2 M540,70 l-16,32"/>
+    </g>
+    <!-- 烟花中心点 -->
+    <g fill="#FFF3C4">
+      <circle cx="150" cy="120" r="6"/>
+      <circle cx="930" cy="110" r="6"/>
+      <circle cx="540" cy="70" r="4.5"/>
+    </g>
+    <!-- 烟花星点 -->
+    <g fill="#FFE9A8">
+      <circle cx="120" cy="200" r="2.5" opacity="0.8"/>
+      <circle cx="200" cy="90" r="2" opacity="0.7"/>
+      <circle cx="90" cy="140" r="2" opacity="0.6"/>
+      <circle cx="975" cy="180" r="2.5" opacity="0.8"/>
+      <circle cx="890" cy="80" r="2" opacity="0.7"/>
+      <circle cx="1010" cy="130" r="2" opacity="0.6"/>
+      <circle cx="520" cy="140" r="2" opacity="0.7"/>
+      <circle cx="560" cy="130" r="2" opacity="0.6"/>
+    </g>
+
+    <!-- 灯笼（左右对称） -->
+    <g id="灯笼_左" transform="translate(120,290)">
+      <rect x="-2" y="-70" width="4" height="60" fill="#F5C56B"/>
+      <path d="M-34,-10 h68 a34,46 0 0 1 0,92 h-68 a34,46 0 0 1 0,-92 Z" fill="url(#gLantern)"/>
+      <ellipse cx="0" cy="36" rx="30" ry="10" fill="#B01008"/>
+      <rect x="-18" y="40" width="36" height="26" fill="#E82015"/>
+      <path d="M-10,66 l20,0 M0,66 l8,30 M-8,66 l-8,30" stroke="#F5C56B" stroke-width="2.5" fill="none"/>
+      <line x1="-34" y1="-12" x2="34" y2="-12" stroke="#FFD968" stroke-width="4"/>
+      <ellipse cx="0" cy="-8" rx="36" ry="8" fill="#DBA120"/>
+      <text x="0" y="6" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="26" fill="#FFF3C4" text-anchor="middle">禧</text>
+      <path d="M-8,96 l0,34 M0,96 l0,34 M8,96 l0,34" stroke="#F5C56B" stroke-width="2" fill="none"/>
+      <circle cx="0" cy="132" r="5" fill="#F5C56B"/>
+    </g>
+    <g id="灯笼_右" transform="translate(960,290)">
+      <rect x="-2" y="-70" width="4" height="60" fill="#F5C56B"/>
+      <path d="M-34,-10 h68 a34,46 0 0 1 0,92 h-68 a34,46 0 0 1 0,-92 Z" fill="url(#gLantern)"/>
+      <ellipse cx="0" cy="36" rx="30" ry="10" fill="#B01008"/>
+      <rect x="-18" y="40" width="36" height="26" fill="#E82015"/>
+      <path d="M-10,66 l20,0 M0,66 l8,30 M-8,66 l-8,30" stroke="#F5C56B" stroke-width="2.5" fill="none"/>
+      <line x1="-34" y1="-12" x2="34" y2="-12" stroke="#FFD968" stroke-width="4"/>
+      <ellipse cx="0" cy="-8" rx="36" ry="8" fill="#DBA120"/>
+      <text x="0" y="6" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="26" fill="#FFF3C4" text-anchor="middle">福</text>
+      <path d="M-8,96 l0,34 M0,96 l0,34 M8,96 l0,34" stroke="#F5C56B" stroke-width="2" fill="none"/>
+      <circle cx="0" cy="132" r="5" fill="#F5C56B"/>
+    </g>
+  </g>
+
+  <!-- ================================================================
+       Layer 3 · 标题横幅层（金榜题名 + 升学宴）
+       ================================================================ -->
+  <g id="layer_标题横幅">
+    <g id="banner_金榜题名">
+      <rect x="200" y="300" width="680" height="150" rx="18" fill="#8A0E0C" stroke="#FFD968" stroke-width="5"/>
+      <rect x="214" y="314" width="652" height="122" rx="12" fill="none" stroke="#FFE9A8" stroke-width="2"/>
+      <text x="540" y="408" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="118" font-weight="bold" fill="url(#gGold)" stroke="#8A4A00" stroke-width="2" text-anchor="middle">金榜题名</text>
+    </g>
+    <g id="subtitle_升学宴">
+      <text x="540" y="560" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="88" font-weight="bold" fill="#FFF3C4" stroke="#B01008" stroke-width="2" text-anchor="middle">升学宴</text>
+      <text x="540" y="616" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="30" fill="#FFE9A8" text-anchor="middle">恭贺金榜题名 · 前程似锦</text>
+    </g>
+  </g>
+
+  <!-- ================================================================
+       Layer 4 · 古风状元人物层（居中主视觉）
+       组原点 = 人物头部中心 (540, 700)，头身比约 1:5.5，非卡通比例
+       ================================================================ -->
+  <g id="layer_古风状元人物" transform="translate(540,700)">
+
+    <!-- 4.1 祥云底座 -->
+    <g id="人物_祥云底座" fill="#FFE9A8" opacity="0.9">
+      <ellipse cx="-80" cy="342" rx="86" ry="24"/>
+      <ellipse cx="0" cy="352" rx="100" ry="28"/>
+      <ellipse cx="80" cy="342" rx="86" ry="24"/>
+      <ellipse cx="-46" cy="330" rx="54" ry="18"/>
+      <ellipse cx="46" cy="330" rx="54" ry="18"/>
+      <path d="M-70,318 q20,-14 40,0 q18,12 36,0" stroke="#DBA120" stroke-width="2" fill="none" opacity="0.6"/>
+      <path d="M-30,352 q20,-12 40,0" stroke="#DBA120" stroke-width="2" fill="none" opacity="0.6"/>
+    </g>
+
+    <!-- 4.2 袍摆 / 长袍（红袍拖地，A 字展开） -->
+    <g id="人物_袍服">
+      <!-- 袍摆主体 -->
+      <path d="M-58,58 C-62,120 -74,190 -92,300 L-14,330 L14,330 L92,300 C74,190 62,120 58,58 Z" fill="url(#gRobe)"/>
+      <!-- 袍摆内衬（下摆露出一截深红） -->
+      <path d="M-92,300 L-14,330 L14,330 L92,300 C84,320 40,344 0,344 C-40,344 -84,320 -92,300 Z" fill="#7A0C0A"/>
+      <!-- 衣纹褶皱 -->
+      <path d="M-30,90 q-6,70 -22,150 M30,90 q6,70 22,150 M0,90 q0,80 0,180" stroke="#8A0E0C" stroke-width="3" fill="none" opacity="0.7"/>
+      <!-- 前襟交领 -->
+      <path d="M-20,58 L0,96 L20,58" fill="none" stroke="#FFD968" stroke-width="3"/>
+      <!-- 中衣白色圆领 -->
+      <path d="M-22,50 C-16,70 16,70 22,50 L20,46 C12,62 -12,62 -20,46 Z" fill="#FDF3DC" stroke="#DBA120" stroke-width="1.5"/>
+    </g>
+
+    <!-- 4.3 玉带（金色腰带 + 白玉扣） -->
+    <g id="人物_玉带">
+      <rect x="-56" y="112" width="112" height="14" rx="6" fill="#DBA120" stroke="#B8860B" stroke-width="1.5"/>
+      <rect x="-6" y="110" width="12" height="18" rx="3" fill="#FDF3DC" stroke="#B8860B" stroke-width="1.5"/>
+      <rect x="-2" y="112" width="4" height="14" rx="2" fill="#B8860B"/>
+      <path d="M-52,119 h-14 M52,119 h14" stroke="#B8860B" stroke-width="2"/>
+      <!-- 玉带下坠流苏 -->
+      <path d="M-44,126 q-2,16 6,20 M44,126 q2,16 -6,20" stroke="#FFD968" stroke-width="2" fill="none"/>
+      <circle cx="-36" cy="148" r="3.5" fill="#FFD968"/>
+      <circle cx="36" cy="148" r="3.5" fill="#FFD968"/>
+    </g>
+
+    <!-- 4.4 双手与金榜卷轴（右手持卷，左手拢袖） -->
+    <g id="人物_手持">
+      <!-- 左袖（拢袖垂于身侧） -->
+      <path d="M-58,72 C-92,80 -104,108 -92,132 C-82,152 -54,146 -48,120 C-46,106 -50,84 -58,72 Z" fill="#C41E1A" stroke="#8A0E0C" stroke-width="1.5"/>
+      <path d="M-96,118 C-90,138 -70,146 -54,140" stroke="#FFD968" stroke-width="2" fill="none"/>
+      <!-- 右手执卷（金榜卷轴横于胸前） -->
+      <path d="M56,72 C86,80 100,104 92,128 C84,148 58,142 50,118 C48,104 50,86 56,72 Z" fill="#C41E1A" stroke="#8A0E0C" stroke-width="1.5"/>
+      <path d="M88,114 C82,134 66,142 52,136" stroke="#FFD968" stroke-width="2" fill="none"/>
+      <!-- 卷轴（金榜） -->
+      <g id="手持_金榜卷轴">
+        <rect x="44" y="88" width="86" height="34" rx="5" fill="#FFF3C4" stroke="#DBA120" stroke-width="2"/>
+        <rect x="44" y="88" width="12" height="34" rx="5" fill="#DBA120"/>
+        <rect x="118" y="88" width="12" height="34" rx="5" fill="#DBA120"/>
+        <rect x="56" y="96" width="76" height="4" fill="#C41E1A"/>
+        <rect x="56" y="106" width="60" height="4" fill="#C41E1A"/>
+        <rect x="56" y="116" width="70" height="4" fill="#C41E1A"/>
+        <!-- 卷轴红绸带 -->
+        <path d="M44,88 q-10,-4 -8,-14 M56,88 q-8,-4 -6,-12" stroke="#E82015" stroke-width="2.5" fill="none"/>
+        <path d="M126,122 q10,4 8,14 M118,122 q8,4 6,12" stroke="#E82015" stroke-width="2.5" fill="none"/>
+      </g>
+      <!-- 手 -->
+      <circle cx="56" cy="112" r="8" fill="#F2C98F" stroke="#C98A4B" stroke-width="1"/>
+      <circle cx="-50" cy="128" r="8" fill="#F2C98F" stroke="#C98A4B" stroke-width="1"/>
+    </g>
+
+    <!-- 4.5 颈部与头部 -->
+    <g id="人物_头部">
+      <!-- 颈部 -->
+      <path d="M-12,48 L-9,8 C-4,16 4,16 9,8 L12,48 Z" fill="url(#gSkin)"/>
+      <!-- 鹅蛋脸 -->
+      <path d="M-36,-18 C-40,10 -32,40 -16,52 C-8,58 8,58 16,52 C32,40 40,10 36,-18 C30,-44 -30,-44 -36,-18 Z" fill="url(#gSkin)"/>
+      <!-- 耳朵 -->
+      <ellipse cx="-36" cy="0" rx="8" ry="14" fill="#F2C98F" stroke="#C98A4B" stroke-width="1.2"/>
+      <ellipse cx="36" cy="0" rx="8" ry="14" fill="#F2C98F" stroke="#C98A4B" stroke-width="1.2"/>
+      <!-- 鬓发 -->
+      <path d="M-34,-16 C-44,-4 -42,16 -30,26 C-36,10 -32,-8 -34,-16 Z" fill="#24160C"/>
+      <path d="M34,-16 C44,-4 42,16 30,26 C36,10 32,-8 34,-16 Z" fill="#24160C"/>
+      <!-- 发髻（顶部发髻露出） -->
+      <path d="M-14,-42 C-18,-58 -6,-64 0,-64 C6,-64 18,-58 14,-42 Z" fill="#24160C"/>
+    </g>
+
+    <!-- 4.6 乌纱帽（展脚幞头，状元帽） -->
+    <g id="人物_乌纱帽">
+      <!-- 帽壳 -->
+      <path d="M-40,-18 L-44,-52 C-40,-64 40,-64 44,-52 L40,-18 Z" fill="#1F1A26" stroke="#3A2F3A" stroke-width="1.5"/>
+      <!-- 帽沿金边 -->
+      <path d="M-42,-20 L42,-20" stroke="#DBA120" stroke-width="4" fill="none"/>
+      <rect x="-40" y="-22" width="80" height="8" rx="3" fill="#DBA120"/>
+      <!-- 左右展脚（双翅） -->
+      <path d="M-44,-40 C-66,-44 -88,-42 -104,-38 C-108,-42 -106,-50 -100,-52 C-82,-52 -60,-50 -44,-46 Z" fill="#24160C"/>
+      <path d="M44,-40 C66,-44 88,-42 104,-38 C108,-42 106,-50 100,-52 C82,-52 60,-50 44,-46 Z" fill="#24160C"/>
+      <!-- 帽顶金饰 -->
+      <circle cx="0" cy="-62" r="5" fill="#DBA120"/>
+      <!-- 状元花（红绒花） -->
+      <g id="人物_状元花">
+        <ellipse cx="-8" cy="-66" rx="7" ry="5" fill="#E82015" transform="rotate(-30,-8,-66)"/>
+        <ellipse cx="8" cy="-66" rx="7" ry="5" fill="#E82015" transform="rotate(30,8,-66)"/>
+        <ellipse cx="0" cy="-72" rx="7" ry="5" fill="#E82015" transform="rotate(0,0,-72)"/>
+        <circle cx="0" cy="-68" r="3.5" fill="#FFD968"/>
+      </g>
+      <!-- 帽侧簪花 -->
+      <path d="M-38,-46 C-48,-56 -52,-66 -48,-74" stroke="#DBA120" stroke-width="2.5" fill="none"/>
+      <circle cx="-49" cy="-76" r="4" fill="#FF5A2A"/>
+    </g>
+
+    <!-- 4.7 面部五官（细长眉 + 丹凤眼 + 微笑，古风文人气度） -->
+    <g id="人物_五官">
+      <!-- 眉 -->
+      <path d="M-26,-22 Q-17,-28 -9,-22" stroke="#3A2410" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M9,-22 Q17,-28 26,-22" stroke="#3A2410" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <!-- 上眼皮（丹凤眼） -->
+      <path d="M-25,-10 Q-16,-15 -8,-9" stroke="#4A2E14" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M8,-9 Q16,-15 25,-10" stroke="#4A2E14" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <!-- 眼珠 -->
+      <circle cx="-16" cy="-9" r="2.8" fill="#24160C"/>
+      <circle cx="16" cy="-9" r="2.8" fill="#24160C"/>
+      <circle cx="-17" cy="-10" r="0.9" fill="#FFFFFF" opacity="0.85"/>
+      <circle cx="15" cy="-10" r="0.9" fill="#FFFFFF" opacity="0.85"/>
+      <!-- 鼻 -->
+      <path d="M0,2 L-1,10 Q1,14 5,12" stroke="#C98A4B" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- 微笑唇 -->
+      <path d="M-11,22 Q0,32 11,22" stroke="#A04020" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M-11,22 Q-4,26 0,25" stroke="#D05030" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <!-- 腮红 -->
+      <circle cx="-28" cy="8" r="7" fill="#E85A3A" opacity="0.28"/>
+      <circle cx="28" cy="8" r="7" fill="#E85A3A" opacity="0.28"/>
+    </g>
+
+    <!-- 4.8 朝靴 -->
+    <g id="人物_朝靴">
+      <path d="M-30,330 q-8,10 -14,8 q6,6 18,4 Z" fill="#24160C"/>
+      <path d="M30,330 q8,10 14,8 q-6,6 -18,4 Z" fill="#24160C"/>
+    </g>
+  </g>
+
+  <!-- ================================================================
+       Layer 5 · 可编辑文字层（姓名 / 时间 / 地点 —— 直接改字即可换下一单）
+       ================================================================ -->
+  <g id="layer_可编辑文字_姓名时间地点" transform="translate(540,1120)">
+    <line x1="-360" y1="0" x2="-150" y2="0" stroke="#FFE9A8" stroke-width="2"/>
+    <circle cx="-120" cy="0" r="6" fill="#FFD968"/>
+    <line x1="150" y1="0" x2="360" y2="0" stroke="#FFE9A8" stroke-width="2"/>
+    <circle cx="120" cy="0" r="6" fill="#FFD968"/>
+
+    <!-- 【可编辑】姓名行：改为客户姓名 -->
+    <text id="txt_姓名" x="0" y="44" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="34" font-weight="bold" fill="#FFD968" text-anchor="middle">谨邀 TJF 同学及家人</text>
+
+    <!-- 【可编辑】时间行 -->
+    <text id="txt_时间" x="0" y="94" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="30" fill="#FFF3C4" text-anchor="middle">宴设时间：2026年8月9日 01:18</text>
+
+    <!-- 【可编辑】地点行 -->
+    <text id="txt_地点" x="0" y="144" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="30" fill="#FFF3C4" text-anchor="middle">宴设地点：北京</text>
+
+    <!-- 恭贺行 -->
+    <text x="0" y="192" font-family="Noto Serif SC,SimSun,STSong,WenQuanYi Zen Hei,serif" font-size="26" fill="#FFE9A8" text-anchor="middle">恭请 亲朋好友 共赴盛宴 · 同贺金榜</text>
+  </g>
+
+  <!-- ================================================================
+       Layer 6 · 底部祥云层
+       ================================================================ -->
+  <g id="layer_底部祥云" fill="#FFE9A8" opacity="0.5">
+    <ellipse cx="180" cy="1320" rx="120" ry="20"/>
+    <ellipse cx="300" cy="1330" rx="90" ry="16"/>
+    <ellipse cx="880" cy="1320" rx="120" ry="20"/>
+    <ellipse cx="760" cy="1330" rx="90" ry="16"/>
+  </g>
+</svg>
