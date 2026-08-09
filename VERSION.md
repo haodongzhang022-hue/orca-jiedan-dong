@@ -1,9 +1,10 @@
 # 版本信息
-version: 1.8.0
+version: 1.8.1
 release_date: 2026-08-09
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
+  - 【配额/容器/可视化文档】Issue#27 交付 docs/配额与消耗查询图文操作手册.md + docs/配额容器可视化三问速查小抄.md（官方定价文档+构建记录实测，v1.8.0→1.8.1）
   - 【Hermes Studio 全自动落地 v2.0】Issue#27 全权授权 MARVIS 零操作：docs/Marvis配合执行方案_HermesStudio全自动_v2.0.md（v1.0→v2.0，下载校验+静默安装+桥接全自动）
   - 【云上复刻】.ide/Dockerfile + .ide/start.sh + .cnb.yml vscode 事件：把 Hermes Studio Web GUI(6060) 打进 CNB 云原生开发环境，浏览器 https://{id}-6060.cnb.run 直接访问，后台拉起 CNB 免费网关适配层(127.0.0.1:8787)
   - 【群聊痕迹墙】scripts/cnb_echo_ping.sh + docs/Hermes_Studio_群聊痕迹墙_接入说明.md：云端 NPC(hermes/codex/claude-code)交流写痕迹到 msgbus/inbox/echo_wall/，Hermes Studio 桌面版可见；各角色 prompt 追加 echo 规则（.cnb/settings.yml）
