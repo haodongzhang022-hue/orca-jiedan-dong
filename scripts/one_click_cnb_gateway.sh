@@ -6,9 +6,10 @@
 #   把本地 Hermes Studio 桌面编排的模型端点指向 CNB 免费网关 deepseek-v4-flash，
 #   零成本、一键完成。配套输出云端云上复刻指引 + 群聊痕迹墙联动说明。
 #
+# 域标注：Windows本机Marvis域专属执行脚本
 # 适用：
 #   - Windows 本机（Git Bash / WSL）由汤嘉锋或 MARVIS 执行
-#   - 云端容器内由 NPC 执行（此时 --check-only 自检用）
+#   - 云端容器环境禁止执行本脚本（跨域边界，云端应使用 CNB CodeBuddy 内建能力）
 #
 # 用法：
 #   bash scripts/one_click_cnb_gateway.sh             # 写入 provider 配置（自动）
@@ -20,7 +21,7 @@
 #   - api_key 指向环境变量 CNB_TOKEN（由调用方在 Hermes Studio 或本机环境变量设置）
 #   - 不修改 15721/15730/8642/4567/11434 端口铁律
 # =============================================================================
-set -euo pipefail
+set -euo pipefail 2>/dev/null || set -euo
 
 GATEWAY="https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions"
 MODEL="deepseek-v4-flash"

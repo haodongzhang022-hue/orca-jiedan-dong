@@ -44,11 +44,51 @@ v2.0：云端出代码 + 出安装器 → MARVIS【全权自动】下载/静默�
 
 ---
 
-## 二、MARVIS 全自动执行清单（全权授权 · 6 步全自动）
+## 二、MARVIS 全自动执行清单（全权授权 · 7 步全自动）
 
 > **授权范围**：本方案视为汤嘉锋对 MARVIS 的**全权委托**。MARVIS 可自动执行下载、校验、静默安装、
 > 桥接配置、健康检查、数据落盘、闭环回写；**唯一例外**：不触碰 Token 明文（只写本机环境变量）、
 > 不改云端代码、不新增 schtasks 命令（沿用现有消费机制）。
+
+### 第 0 步：静默安装前置探测（MARVIS，安装前的必要预检）
+
+在正式下载安装前，先探测 `--silent` 静默参数兼容性和 Windows UAC 拦载情况，避免卡死重试。
+
+```powershell
+# ① 探测安装器是否支持 --silent 静默参数（NSIS/Squirrel 安装器常见）
+$testExe = "Hermes.Studio-0.6.39-x64.exe"  # 占位，实际安装前用下载后的文件
+$silentTest = Start-Process -FilePath $testExe -ArgumentList "--silent","/?" -Wait -NoNewWindow -PassThru 2>&1
+# 若返回非 0 或无输出，标记 --silent 不兼容
+
+# ② 探测 UAC 拦载：检查当前进程是否以管理员运行，预判是否会弹 UAC
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+  # 非管理员运行，--silent 安装大概率被 UAC 拦截
+  $needClick = $true
+}
+
+# ③ 若 --silent 不兼容 或 UAC 弹窗将拦截 → 写入 local_job_queue.json
+if ($needClick -or $silentTest.ExitCode -ne 0) {
+  $queuePath = "E:\龙虾AI主控中心\ORCA数据\企业微信群定制接单项目\local_job_queue.json"
+  $entry = @{
+    task_name = "hermes_studio_install_blocked"
+    status = "need_human_click"
+    reason = if ($needClick) { "UAC拦截，需管理员权限" } else { "安装器不支持 --silent 静默参数" }
+    timestamp = (Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    action = "请手动双击 E:\\tmp\\Hermes.Studio-0.6.39-x64.exe 完成安装"
+  }
+  # 合并写回（不覆盖已有队列项）
+  $queue = if (Test-Path $queuePath) { Get-Content $queuePath | ConvertFrom-Json } else { @() }
+  $queue += $entry
+  $queue | ConvertTo-Json -Depth 3 | Set-Content $queuePath -Encoding UTF8
+  Write-Error "中止自动安装：$($entry.reason)，已写入 $queuePath 标记 need_human_click"
+  exit 1
+}
+```
+
+**通过标准**：`--silent` 参数可用 + 非管理员也能无弹窗运行（或已以管理员运行），方可进入第 1 步。
+
+**阻断标准**：任一条件不满足 → 写 `local_job_queue.json` 标记 `need_human_click` → 终止自动安装，等待人工介入，杜绝卡死重试。
 
 ### 第 1 步：自动下载 + SHA256 校验（MARVIS）
 
@@ -153,7 +193,7 @@ providers:
 | 需求 | 云端交付物 | 对接方式 |
 |------|-----------|----------|
 | ② 云上复刻 | `.ide/Dockerfile` + `.cnb.yml` `vscode` 事件 | 点仓库「云原生开发」按钮，浏览器打开 Hermes Studio Web GUI（6060 端口映射） |
-| ③ 云端看群聊 | `docs/Hermes_Studio_群聊痕迹墙_接入说明.md` + `scripts/cnb_echo_ping.py` | 云端 NPC 每轮 echo 一条痕迹，Hermes Studio 群聊 @ 可见；本机也可反向投递 |
+| ③ 云端看群聊 | `docs/Hermes_Studio_群聊痕迹墙_接入说明.md` + `scripts/cnb_echo_ping.sh` | 云端容器文件经 **30 分钟定时 git push → 本机 git pull 同步后查看**，存在固定同步延迟；非实时直读。本机也可反向投递 |
 | ④ 一键技能 | `skills/hermes-studio-cnb/SKILL.md` + `scripts/one_click_cnb_gateway.sh` | 本地一条命令把 Hermes Studio 模型端点切到 CNB 免费网关 |
 
 ---
@@ -169,12 +209,13 @@ providers:
 
 ## 六、验收清单（全自动闭环后逐项打勾）
 
+- [ ] 静默安装前置探测通过（`--silent` 兼容 + 无 UAC 拦截）
 - [ ] SHA256 校验通过，安装包在 `E:\tmp\`
 - [ ] `hermes-studio --version` 有输出；6060 端口监听
 - [ ] `cnb-deepseek-v4-flash` provider 可选且试调用 200
 - [ ] Token 仅本机环境变量，仓库/日志零泄露
 - [ ] 云端 `.ide/Dockerfile` + `vscode` 事件已合并（本 PR）
-- [ ] 群聊痕迹墙脚本已入库（本 PR）
+- [ ] 群聊痕迹墙脚本已入库（本 PR）；链路标注了 30 分钟同步延迟
 - [ ] `hermes-studio-cnb` 技能已注册（本 PR）
 - [ ] `local_job_queue.json` 闭环记录已回写
 - [ ] 汤嘉锋零手动操作
