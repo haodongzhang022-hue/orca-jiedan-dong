@@ -103,6 +103,45 @@
         "date": "2026-08-07",
         "result": "四角色矩阵 v1.6.0 闭环：@claude-code/@codex 实测通过，基座 deepseek-v4-flash，AI用量 milli_credit=0，镜像 orca-jiedan:1.6.0 已推送"
       }
+    },
+    {
+      "id": "hermes_studio_cnb_gateway",
+      "name": "Hermes Studio 一键接入CNB免费基座",
+      "version": "1.0.0",
+      "category": "龙虾舰队流水线 · CNB云原生NPC技能库",
+      "description": "一键把本地 Hermes Studio 桌面编排的模型端点指向 CNB 免费网关 deepseek-v4-flash（0成本）；配套云上复刻 Hermes Studio Web GUI（.ide/Dockerfile + vscode 事件）与群聊痕迹墙（msgbus/inbox/echo_wall/），云端 NPC 交流对桌面端可见。",
+      "entry_script": "scripts/one_click_cnb_gateway.sh",
+      "echo_script": "scripts/cnb_echo_ping.sh",
+      "skill_file": "skills/hermes-studio-cnb/SKILL.md",
+      "cloud_ide": ".ide/Dockerfile",
+      "files": [
+        "skills/hermes-studio-cnb/SKILL.md",
+        "scripts/one_click_cnb_gateway.sh",
+        "scripts/cnb_echo_ping.sh",
+        ".ide/Dockerfile",
+        ".ide/start.sh",
+        ".cnb.yml",
+        "docs/Hermes_Studio_群聊痕迹墙_接入说明.md",
+        "docs/Marvis配合执行方案_HermesStudio全自动_v2.0.md"
+      ],
+      "triggers": [
+        "一键接入CNB",
+        "免费基座",
+        "CNB免费网关",
+        "deepseek-v4-flash",
+        "Hermes Studio 接CNB",
+        "零成本算力",
+        "云上复刻",
+        "群聊痕迹墙"
+      ],
+      "base_model": "CNB内置免费DeepSeek-V4-Flash",
+      "gateway": "https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions",
+      "project_root": "E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目",
+      "latest_case": {
+        "issue": "TJF19770107/orca-jiedan#27",
+        "date": "2026-08-09",
+        "result": "全自动 v2.0 方案 + 云上复刻 .ide/Dockerfile + 群聊痕迹墙 + 一键技能交付"
+      }
     }
   ]
 }
