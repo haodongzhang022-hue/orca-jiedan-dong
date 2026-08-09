@@ -165,6 +165,34 @@ UPSTREAM = "https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions"
 
 ---
 
+## 六·五、填表避坑速查（本 Issue 实战踩坑 · 2026-08-09/10）
+
+> 这几条全是汤嘉锋在 Hermes Studio「添加 Provider」表单里实际踩过的坑，**填表前先看这节**。
+
+| # | 坑 | 表象 | 正确做法 |
+|---|---|---|---|
+| 1 | **Base URL 末尾抄成 `g`**（`chat/completiong`） | 保存后调用 **404** | `.../ai/chat/completions`（末尾 **s**，实测 200） |
+| 2 | **Base URL 少写 `s`**（`chat/completion`） | 调用 **404** | 同上，`completions` 带 s |
+| 3 | **模型填 `deepseek-v4-pro`** | 不走免费档，**会扣费** | 填 `deepseek-v4-flash`（免费基座，0 成本） |
+| 4 | **模型填对但还在旧会话里聊** | 会话标题仍显示 `MiMo #NN`，@Hermes 报 **HTTP 429: quota exhausted** | 旧会话绑死旧 provider，**必须新建会话**，右上角确认 `deepseek-v4-flash` |
+| 5 | **API Key 明文截图发进 Issue** | Token 泄露风险 | 截图前打码；已泄露立即去 CNB → 个人设置 → 访问令牌**吊销重建** |
+| 6 | Provider 类型选错 | 预设匹配不上网关 | 选 **DeepSeek（预设）**，不要选"自定义" |
+| 7 | API 模式选错 | 协议不兼容 | 选 **chat_completions (/chat/completions)**（OpenAI 兼容），不要选 responses/anthropic |
+
+**快速自检三连（填完必查）**：
+
+```
+① Base URL 末尾 = completions（带 s）
+② 模型 = deepseek-v4-flash（不是 pro）
+③ 重启 + 新建会话后，右上角 = deepseek-v4-flash（不是 MiMo #NN）
+```
+
+**429 报错 = 旧会话还在烧 MiMo 积分**：截图里 `API call failed after 3 retries: HTTP 429: quota exhausted`
+表示当前会话仍走 Xiaomi MiMo provider 且积分耗尽。**不是 CNB 网关的问题**（网关实测流式 200）；
+切换 provider 后必须新建会话，旧的 `MiMo #NN` 会话别再用了。
+
+---
+
 ## 七、FAQ
 
 | 问题 | 答案 |
@@ -174,6 +202,9 @@ UPSTREAM = "https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions"
 | CNB_TOKEN 在哪拿？ | 你本人登录 CNB → 个人令牌；只放本机环境变量，绝不入库/截图 |
 | 云端 NPC 要不要也切？ | 不用，云端早已全走免费基座（`milli_credit=0` 实证） |
 | MiMo 积分还能恢复吗？ | 不能，属消耗型。切到 CNB 免费基座后不再消耗即可 |
+| @Hermes 报 `HTTP 429: quota exhausted` 怎么办？ | 当前会话仍走 MiMo provider（会话标题 `MiMo #NN`）且积分已耗尽。切 provider 后**必须新建会话**，旧会话别再用；429 不是 CNB 网关问题 |
+| Base URL 填了 `completions` 仍 404？ | 检查末尾是否抄成 `completiong`（g）或 `completion`（少 s）；开头确认是 `https://` 非 `ttps://` |
+| 截图里 API Key 暴露了怎么办？ | 立即去 CNB → 个人设置 → 访问令牌吊销重建；以后截图前打码 |
 
 ---
 
