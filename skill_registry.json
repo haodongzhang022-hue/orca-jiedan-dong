@@ -107,9 +107,9 @@
     {
       "id": "hermes_studio_cnb_gateway",
       "name": "Hermes Studio 一键接入CNB免费基座",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "龙虾舰队流水线 · CNB云原生NPC技能库",
-      "description": "一键把本地 Hermes Studio 桌面编排的模型端点指向 CNB 免费网关 deepseek-v4-flash（0成本）；配套云上复刻 Hermes Studio Web GUI（.ide/Dockerfile + vscode 事件）与群聊痕迹墙（msgbus/inbox/echo_wall/），云端 NPC 交流对桌面端可见。",
+      "description": "一键把本地 Hermes Studio 桌面编排的模型端点指向 CNB 免费网关 deepseek-v4-flash（0成本）；配套云上复刻 Hermes Studio Web GUI（.ide/Dockerfile + vscode 事件）与群聊痕迹墙（msgbus/inbox/echo_wall/），云端 NPC 交流对桌面端可见。 新增 MiMo→CNB 切换手册与一键切换脚本（GUI 5步+验证+回滚，停止消耗 MiMo 积分）。",
       "entry_script": "scripts/one_click_cnb_gateway.sh",
       "echo_script": "scripts/cnb_echo_ping.sh",
       "skill_file": "skills/hermes-studio-cnb/SKILL.md",
@@ -122,7 +122,9 @@
         ".ide/start.sh",
         ".cnb.yml",
         "docs/Hermes_Studio_群聊痕迹墙_接入说明.md",
-        "docs/Marvis配合执行方案_HermesStudio全自动_v2.0.md"
+        "docs/Marvis配合执行方案_HermesStudio全自动_v2.0.md",
+        "scripts/switch_to_cnb_gateway.sh",
+        "docs/免费基座DeepSeekV4Flash切换图文手册.md"
       ],
       "triggers": [
         "一键接入CNB",
@@ -140,7 +142,7 @@
       "latest_case": {
         "issue": "TJF19770107/orca-jiedan#27",
         "date": "2026-08-09",
-        "result": "全自动 v2.0 方案 + 云上复刻 .ide/Dockerfile + 群聊痕迹墙 + 一键技能交付"
+        "result": "MiMo(0.31%)→CNB免费deepseek-v4-flash 切换手册+脚本交付"
       }
     }
   ]
