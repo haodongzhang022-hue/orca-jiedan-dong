@@ -1,9 +1,10 @@
 # 版本信息
-version: 1.8.2
-release_date: 2026-08-09
+version: 1.8.3
+release_date: 2026-08-11
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
+  - 【云上复刻操作手册】Issue#27 交付 docs/操作手册_云上复刻HermesWebGUI可视化说明书.md：可视化逐步图解云原生开发→WebIDE PORTS→真实地址(https://{id}-6060.cnb.run)打开 Hermes Web GUI，明确「{id} 是占位符须由平台生成」避坑（v1.8.2→1.8.3）
   - 【免费基座切换】Issue#27 交付 docs/免费基座DeepSeekV4Flash切换图文手册.md + scripts/switch_to_cnb_gateway.sh：本地 Hermes Studio 从 Xiaomi MiMo(mimo-v2.5-pro, 积分0.31%) 切到 CNB 免费 deepseek-v4-flash（GUI 5步 + 一键脚本 + 验证 + 回滚），云端 NPC 早已全走免费基座（v1.8.1→1.8.2）
   - 【配额/容器/可视化文档】Issue#27 交付 docs/配额与消耗查询图文操作手册.md + docs/配额容器可视化三问速查小抄.md（官方定价文档+构建记录实测，v1.8.0→1.8.1）
   - 【Hermes Studio 全自动落地 v2.0】Issue#27 全权授权 MARVIS 零操作：docs/Marvis配合执行方案_HermesStudio全自动_v2.0.md（v1.0→v2.0，下载校验+静默安装+桥接全自动）
