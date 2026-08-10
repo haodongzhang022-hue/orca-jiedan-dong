@@ -23,7 +23,8 @@
 # =============================================================================
 
 # 官方 Hermes Web UI 镜像（含 Hermes Agent 运行时 + 完整 Web 控制台）
-FROM ekkoye8888/hermes-web-ui:0.6.39
+# ⚠️ tag 必须带 v 前缀：Docker Hub 上仓库 tag 为 v0.6.39（0.6.39 不存在，404）
+FROM ekkoye8888/hermes-web-ui:v0.6.39
 
 # ---- 1. 基础工具链（云原生开发环境常规需求）----
 USER root
