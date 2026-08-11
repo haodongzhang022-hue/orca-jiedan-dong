@@ -137,33 +137,14 @@ class CNBProxyHandler(http.server.BaseHTTPRequestHandler):
         pass  # 静默日志
 
 
-def daemonize():
-    """双 fork 守护进程化：父进程立即退出，子进程在后台运行。"""
-    import sys as _sys
-    if os.fork() > 0:
-        _sys.exit(0)  # 父进程退出
-    os.setsid()
-    if os.fork() > 0:
-        _sys.exit(0)  # 第一代子进程退出
-    # 重定向标准流到 /dev/null
-    devnull = os.open(os.devnull, os.O_RDWR)
-    os.dup2(devnull, _sys.stdin.fileno())
-    os.dup2(devnull, _sys.stdout.fileno())
-    os.dup2(devnull, _sys.stderr.fileno())
-    os.close(devnull)
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--host", default="0.0.0.0")
-    parser.add_argument("--no-daemon", action="store_true", help="不守护进程化（调试用）")
     args = parser.parse_args()
 
-    if not args.no_daemon:
-        daemonize()
-
     server = http.server.HTTPServer((args.host, args.port), CNBProxyHandler)
+    print(f"[CNB Proxy] 监听 {args.host}:{args.port}")
     server.serve_forever()
 
 
