@@ -1,0 +1,3 @@
+{
+  "postCreateCommand": "nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 > /tmp/cnb_proxy.log 2>&1 &"
+}

@@ -61,11 +61,9 @@ $:
       services:
         - vscode
         - docker
-      env:
-        CNB_WELCOME_CMD: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 &
-      stages:
-        - name: start-proxy
-          script: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 &
+      options:
+        launch: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 &
+        daemon: true
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
