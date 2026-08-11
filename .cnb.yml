@@ -59,18 +59,15 @@ $:
       runner:
         cpus: 4
       services:
-        - vscode
         - docker
+        - vscode
       stages:
-        - name: start-proxy
+        - name: start-proxy-container
           script: |
-            touch /tmp/PROXY_STAGE_RAN
-            setsid python3 /workspace/cnb_proxy_clouddev.py --port 8080 > /tmp/proxy.log 2>&1 &
-            disown
-            sleep 1
-            echo "PID: $!"
-            echo "---" >> /workspace/.cnb_stage_ran
-            date >> /workspace/.cnb_stage_ran
+            docker run -d --name cnb-proxy --network host \
+              -v /workspace/cnb_proxy_clouddev.py:/proxy.py:ro \
+              python:3.11-alpine \
+              python /proxy.py --port 8080
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
