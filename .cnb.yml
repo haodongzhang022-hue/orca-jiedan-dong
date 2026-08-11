@@ -64,23 +64,13 @@ $:
       stages:
         - name: start-proxy
           script: |
-            echo "=== START debug ==="
-            pwd
-            ls /workspace/cnb_proxy_clouddev.py
-            python3 -c "
-            import sys, os
-            print('Python:', sys.version)
-            print('Workspace exists:', os.path.isdir('/workspace'))
-            print('Proxy exists:', os.path.isfile('/workspace/cnb_proxy_clouddev.py'))
-            print('CWD files:', os.listdir('.'))
-            "
-            echo "=== Starting proxy ==="
-            nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 > /tmp/proxy.log 2>&1 &
-            sleep 2
-            echo "=== Proxy log ==="
-            cat /tmp/proxy.log 2>/dev/null || echo "(no log)"
-            ps aux | grep proxy
-            echo "=== DONE ==="
+            touch /tmp/PROXY_STAGE_RAN
+            setsid python3 /workspace/cnb_proxy_clouddev.py --port 8080 > /tmp/proxy.log 2>&1 &
+            disown
+            sleep 1
+            echo "PID: $!"
+            echo "---" >> /workspace/.cnb_stage_ran
+            date >> /workspace/.cnb_stage_ran
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
