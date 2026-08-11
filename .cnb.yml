@@ -69,6 +69,9 @@ $:
       runner:
         # 镜像体积大（约1.6GB）+ Web UI + 适配层，4核8G起步
         cpus: 4
+      env:
+        # CloudDev 启动后自动运行 CNB 免费网关代理，监听 8080 转发到 CNB AI Gateway
+        CNB_WELCOME_CMD: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 >/tmp/cnb_proxy.log 2>&1 &
       stages:
         - name: verify hermes web ui
           script: |
