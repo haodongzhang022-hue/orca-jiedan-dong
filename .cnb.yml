@@ -55,14 +55,11 @@ $:
   #    ⚠️ 回收机制：10分钟无操作/最长18h/凌晨4-6点强制回收 → 定位为出差/兜底可视化
   vscode:
     - docker:
-        image: python:3.11-slim
+        image: cnbcool/default-dev-env:latest
       runner:
         cpus: 4
       env:
-        CNB_WELCOME_CMD:
-          - sh
-          - -c
-          - nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 > /tmp/proxy.log 2>&1 &
+        CNB_WELCOME_CMD: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 &
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
