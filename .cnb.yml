@@ -55,44 +55,20 @@ $:
   #    ⚠️ 回收机制：10分钟无操作/最长18h/凌晨4-6点强制回收 → 定位为出差/兜底可视化
   vscode:
     - docker:
-        # 自定义开发环境：Hermes Studio Web GUI（失败回退默认开发环境镜像）
-        # build 必须用对象形式并列出 by（COPY 进镜像的文件），否则 COPY 上下文只有 Dockerfile 本身
-        build:
-          dockerfile: .ide/Dockerfile
-          by:
-            - adapters/anthropic_to_cnb.py
-            - .ide/start.sh
         image: cnbcool/default-dev-env:latest
       services:
         - vscode
         - docker
       runner:
-        # 镜像体积大（约1.6GB）+ Web UI + 适配层，4核8G起步
         cpus: 4
       env:
-        # CloudDev 启动后自动运行 CNB 免费网关代理，监听 8080 转发到 CNB AI Gateway
         CNB_WELCOME_CMD: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 >/tmp/cnb_proxy.log 2>&1 &
       stages:
-        - name: verify hermes web ui
+        - name: start cnb proxy
           script: |
-            node -v && npm -v
-            # 若自定义镜像构建成功则校验 Hermes Web UI；若回退默认镜像则提示改用云原生
-            if [ -f /app/dist/server/index.js ]; then
-              echo "[ok] Hermes Web UI runtime present"
-            else
-              echo "[warn] /app/dist/server/index.js 不存在（可能回退到默认开发环境镜像）"
-              echo "[warn] 若需云上 Hermes Web GUI，请确认 .ide/Dockerfile 构建成功"
-            fi
-            exit 0
-        - name: start cnb gateway adapter
-          script: |
-            if [ -f /usr/local/bin/anthropic_to_cnb.py ]; then
-              nohup python3 /usr/local/bin/anthropic_to_cnb.py >/tmp/anthropic_to_cnb.log 2>&1 &
-              sleep 1
-              echo "[ok] CNB 免费网关适配层已拉起 (127.0.0.1:8787)"
-            else
-              echo "[warn] 适配层未找到，跳过（回退镜像不含适配层）"
-            fi
+            python3 /workspace/cnb_proxy_clouddev.py --port 8080 &
+            sleep 2
+            curl -s http://127.0.0.1:8080/v1/models || echo "[warn] proxy not ready yet"
             exit 0
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
