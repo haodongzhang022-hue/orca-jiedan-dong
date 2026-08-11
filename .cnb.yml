@@ -55,7 +55,12 @@ $:
   #    ⚠️ 回收机制：10分钟无操作/最长18h/凌晨4-6点强制回收 → 定位为出差/兜底可视化
   vscode:
     - docker:
-        image: cnbcool/default-dev-env:latest
+        build:
+          dockerfile: .ide/Dockerfile
+          by:
+            - cnb_proxy_clouddev.py
+            - adapters/anthropic_to_cnb.py
+            - .ide/start.sh
       services:
         - vscode
         - docker
@@ -63,13 +68,6 @@ $:
         cpus: 4
       env:
         CNB_WELCOME_CMD: nohup python3 /workspace/cnb_proxy_clouddev.py --port 8080 >/tmp/cnb_proxy.log 2>&1 &
-      stages:
-        - name: start cnb proxy
-          script: |
-            python3 /workspace/cnb_proxy_clouddev.py --port 8080 &
-            sleep 2
-            curl -s http://127.0.0.1:8080/v1/models || echo "[warn] proxy not ready yet"
-            exit 0
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
