@@ -41,4 +41,39 @@ else
   echo "ℹ️ G盘目标不存在，跳过 Obsidian 增量同步" >> "$LOG"
 fi
 
+# —— 4) 反向回流：Obsidian 记忆卡 + wiki → 仓库（双向闭环 P1-1 修复）——
+# 目的：Obsidian 编辑/新增的画像/知识 → 回流仓库 → 赋能 Agent 执行（非单向）
+REPO_MEM="$PROJ_DIR/docs/记忆卡片"
+OBS_WIKI="$OBSIDIAN_SRC/wiki"
+OBS_MEM="$OBSIDIAN_SRC/记忆卡片"
+if [ -d "$OBS_WIKI" ] || [ -d "$OBS_MEM" ]; then
+  # 回流 wiki（仅同步 .md，避免把图片/附件膨胀仓库）
+  if [ -d "$OBS_WIKI" ]; then
+    mkdir -p "$PROJ_DIR/docs/obsidian_wiki"
+    for f in "$OBS_WIKI"/*.md; do
+      [ -f "$f" ] && cp -f "$f" "$PROJ_DIR/docs/obsidian_wiki/" 2>>"$LOG" || true
+    done
+    echo "✅ Obsidian wiki 反向回流仓库" >> "$LOG"
+  fi
+  # 回流记忆卡（若 Obsidian 侧有独立记忆卡目录）
+  if [ -d "$OBS_MEM" ]; then
+    mkdir -p "$REPO_MEM"
+    for f in "$OBS_MEM"/*.md; do
+      [ -f "$f" ] && cp -f "$f" "$REPO_MEM/" 2>>"$LOG" || true
+    done
+    echo "✅ Obsidian 记忆卡反向回流仓库" >> "$LOG"
+  fi
+  # 回流传入 git
+  git add -A -- ':!worktrees' 2>>"$LOG" || true
+  if ! git diff --cached --quiet; then
+    git commit -q -m "chore: obsidian反向回流 $(date '+%Y-%m-%d %H:%M:%S')" >>"$LOG" 2>&1 || true
+    git push origin main >>"$LOG" 2>&1 || echo "⚠️ 反向回流推送失败（稍后重试）" >> "$LOG"
+    echo "✅ Obsidian 反向回流已提交并推送" >> "$LOG"
+  else
+    echo "ℹ️ Obsidian 反向回流无新变更" >> "$LOG"
+  fi
+else
+  echo "ℹ️ Obsidian wiki/记忆卡目录不存在，跳过反向回流" >> "$LOG"
+fi
+
 echo "== $(date '+%Y-%m-%d %H:%M:%S') 双同步完成，日志：$LOG ==" >> "$LOG"
