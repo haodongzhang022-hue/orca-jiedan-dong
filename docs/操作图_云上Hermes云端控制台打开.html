@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云上 Hermes 云端控制台打开 · 可视化标注操作图</title>
+<style>
+  :root{
+    --ink:#1f2933; --sub:#52606d; --line:#d0d7de; --accent:#e8590c;
+    --blue:#2b6cb0; --green:#2f9e44; --red:#c92a2a; --card:#ffffff; --bg:#f4f6f9;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;line-height:1.6;}
+  header{background:linear-gradient(135deg,#1f2933,#2b3a55);color:#fff;padding:22px 32px;}
+  header h1{margin:0 0 6px;font-size:22px;}
+  header p{margin:0;opacity:.85;font-size:13px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px;}
+  .note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;
+    border-radius:8px;padding:12px 16px;font-size:13px;margin:18px 0;}
+  .note.green{background:#f0fdf4;border-color:#bbf7d0;color:#166534;}
+  .note.red{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;margin:20px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  h2{font-size:18px;margin:0 0 4px;color:#1f2933;}
+  h2 small{font-weight:400;color:var(--sub);font-size:13px;}
+  svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:#fff;}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.5px;}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:#f0f4f9;color:#1f2933;}
+  .num{display:inline-block;min-width:22px;height:22px;line-height:22px;text-align:center;
+    background:var(--accent);color:#fff;border-radius:50%;font-size:12px;margin-right:6px;}
+  pre{background:#1e1e1e;color:#d4f0d4;padding:14px 16px;border-radius:8px;overflow:auto;font-size:12.5px;}
+  code{background:#eef1f5;padding:1px 5px;border-radius:4px;font-size:12.5px;color:#b4321a;}
+  .tag{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:4px;padding:1px 7px;font-size:12px;margin:2px 4px 2px 0;}
+  .ok{color:#166534;font-weight:bold;}
+  .bad{color:#991b1b;font-weight:bold;}
+</style>
+</head>
+<body>
+<header>
+  <h1>云上 Hermes 云端控制台打开 · 可视化标注操作图</h1>
+  <p>照着图点就行 · 4 步从 connection refused 到 Hermes Studio Web 控制台 · 模型走 CNB 免费基座 deepseek-v4-flash（0 成本）</p>
+</header>
+
+<div class="wrap">
+
+  <div class="note red">
+    <b>⚠️ 为什么之前打不开：</b>你访问的 <code>on8guoflgv-6060.cnb.run</code> 是<b>修复前（旧提交 c132f1b）</b>启动的<b>旧工作区</b>，
+    里面<b>没有装 Hermes Web UI</b>，所以 6060 端口一直 <code>connection refused</code>。
+    <b>这不是代码 bug</b>，是「旧工作区」需要删除重建。修复代码已在 main 就绪，下面 4 步就能打开。
+  </div>
+
+  <!-- ============ 步骤 1 ============ -->
+  <section>
+    <h2>① 删除旧工作区（关键！不删会复用旧环境）</h2>
+    <p>个人主页 → 云原生开发环境列表 → 找到 <b>running 的 <code>on8guoflgv</code></b>（流水线 <code>cnb-lb8…</code>）</p>
+    <svg viewBox="0 0 1000 300" font-family="'Microsoft YaHei',sans-serif">
+      <defs>
+        <marker id="arw" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#e8590c"/>
+        </marker>
+        <marker id="arwR" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#c92a2a"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="1000" height="42" fill="#2b3a55"/>
+      <text x="20" y="27" fill="#fff" font-size="15" font-weight="bold">云原生开发环境列表</text>
+
+      <!-- 旧工作区卡片 -->
+      <rect x="40" y="70" width="540" height="120" rx="8" fill="#fafbfc" stroke="#c9d1d9"/>
+      <text x="60" y="100" font-size="14" font-weight="bold" fill="#1f2933">on8guoflgv</text>
+      <text x="60" y="122" font-size="12" fill="#7b8794">流水线：cnb-lb8-1jvr6tnje（旧提交 c132f1b）</text>
+      <text x="60" y="144" font-size="12" fill="#7b8794">状态：</text>
+      <circle cx="150" cy="140" r="5" fill="#c92a2a"/>
+      <text x="160" y="144" font-size="12" font-weight="bold" fill="#c92a2a">running（旧）</text>
+      <text x="60" y="170" font-size="12" fill="#7b8794">作用：仅启动过代理容器，无 Hermes Web UI</text>
+
+      <!-- 删除按钮 -->
+      <rect x="620" y="100" width="120" height="42" rx="6" fill="#c92a2a"/>
+      <text x="680" y="126" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">删除</text>
+      <line x1="616" y1="121" x2="592" y2="121" stroke="#c92a2a" stroke-width="2.5" marker-end="url(#arwR)"/>
+      <text x="700" y="86" font-size="12.5" fill="#c92a2a" font-weight="bold">点它，然后确认删除</text>
+
+      <!-- 说明 -->
+      <text x="640" y="210" font-size="12.5" fill="#991b1b" font-weight="bold">⚠️ 务必先【关闭】再【删除】</text>
+      <text x="640" y="232" font-size="12.5" fill="#991b1b">删掉后这里不再有 on8guoflgv 才算成功</text>
+    </svg>
+  </section>
+
+  <!-- ============ 步骤 2 ============ -->
+  <section>
+    <h2>② 回仓库 → 切 main → 点「云原生开发」</h2>
+    <svg viewBox="0 0 1000 300" font-family="'Microsoft YaHei',sans-serif">
+      <!-- 仓库页浏览器窗口 -->
+      <rect x="0" y="0" width="1000" height="34" rx="6" fill="#e9ecef"/>
+      <circle cx="20" cy="17" r="6" fill="#f1f3f5"/>
+      <text x="30" y="21" font-size="12" fill="#7b8794">仓库 TJF19770107/orca-jiedan</text>
+
+      <!-- 分支选择 -->
+      <rect x="40" y="70" width="220" height="44" rx="6" fill="#f7f9fc" stroke="#c9d1d9"/>
+      <text x="56" y="97" font-size="14" font-weight="bold" fill="#1f2933">分支：main ✓</text>
+      <line x1="290" y1="92" x2="306" y2="92" stroke="#e8590c" stroke-width="2.5" marker-end="url(#arw)"/>
+      <text x="312" y="96" font-size="12.5" fill="#9a3412" font-weight="bold">切到 main（修复版 9687302）</text>
+
+      <!-- 云原生开发按钮 -->
+      <rect x="600" y="70" width="200" height="48" rx="8" fill="#2f9e44"/>
+      <text x="700" y="99" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">云原生开发 ▶</text>
+      <line x1="820" y1="94" x2="842" y2="94" stroke="#e8590c" stroke-width="2.5" marker-end="url(#arw)"/>
+      <text x="846" y="98" font-size="12.5" fill="#166534" font-weight="bold">点它开始重建</text>
+
+      <text x="40" y="170" font-size="13" fill="#1f2933" font-weight="bold">这次基于最新 main，走修复后 .cnb.yml：</text>
+      <text x="60" y="196" font-size="12.5" fill="#52606d">· .ide/Dockerfile 拉取 Hermes Web UI 镜像 v0.6.39</text>
+      <text x="60" y="218" font-size="12.5" fill="#52606d">· start.sh 自动拉起适配层(127.0.0.1:8787) + Web UI(0.0.0.0:6060)</text>
+      <text x="60" y="240" font-size="12.5" fill="#52606d">· stages：verify-hermes-webui → start-cnb-gateway-adapter → start-hermes-webui</text>
+      <text x="60" y="268" font-size="12.5" fill="#9a3412" font-weight="bold">⏳ 等镜像构建（约 1.5GB，第一次较久属正常）</text>
+    </svg>
+  </section>
+
+  <!-- ============ 步骤 3 ============ -->
+  <section>
+    <h2>③ WebIDE → PORTS 面板 → 添加 6060 端口</h2>
+    <svg viewBox="0 0 1000 320" font-family="'Microsoft YaHei',sans-serif">
+      <!-- WebIDE 窗口 -->
+      <rect x="0" y="0" width="1000" height="30" rx="6" fill="#1e1e1e"/>
+      <text x="16" y="20" font-size="12" fill="#9cdcfe">WebIDE（VS Code 风格网页编辑器）</text>
+
+      <!-- 左侧文件树示意 -->
+      <rect x="20" y="48" width="180" height="240" fill="#252526" stroke="#3c3c3c"/>
+      <text x="34" y="74" font-size="12" fill="#cccccc">📁 .ide/</text>
+      <text x="34" y="96" font-size="12" fill="#cccccc">📄 Dockerfile</text>
+      <text x="34" y="118" font-size="12" fill="#cccccc">📄 start.sh</text>
+      <text x="34" y="140" font-size="12" fill="#cccccc">📁 adapters/</text>
+      <text x="34" y="162" font-size="12" fill="#cccccc">📄 .cnb.yml</text>
+
+      <!-- 右侧终端区 -->
+      <rect x="220" y="48" width="440" height="180" fill="#1e1e1e" stroke="#3c3c3c"/>
+      <text x="236" y="76" font-size="12" fill="#6a9955">$ curl http://127.0.0.1:8787/health</text>
+      <text x="236" y="98" font-size="12" fill="#d4d4d4">→ model=deepseek-v4-flash ✓</text>
+      <text x="236" y="122" font-size="12" fill="#d4d4d4">$ (echo >/dev/tcp/127.0.0.1/6060) && echo OK</text>
+      <text x="236" y="144" font-size="12" fill="#6a9955">OK ✓（6060 已监听）</text>
+
+      <!-- PORTS 面板 -->
+      <rect x="220" y="244" width="740" height="52" fill="#f7f9fc" stroke="#4a90d9" stroke-width="2"/>
+      <text x="236" y="268" font-size="13" font-weight="bold" fill="#1f2933">PORTS / 端口 面板</text>
+      <rect x="420" y="252" width="150" height="34" rx="5" fill="#2b6cb0"/>
+      <text x="495" y="274" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">添加端口 +</text>
+      <text x="580" y="274" font-size="12.5" fill="#7b8794">输入 <code>6060</code> 回车</text>
+
+      <line x1="200" y1="270" x2="214" y2="270" stroke="#e8590c" stroke-width="2.5" marker-end="url(#arw)"/>
+      <text x="100" y="292" font-size="12.5" fill="#9a3412" font-weight="bold">把 6060 加进端口映射</text>
+    </svg>
+  </section>
+
+  <!-- ============ 步骤 4 ============ -->
+  <section>
+    <h2>④ 复制平台生成的真实地址 → 浏览器打开 → 看到 Hermes 控制台</h2>
+    <svg viewBox="0 0 1000 320" font-family="'Microsoft YaHei',sans-serif">
+      <!-- PORTS 生成的真实地址 -->
+      <rect x="0" y="0" width="1000" height="34" rx="6" fill="#e9ecef"/>
+      <text x="16" y="22" font-size="12" fill="#7b8794">PORTS 面板 · 6060 已映射</text>
+
+      <rect x="40" y="60" width="700" height="46" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+      <text x="60" y="89" font-size="16" font-weight="bold" fill="#166534">https://fjisdofi21-6060.cnb.run</text>
+      <line x1="756" y1="83" x2="780" y2="83" stroke="#e8590c" stroke-width="2.5" marker-end="url(#arw)"/>
+      <text x="786" y="87" font-size="12.5" fill="#166534" font-weight="bold">复制这一行（或点「在浏览器打开」）</text>
+      <text x="60" y="130" font-size="12.5" fill="#9a3412" font-weight="bold">⚠️ 别手打 {id} 占位符——那串随机字母由平台生成，每次启动可能不同</text>
+
+      <!-- 浏览器地址栏 -->
+      <rect x="40" y="170" width="700" height="40" rx="8" fill="#fff" stroke="#c9d1d9"/>
+      <circle cx="60" cy="190" r="4" fill="#f1f3f5"/>
+      <text x="76" y="195" font-size="13" fill="#1f2933">https://fjisdofi21-6060.cnb.run</text>
+
+      <!-- Hermes 控制台示意 -->
+      <rect x="780" y="60" width="200" height="150" rx="8" fill="#1e1e1e" stroke="#3c3c3c"/>
+      <text x="800" y="90" font-size="13" font-weight="bold" fill="#9cdcfe">Hermes Studio Web</text>
+      <text x="800" y="114" font-size="12" fill="#cccccc">模型：deepseek-v4-flash</text>
+      <text x="800" y="138" font-size="12" fill="#6a9955">✓ 已连接免费网关</text>
+      <rect x="800" y="154" width="160" height="36" rx="5" fill="#2f9e44"/>
+      <text x="880" y="177" font-size="12" font-weight="bold" fill="#fff" text-anchor="middle">✅ 成功！</text>
+
+      <text x="780" y="236" font-size="12" fill="#7b8794">发一句话能回复 = 走通</text>
+    </svg>
+  </section>
+
+  <!-- ============ 验证清单 ============ -->
+  <section>
+    <h2>✅ 验证成功标准（照表勾）</h2>
+    <table>
+      <thead>
+        <tr><th>#</th><th>检查项</th><th>通过标准</th><th>结果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>地址能打开</td><td>显示 Hermes Web 控制台，不是「没有找到该URL」</td><td>☐</td></tr>
+        <tr><td>2</td><td>适配层在跑</td><td>容器终端 <code>curl http://127.0.0.1:8787/health</code> 返回 <code>model=deepseek-v4-flash</code></td><td>☐</td></tr>
+        <tr><td>3</td><td>发消息能回</td><td>Web 控制台发一句话，模型正常回复，无 400/429/403</td><td>☐</td></tr>
+        <tr><td>4</td><td>走免费网关</td><td>会话模型显示 <code>deepseek-v4-flash</code>（不是 mimo / 不是 pro）</td><td>☐</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="note green">
+    <b>💡 小结：</b>4 步 = ① 删旧工作区 on8guoflgv → ② 回 main 点「云原生开发」→ ③ PORTS 加 6060 → ④ 复制真实地址打开。
+    全部完成后即可在浏览器里用 <b>Hermes Studio Web 控制台</b>，模型走 <code>127.0.0.1:8787</code> 适配层 → CNB 免费基座 <code>deepseek-v4-flash</code>（免费额度到 2026-12-31）。
+  </div>
+
+</div>
+</body>
+</html>

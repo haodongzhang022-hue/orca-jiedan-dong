@@ -1,0 +1,97 @@
+# 云上 Hermes 云端控制台打开 · 可视化标注操作图
+
+> 配套可视化操作图（带箭头标注，浏览器可直接打开）：
+> `docs/操作图_云上Hermes云端控制台打开.html`
+> 4 步从 `connection refused` 到 Hermes Studio Web 控制台 · 模型走 CNB 免费基座 `deepseek-v4-flash`（0 成本）
+> 关联：Issue #27 · 排查记录 `docs/云上Hermes6060_connection_refused排查记录.md`
+
+---
+
+## ⚠️ 为什么之前打不开（1 句话）
+
+你访问的 `on8guoflgv-6060.cnb.run` 是**修复前（旧提交 c132f1b）**启动的**旧工作区**，里面**没有装 Hermes Web UI**，所以 6060 端口一直 `connection refused`。
+**这不是代码 bug**，是「旧工作区」需要删除重建。修复代码已在 main 就绪。
+
+---
+
+## 🗺️ 4 步总览（照着图点就行）
+
+```
+① 删除旧工作区 on8guoflgv
+        ↓
+② 回仓库 → 切 main → 点「云原生开发」（重建）
+        ↓
+③ WebIDE → PORTS 面板 → 添加 6060 端口
+        ↓
+④ 复制平台生成的真实地址 → 浏览器打开 → 看到 Hermes 控制台
+```
+
+---
+
+## ① 删除旧工作区（关键！不删会复用旧环境）
+
+个人主页 → 云原生开发环境列表 → 找到 **running 的 `on8guoflgv`**（流水线 `cnb-lb8…`）：
+
+- 状态显示 `running（旧）`
+- **务必先【关闭】再【删除】**
+- 删掉后列表里不再有 `on8guoflgv` 才算成功
+
+> ⚠️ 这步必须做——如果只点「云原生开发」不删旧工作区，平台可能直接复用旧的 `on8guoflgv`，还是打不开。
+
+---
+
+## ② 回仓库 → 切 main → 点「云原生开发」
+
+1. 打开仓库 `https://cnb.cool/TJF19770107/orca-jiedan`
+2. 分支切到 **`main`**（修复版 `9687302`，含 PR #38 修复）
+3. 点 **「云原生开发」** 按钮 → 开始重建
+
+这次基于最新 main，走修复后 `.cnb.yml`：
+
+- `.ide/Dockerfile` 拉取 Hermes Web UI 镜像 `v0.6.39`
+- `start.sh` 自动拉起适配层(`127.0.0.1:8787`) + Web UI(`0.0.0.0:6060`)
+- stages：`verify-hermes-webui` → `start-cnb-gateway-adapter` → `start-hermes-webui`
+
+⏳ 等镜像构建（约 1.5GB，第一次较久属正常）。
+
+---
+
+## ③ WebIDE → PORTS 面板 → 添加 6060 端口
+
+构建完成后自动进入 **WebIDE 浏览器窗口**（VS Code 风格网页编辑器）：
+
+1. 在底部（或右侧）找到 **「PORTS / 端口」** 面板
+2. 点 **「添加端口 / Add Port」**
+3. 填入 **`6060`** 回车
+
+---
+
+## ④ 复制平台生成的真实地址 → 浏览器打开 → 看到 Hermes 控制台
+
+PORTS 面板会生成一行真实地址，例如：
+
+```
+https://fjisdofi21-6060.cnb.run
+```
+
+- **不要手打**，直接点面板里那行地址，或点「在浏览器打开 / Open in Browser」
+- 那串 `fjisdofi21` 是平台自动分配的真实 id，每次启动可能不同
+- 浏览器打开后出现 **Hermes Studio Web 控制台** 即成功
+
+---
+
+## ✅ 验证成功标准（照表勾）
+
+| # | 检查项 | 通过标准 |
+|---|--------|----------|
+| 1 | 地址能打开 | 显示 Hermes Web 控制台，不是「没有找到该URL」 |
+| 2 | 适配层在跑 | 容器终端 `curl http://127.0.0.1:8787/health` 返回 `model=deepseek-v4-flash` |
+| 3 | 发消息能回 | Web 控制台发一句话，模型正常回复，无 400/429/403 |
+| 4 | 走免费网关 | 会话模型显示 `deepseek-v4-flash`（不是 mimo / 不是 pro） |
+
+---
+
+## 💡 小结
+
+4 步 = ① 删旧工作区 → ② 回 main 点「云原生开发」→ ③ PORTS 加 6060 → ④ 复制真实地址打开。
+全部完成后即可在浏览器里用 **Hermes Studio Web 控制台**，模型走 `127.0.0.1:8787` 适配层 → CNB 免费基座 `deepseek-v4-flash`（免费额度到 2026-12-31）。

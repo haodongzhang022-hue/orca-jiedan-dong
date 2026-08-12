@@ -61,3 +61,17 @@ dial tcp 172.17.0.31:6060: connect: connection refused
 - PORTS 面板里 6060 端口显示已监听（不再是 refused）
 - 浏览器打开后出现 Hermes Studio 云端控制台界面
 - 能新建会话，模型为 `deepseek-v4-flash`
+
+---
+
+## 六、可视化标注操作图（照着图点就行）
+
+> 为方便照图操作，已生成带箭头标注的分步操作图：
+> - **HTML（推荐，浏览器直接打开）**：`docs/操作图_云上Hermes云端控制台打开.html`
+> - **Markdown**：`docs/操作图_云上Hermes云端控制台打开.md`
+
+**4 步总览：**
+
+```
+① 删除旧工作区 on8guoflgv → ② 回 main 点「云原生开发」→ ③ PORTS 加 6060 → ④ 复制真实地址打开
+```
