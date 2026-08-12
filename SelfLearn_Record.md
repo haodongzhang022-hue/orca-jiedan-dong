@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-08-13 · 夜星空01 Step4终验放行 + Step5闭环（任务卡状态机→已放行）
+
+### 本次亮点
+- **状态机走通**：已接单→执行中→待审核→**已放行**；任务卡头部状态更新 + Step2/3/4 待办全勾；CLAUDE CODE 四轮终验（review_report.md 附2/3/4）零回归 FINAL PASS
+- **快照基线确认**：`snapshots/normal_node_20260812_235516.tar.gz`（10.6M）在盘但被 .gitignore 排除——**glob 工具跳过被忽略文件，核查快照必须用 `ls -la snapshots/`**
+- **新快照更新**：`snapshots/normal_node_20260813_001709.tar.gz`（13M<20M）覆盖终验后正常节点，打包到 /tmp 再 mv 回避免自包含
+- **GitHub 三通道持续阻塞根因**：GCM 非交互环境报 `/dev/tty: No such device or address`（凭据管理器无终端可交互）+ ssh 无公钥——非网络问题，需 owner 跑 `gh auth login` 打通；CNB（origin）主链路已同步 e6d36e5
+
 ## 2026-08-12 · 夜星空01 设计三件套交付闭环（PSD+网页+Word）
 
 ### 本次亮点
