@@ -1,9 +1,10 @@
 # 版本信息
-version: 1.8.4
-release_date: 2026-08-11
+version: 1.8.5
+release_date: 2026-08-12
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
+  - 【一键操作手册】Issue#27 交付 docs/一键操作手册_先B再A接CNB免费网关_云端WebGUI验证.md：把「先方式B手动建Provider + 方式A脚本固化 + 云端WebGUI验证」固化为可重复执行手册；用户已实测确认 方式A config.yaml 已注册✅ + 云端6060 Hermes Web UI可打开✅，附验收清单/MARVIS闭环记录/回滚（v1.8.4→1.8.5）
   - 【云上复刻构建修复】Issue#27 修复云原生开发环境构建失败：.cnb.yml build 改为对象形式并加 by 列表（adapters/anthropic_to_cnb.py + .ide/start.sh），否则 CNB build 上下文只有 Dockerfile 本身导致 COPY 失败→回退默认镜像；verify/start 阶段健壮化（v1.8.3→1.8.4）
   - 【云上复刻操作手册】Issue#27 交付 docs/操作手册_云上复刻HermesWebGUI可视化说明书.md：可视化逐步图解云原生开发→WebIDE PORTS→真实地址(https://{id}-6060.cnb.run)打开 Hermes Web GUI，明确「{id} 是占位符须由平台生成」避坑（v1.8.2→1.8.3）
   - 【免费基座切换】Issue#27 交付 docs/免费基座DeepSeekV4Flash切换图文手册.md + scripts/switch_to_cnb_gateway.sh：本地 Hermes Studio 从 Xiaomi MiMo(mimo-v2.5-pro, 积分0.31%) 切到 CNB 免费 deepseek-v4-flash（GUI 5步 + 一键脚本 + 验证 + 回滚），云端 NPC 早已全走免费基座（v1.8.1→1.8.2）
