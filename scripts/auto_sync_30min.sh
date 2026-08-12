@@ -34,7 +34,8 @@ echo "推送结果：CNB=$([ $PUSH_CNB -eq 1 ] && echo OK || echo FAIL) GitHub=$
 OBSIDIAN_SRC="E:/龙虾AI主控中心/Obsidian"
 OBSIDIAN_DST="G:/龙虾AI主控中心/Obsidian"  # 若 G 盘不存在则跳过
 if [ -d "$OBSIDIAN_DST" ]; then
-  robocopy "$OBSIDIAN_SRC" "$OBSIDIAN_DST" /MIR /XD .git /R:1 /W:1 /NJH /NJS >> "$LOG" 2>&1 || true
+  # 注意：Git Bash 会把 /MIR 转换为 C:/Program Files/Git/MIR，必须 MSYS_NO_PATHCONV=1
+  MSYS_NO_PATHCONV=1 robocopy "$OBSIDIAN_SRC" "$OBSIDIAN_DST" /MIR /XD .git /R:1 /W:1 /NJH /NJS >> "$LOG" 2>&1 || true
   echo "✅ Obsidian 增量同步完成" >> "$LOG"
 else
   echo "ℹ️ G盘目标不存在，跳过 Obsidian 增量同步" >> "$LOG"
