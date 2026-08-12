@@ -1,0 +1,66 @@
+/* 夜星空01 · 品牌展示页样式 —— 1920px 宽设计，响应式适配 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --night: #0b1026;
+  --night-2: #1a2350;
+  --star: #f5e9c8;
+  --accent: #ffb84d;
+}
+
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  color: var(--star);
+  background: linear-gradient(160deg, var(--night) 0%, var(--night-2) 100%);
+  min-height: 100vh;
+}
+
+.hero {
+  text-align: center;
+  padding: 120px 20px;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0, transparent 25%),
+    radial-gradient(circle at 80% 60%, rgba(255, 184, 77, 0.18) 0, transparent 30%);
+}
+
+.brand { font-size: 4rem; letter-spacing: 6px; }
+.brand span { color: var(--accent); }
+
+.slogan { margin: 18px 0 34px; font-size: 1.4rem; opacity: 0.85; letter-spacing: 4px; }
+
+.btn {
+  display: inline-block;
+  padding: 14px 44px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+  border-radius: 999px;
+  transition: all 0.3s;
+}
+.btn:hover { background: var(--accent); color: var(--night); }
+
+.section { max-width: 1200px; margin: 0 auto; padding: 70px 20px; }
+.section h2 { text-align: center; margin-bottom: 30px; font-size: 2rem; letter-spacing: 3px; }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s;
+}
+.card:hover { transform: translateY(-6px); }
+.card h3 { color: var(--accent); margin-bottom: 10px; }
+
+footer { text-align: center; padding: 26px; opacity: 0.6; font-size: 0.9rem; }
+
+/* 响应式：平板 / 手机 */
+@media (max-width: 900px) {
+  .brand { font-size: 2.6rem; }
+  .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 1920px) and (min-width: 901px) {
+  .hero { padding: 140px 20px; }
+}
