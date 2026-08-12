@@ -105,6 +105,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 四化 | `lobster-cmd 四化` | 显示四化校准+执行自我进化 |
 | 设计单/接单 | 打开 `docs/设计类商单流水线.md` | 自动唤起设计类商单流水线，开始 Step1 接单解析 |
 | 网页设计 | 打开 `docs/设计类商单流水线.md` 第三节 | 唤起网页设计专项（HTML+CSS） |
+| 一人一公司/AUTOGAT/agency/公司化运营 | 加载 `E:\龙虾AI主控中心\我的AI分身\技能库\agency-agents\` | 一人一公司技能集：17部门200+角色，按需求选角色执行（设计单→design/8角色，营销→marketing/30角色，antigravity/184 SKILL.md 可直接加载） |
 | 交付/上传 | `git push origin main && git push direct main` | 双仓库上传：CNB云原生+GitHub |
 
 **重要**：执行完命令后，将输出结果直接返回给用户。如果代理已正常运行，命令会自动跳过恢复步骤，不影响任何对话和任务数据。

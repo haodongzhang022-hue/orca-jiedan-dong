@@ -66,6 +66,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 网页设计 | 打开 `docs/设计类商单流水线.md` 第三节 | 唤起网页设计专项（HTML+CSS） |
 | 快照 | `tar -czf snapshots/normal_node_*.tar.gz` | 创建轻量快照 <20MB |
 | 迭代 | 龙虾五步法+全域模板+四化→知识库+脚手架 | 自我进化闭环 |
+| 一人一公司/AUTOGAT/agency/公司化运营 | 加载 `E:\龙虾AI主控中心\我的AI分身\技能库\agency-agents\` | 一人一公司技能集：17部门200+角色，按需求选角色执行（设计单→design/8角色，营销→marketing/30角色，antigravity/184 SKILL.md 可直接加载） |
 | 交付/上传 | `git push origin main && git push direct main` | 双仓库上传：CNB云原生+GitHub |
 
 ## 四化校准（核心哲学）
