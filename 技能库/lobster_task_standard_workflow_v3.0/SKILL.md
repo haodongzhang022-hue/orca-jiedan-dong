@@ -13,7 +13,7 @@ AIGC:
 
 # 龙虾五步法V3.6·PR#21闭环版（成本优先置顶）
 
-> 版本：v3.7 | 更新时间：2026-08-10 | CNB Token换绑联调 + 凭证链路验证 + Hermes Studio模型迁移
+> 版本：v3.9 | 更新时间：2026-08-13 | agency-agents一人一公司技能集内置（17部门200+角色）
 > 核心升级：从"执行框架"升级为"AI员工自主工作框架"
 > 核心哲学：有道无术术可求，有术无道止于术
 > 万法皆空，因果不空
@@ -555,6 +555,7 @@ Ollama Cloud返回429/503时，自动切换到官方DeepSeek API：
 | **量化双仓调度 v1.0** | `E:\龙虾AI主控中心\orca\schedulers\quant_scheduler.py` | 嘉盛MT4/MT5 + 币安 每30分钟巡检 + 策略回测 + 三端文件一致性校验(SHA256) + 快照归档 | 量化交易、MT4/MT5、币安、quant、回测、三端校验 |
 | **定时触发器配置 v1.0** | `E:\龙虾AI主控中心\orca\deploy\auto_gpt_trigger_config.py` | 6项schtasks全自动注册（闲鱼/量化/凭证/爬虫/三端同步/快照） + 健康检查 + PowerShell兜底 | 定时任务、schtasks、触发器配置、计划任务注册 |
 | | **凭证链路自动巡检 v1.0** | `E:\龙虾AI主控中心\docs\credential-automation\` | GH_TOKEN / XHS_COOKIE / DOUYIN_COOKIE 三项凭证周期性有效性校验 + 过期提前预警 + 自动清理 | 凭证巡检、credential_patrol、凭证检查、token过期检测 |
+| **agency-agents 一人一公司技能集 v1.0** | `E:\龙虾AI主控中心\我的AI分身\技能库\agency-agents\` | GitHub: msitarzewski/agency-agents（MIT）：17部门200+角色，一人一公司全角色覆盖（工程29/营销30/专项41/战略16/设计8/销售8/投流7/财务5/产品5/项目管理6/测试8/客服6/学术5/游戏20等）；`integrations/antigravity/` 下184角色已转标准SKILL.md，可直接被任何支持SKILL.md的引擎加载 | 一人一公司、AUTOGAT、公司化运营、全角色调度、接单多角色接力 |
 
 
 ### 11.2 软链接调用逻辑
@@ -614,6 +615,7 @@ Ollama Cloud返回429/503时，自动切换到官方DeepSeek API：
 | "三端巡检/同步巡检/CNB巡检/git健康检查" | 三端同步一致性巡检 | 三端git状态检测→锁冲突→频率保护→告警 |
 | "学习XX/提升XX生产力/自我进化/一键学习/self-evolve" | 一键自我进化 | AgentReach采集→赛博书屋洗练→仓颉蒸馏→技能注册→全域模板融入 |
 | "CNB Token/Token换绑/Token过期/凭证更新/模型迁移/Token巡检" | CNB Token换绑 v3.7 | config.yaml批量替换→脚手架巡检→API连通性测试→全域模板归档 |
+| "一人一公司/一人公司/AUTOGAT/agency/公司化运营/全角色团队/单人开公司" | agency-agents 一人一公司技能集 | Step1意图识别→Step2按需求选角色（设计单→design/8角色，网页→frontend-developer，营销→marketing/30角色）→Step3角色接力执行→Step4三Agent审核→Step5沉淀 |
 
 ### 11.4 零成本执行策略
 
@@ -631,5 +633,79 @@ Ollama Cloud返回429/503时，自动切换到官方DeepSeek API：
 - 赛博书屋产出 → `E:\龙虾AI主控中心\Obsidian\wiki\赛博书屋\`
 - 项目索引 → Obsidian 双向链接自动关联
 
-*（内容由AI生成，仅供参考）*
+---
+
+## 十二、舰队任务卡与交流协议（v3.8 新增·2026-08-12）
+
+> 解决"多 Agent 之间用什么文件交流、任务怎么分配、结果存哪"三类问题。
+
+### 12.1 任务分配：任务卡（唯一通道）
+
+| 目录 | 状态 | 写入者 | 读取者 |
+|------|------|--------|--------|
+| `fleet_exchange/incoming/` | 待接单 | Hermes | Codex |
+| `fleet_exchange/doing/` | 执行中 | Codex | Claude Code |
+| `fleet_exchange/done/` | 已完成 | Claude Code | Hermes |
+| `fleet_exchange/results/` | 归档 | Hermes | 客户/存档 |
+
+铁律：**任务只通过任务卡流转，禁止口头分配不落卡**。任务卡必须带唯一 `任务ID: YYYYMMDD_HHMMSS_N`。
+模板：`fleet_exchange/templates/task_card.md`（脚手架内置）。
+
+### 12.2 交流文件：三通道分工
+
+| 通道 | 文件 | 用途 |
+|------|------|------|
+| 任务 | `fleet_exchange/` 任务卡 | 分配/执行/审核/归档 |
+| 消息 | `msgbus/inbox/<agent>_cli/` | 非任务类即时通信 |
+| 状态 | `SHARED_MEMORY.md` | 长期共享记忆（端口/路径/经验/快照） |
+
+### 12.3 结果路径：每次必写路径
+
+**规则：任何交付必须写最终文件路径，禁止只回"完成"不留路径。** 沉淀路径规范：
+- 知识经验 → `G:\龙虾AI主控中心\Obsidian\wiki\`
+- 技能迭代 → `E:\...\技能库\lobster_task_standard_workflow_v3.0\SKILL.md`
+- 脚手架规范 → `E:\...\项目脚手架\orca_multi_agent_fleet_v1.0\`
+- 故障回滚 → `E:\...\AtomCode\snapshots\`（<20M zip + RESTORE 说明）
+
+### 12.4 超时治理经验（HTTP 500: timed out after 300s 复盘）
+
+| 层 | 根因 | 铁律 |
+|----|------|------|
+| 代理侧 | `atomcode_proxy.py` TIMEOUT=300 太短 | 已改 900s；长上下文任务需更宽 |
+| 客户端侧 | hermes `stale_timeout_seconds` 默认 300s 掐断长请求 | **客户端超时 > 代理超时**（hermes 1800s > 代理 900s） |
+
+SOP：报 `timed out after Ns` 时，先查代理 `TIMEOUT` 与客户端 `stale_timeout_seconds` 两层；hermes 配置按 mtime 热加载无需重启；代理改 TIMEOUT 需重启进程。
+
+---
+
+## 13. 三引擎正常节点快照 + 任务卡机制固化（v3.9 · 2026-08-12）
+
+> 迭代来源：三引擎（hermes/codex/CLAUDE CODE）全部正常运转节点确认 + 用户要求保存状态为回滚基线。
+
+### 13.1 正常节点判定
+
+三引擎全通（deepseek-v4-flash 经 127.0.0.1:13460 AtomCode 代理），此前三类反复故障全部修复：
+① `doubao-proxy` stdio/url 冲突 ② `model_catalog.json` 含 `max` 非法档位 ③ 13460 代理 502。
+
+### 13.2 轻量快照规范（备份回滚）
+
+- 命名：`snapshots/normal_node_YYYYMMDD_HHMMSS.tar.gz`，体积 <20M
+- 排除：.git / 对话记录 / msgbus / fleet_exchange / worktrees / logs / 旧快照
+- 踩坑：tar 打包时快照文件自身被读入（file changed as we read it）→ 先打包到 /tmp 再 mv 回 snapshots/
+- 实测：11M 达标
+
+### 13.3 任务卡交流机制（企业接单项目脚手架）
+
+- 任务卡位置：`01_正在执行实单/【日期_客户_需求】/需求确认文档/任务卡.md`
+- 五段结构：订单信息 / 交付物清单 / 执行路径 / 分工 / 待办
+- 状态机：已接单 → 执行中 → 待审核 → 已放行 → 已归档
+- 已固化：CLAUDE.md / CODEX.md / HERMES.md / hermes/system_prompt.md 四处
+- 铁律：任务只通过任务卡流转，群聊只做触发与汇报
+
+### 13.4 结果路径（本次沉淀）
+
+- 快照 → `E:\...\企业微信群定制接单项目\snapshots\normal_node_20260812_235516.tar.gz`
+- wiki → `E:\龙虾AI主控中心\Obsidian\wiki\舰队运维\三引擎正常节点快照与任务卡机制_20260812.md`
+- 复盘 → `E:\...\企业微信群定制接单项目\docs\技能沉淀\20260812_三引擎正常节点快照与任务卡机制_复盘.md`
+
 *（内容由AI生成，仅供参考）*
