@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-08-12 · 夜星空01 设计三件套交付闭环（PSD+网页+Word）
+
+### 本次亮点
+- **三件套一键贯通**：Logo/Banner/海报（1920px·72PPI）PNG+PSD 由 `generate_design_v1.py`（PIL 绘制 + psd_tools frompil 封 PSD）生成；Word 交付说明由 `generate_delivery_doc.py`（python-docx）生成，零积分全本地
+- **同 VI 多载体**：style.css 与 PSD 共享配色令牌（#0b1026/#1a2350/#f5e9c8/#ffb84d），平面+网页风格锁死
+- **CNB 推送成功**：`8bf36fc..5cbe62e main -> main`；GitHub 直连被中止 + gh-proxy token 失效 + ssh 无公钥，交由 `Lobster_AutoSync_30min` 自动重试兜底
+- 复盘已回灌 `docs/技能沉淀/` + Obsidian/副业变现
+
+### 踩坑与解法
+| 坑 | 解法 |
+|----|------|
+| E:\VNPY python 无 pip/docx/psd_tools | 统一走 `.workbuddy/binaries/python/versions/3.13.12/python.exe`（PIL/docx/psd_tools 齐全） |
+| Word 脚本路径错位（`../最终交付文件` 落到工程源文件下） | 修正为 `../..` 向上两级到任务卡根 |
+| GitHub 三条通道全阻塞（443 中止/代理 token 失效/无 ssh key） | CNB 主链路闭环 + 30 分钟同步任务自动重试，不阻塞交付 |
+
+### 待办（下一迭代）
+- PSD 升级多图层（背景/星点/文字分层）便于客户编辑
+- 客户真实品牌资料到位后一键替换占位文案重跑
+
+---
+
 ## 2026-08-12 · 设计类商单流水线落地 + 定时任务真实注册 + 夜星空01首单
 
 ### 本次亮点
