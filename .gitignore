@@ -66,3 +66,6 @@ tests/sample_course/out_*/
 worktrees/
 
 nul
+
+# CNB Bridge Token (auto-generated)
+bridge_cnb_npc/config/token_config.json

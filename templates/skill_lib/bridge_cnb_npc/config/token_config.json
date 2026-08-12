@@ -1,0 +1,53 @@
+{
+  "cnb_api": {
+    "base_url": "https://api.cnb.cool",
+    "org": "TJF19770107",
+    "repos": {
+      "orca_jiedan": "orca-jiedan",
+      "orca_ops": "orca-worktree-ops",
+      "orca_trade": "orca-quant-trade",
+      "orca_brain": "orca-brain",
+      "orca_fleet": "orca-fleet"
+    },
+    "npc_endpoints": {
+      "hermes": "/v1/npc/hermes/chat",
+      "codex": "/v1/npc/codex/chat",
+      "claude_code": "/v1/npc/claude-code/chat",
+      "lobster": "/v1/npc/lobster/chat"
+    },
+    "auth": {
+      "token_env_var": "CNB_NPC_API_TOKEN",
+      "token": ""
+    }
+  },
+  "local_agents": {
+    "hermes": {
+      "listen_port": 50051,
+      "mode": "cloud_default",
+      "fallback_model": "mimo-v2.5-local"
+    },
+    "codex": {
+      "listen_port": 50052,
+      "mode": "cloud_default",
+      "fallback_model": "mimo-v2.5-local"
+    },
+    "claude_code": {
+      "listen_port": 50053,
+      "mode": "cloud_default",
+      "fallback_model": "mimo-v2.5-local"
+    }
+  },
+  "bridge": {
+    "listen_host": "127.0.0.1",
+    "listen_port": 9000,
+    "max_queue_size": 100,
+    "network_check_interval": 5,
+    "offline_fallback_enabled": true,
+    "session_cache_path": "./cache/sessions"
+  },
+  "cnb_token": "cnb_7AuNZiWS1f10VGYBOsgQgMygpDA",
+  "cnb_username": "TJF19770107",
+  "cnb_git_user": "cnb",
+  "token_created_at": "2026-08-08",
+  "token_name": "lobster-bridge-gateway"
+}

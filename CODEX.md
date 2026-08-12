@@ -47,6 +47,9 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 全域模板 | `lobster-cmd 全域模板` | 显示模板路径+指令说明 |
 | 三引擎状态 | `lobster-cmd 状态` | 查看端口/health/配置 |
 | 快照 | `lobster-cmd 快照` | 创建轻量快照 <20MB |
+| 设计单/接单 | 打开 `docs/设计类商单流水线.md` | 自动唤起设计类商单流水线，开始 Step1 接单解析 |
+| 网页设计 | 打开 `docs/设计类商单流水线.md` 第三节 | 唤起网页设计专项（HTML+CSS） |
+| 交付/上传 | `git push origin main && git push direct main` | 双仓库上传：CNB云原生+GitHub |
 
 **重要**：执行完命令后，将输出结果直接返回给用户。如果代理已正常运行，命令会自动跳过恢复步骤，不影响任何对话和任务数据。
 

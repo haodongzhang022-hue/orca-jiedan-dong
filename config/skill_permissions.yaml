@@ -1,0 +1,102 @@
+# ============================================================
+# 技能库分层权限矩阵
+# 龙虾五步法 V3.3 | 2026-08-08
+# ============================================================
+
+permissions:
+  hermes:
+    role: "决策大脑"
+    skills:
+      - name: lobster_workflow
+        access: read_write
+        desc: "龙虾五步法核心工作流"
+      - name: global_templates
+        access: read_write
+        desc: "全域官方模板库"
+      - name: cyber_book_house
+        access: read_write
+        desc: "赛博书屋知识萃取引擎"
+      - name: client_brief_parser
+        access: read_write
+        desc: "客户需求拆解与剧本策划"
+    api_scope:
+      - text_generation
+      - image_generation
+
+  codex:
+    role: "执行调度层"
+    skills:
+      - name: lobster_workflow
+        access: read
+        desc: "龙虾五步法（仅读）"
+      - name: global_templates
+        access: read
+        desc: "全域模板（仅读）"
+      - name: agnes_video_auto
+        access: read_write
+        desc: "Agnes AI视频自动生产"
+      - name: cangjie-skill
+        access: read
+        desc: "仓颉知识蒸馏"
+      - name: script_splitter
+        access: read_write
+        desc: "长剧本自动切分"
+      - name: ffmpeg_merger
+        access: read_write
+        desc: "FFmpeg视频拼接"
+    api_scope:
+      - text_generation
+      - image_generation
+      - video_generation
+
+  claude-code:
+    role: "审核质检层"
+    skills:
+      - name: lobster_workflow
+        access: read
+        desc: "龙虾五步法（仅读）"
+      - name: global_templates
+        access: read
+        desc: "全域模板（仅读）"
+      - name: content_review
+        access: read_write
+        desc: "内容审核"
+      - name: quality_check
+        access: read_write
+        desc: "成片质检"
+      - name: compliance
+        access: read_write
+        desc: "合规筛查"
+    api_scope:
+      - text_generation
+      - image_generation
+
+  lobster:
+    role: "全栈NPC"
+    skills:
+      - name: lobster_workflow
+        access: read_write
+        desc: "龙虾五步法"
+      - name: global_templates
+        access: read_write
+        desc: "全域模板"
+      - name: cyber_book_house
+        access: read_write
+        desc: "赛博书屋"
+      - name: agnes_video_auto
+        access: read_write
+        desc: "Agnes视频"
+      - name: cangjie-skill
+        access: read_write
+        desc: "仓颉蒸馏"
+    api_scope:
+      - text_generation
+      - image_generation
+      - video_generation
+
+sync_rules:
+  source: "E:\\龙虾AI主控中心\\我的AI分身\\技能库\\"
+  target: "templates/skill_lib/"
+  direction: bidirectional
+  interval: "on_push"
+  conflicts: "manual_review"

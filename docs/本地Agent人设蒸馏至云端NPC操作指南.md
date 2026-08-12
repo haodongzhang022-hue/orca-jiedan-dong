@@ -1,3 +1,14 @@
+---
+AIGC:
+    Label: "1"
+    ContentProducer: 001191440300708461136T1XGW3
+    ProduceID: cf54d54c59baa0ada35a5ecb7c73a584_65f57445914511f1bcfc525400e6dd8f
+    ReservedCode1: qQFjk138xEm+5c2YNoTGCLlso7IjYjn8ms4gmQznQwOzcFtHklVXjXx+nSUy7w1Llo5nBf6ZSvqrm7lTfZ4ezytyh7mymF5JgTrRYZQlZzF8+QzbPIpO2KohIBeMSLU+VsY9wKmzqQooZBma15DvzdE6OyRLuxz4HOOk+HLa+Zp0RNyqOqK0ygINy6M=
+    ContentPropagator: 001191440300708461136T1XGW3
+    PropagateID: cf54d54c59baa0ada35a5ecb7c73a584_65f57445914511f1bcfc525400e6dd8f
+    ReservedCode2: qQFjk138xEm+5c2YNoTGCLlso7IjYjn8ms4gmQznQwOzcFtHklVXjXx+nSUy7w1Llo5nBf6ZSvqrm7lTfZ4ezytyh7mymF5JgTrRYZQlZzF8+QzbPIpO2KohIBeMSLU+VsY9wKmzqQooZBma15DvzdE6OyRLuxz4HOOk+HLa+Zp0RNyqOqK0ygINy6M=
+---
+
 # 本地Agent人设蒸馏至云端NPC操作指南
 
 > 版本：1.4.1 | 基座：CNB免费DeepSeek-V4-Flash（有效期至2026-12-31）
@@ -181,3 +192,4 @@ git push origin main
 > **文档版本**：v1.4.1
 > **基座标识**：CNB免费DeepSeek-V4-Flash（有效期至2026-12-31）
 > **维护者**：龙虾AI主控中心 · Marvis 运维组
+*（内容由AI生成，仅供参考）*
