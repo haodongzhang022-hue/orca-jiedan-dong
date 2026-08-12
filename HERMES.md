@@ -72,6 +72,10 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 马斯克/巴菲特/对标/第一性原理/能力圈/护城河/思维蒸馏 | 加载 `E:\龙虾AI主控中心\我的AI分身\技能库\马斯克巴菲特思维蒸馏_SKILL.md` | 双雄思维弹药库：第一性原理拆解(创造)+能力圈取舍(接单)，接单研判/报价/执行/复盘全场景可用 |
 | 磁盘清理/清理磁盘/释放空间/盘满了 | 运行 `scripts\cleanup_disk.cmd`（定时任务 Lobster_DiskCleanup_Daily 每日03:00） | 清理C/D/E/F盘回收站+临时目录+包缓存，保持10G以上 |
 | 对话记录/对话框保存/群聊记录/消息记录 | 实时落盘 `C:\Users\Administrator\.hermes-web-ui\hermes-web-ui.db`（SQLite+WAL）+附件 `group-chat\attachments\` | 群聊随时保存无需手动存；知识沉淀靠任务卡+SelfLearn_Record+Obsidian回灌 |
+| 1（数字快捷） | 调用一人一公司 | 加载 `技能库\agency-agents\`：17部门200+角色，设计单→design/8，营销→marketing/30 |
+| 2（数字快捷） | 调用马斯克×巴菲特蒸馏 | 加载 `技能库\马斯克巴菲特思维蒸馏_SKILL.md`：第一性原理(创造)+能力圈(取舍) |
+| 3（数字快捷） | 三载体联动迭代 | 五步法v4.0(§14)+全域模板#301+本脚手架，五部分执行指令默认加载 |
+| 4（数字快捷） | 四化迭代 Obsidian 知识库 | 记忆修改→归档Obsidian对应库→知识库反向赋能，三载体同频 |
 
 ## 四化校准（核心哲学）
 
