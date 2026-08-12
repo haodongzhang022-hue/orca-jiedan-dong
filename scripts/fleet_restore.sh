@@ -6,9 +6,14 @@
 # 运行：bash scripts/fleet_restore.sh [--auto] [--snapshot]
 #   --auto     静默模式，不显示交互提示
 #   --snapshot 恢复后自动创建快照
+# 安全：不包含任何密钥明文；Codex api_key 一律从环境变量 CODEX_API_KEY 读取
 # =====================================================================
 
 set -e
+
+# 若未显式提供 CODEX_API_KEY，回退到旧的占位符（避免泄露真实 key）
+# 真实密钥应由调用方在环境变量中注入，严禁写入本脚本
+CODEX_API_KEY="${CODEX_API_KEY:-tp-placeholder-set-CODEX_API_KEY-env}"
 
 PROJECT_ROOT="E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目"
 MCP_DIR="E:/龙虾AI主控中心/MCP服务"
@@ -101,8 +106,8 @@ fix_codex_desktop_config() {
         cp "$CODEX_DESKTOP_CONFIG" "${CODEX_DESKTOP_CONFIG}.bak.$(date +%Y%m%d_%H%M%S)"
         fix "Codex 桌面版配置已备份"
 
-        # 重写正确配置
-        cat > "$CODEX_DESKTOP_CONFIG" << 'TOMLEOF'
+        # 重写正确配置（无引号 heredoc，确保 ${CODEX_API_KEY} 从环境变量展开）
+        cat > "$CODEX_DESKTOP_CONFIG" << TOMLEOF
 model_provider = "mimo-v2.5-pro"
 model = "mimo-v2.5-pro"
 model_reasoning_effort = "high"
@@ -113,7 +118,7 @@ preferred_auth_method = "apikey"
 name = "MiMo V2.5 Pro (via Proxy)"
 wire_api = "chat"
 base_url = "http://127.0.0.1:15730/v1"
-api_key = "tp-cs3zbef7vhc75lcpsw9x7pau27mjftwhqnovn5zrq2d0puft"
+api_key = "${CODEX_API_KEY}"
 
 [features]
 js_repl = false

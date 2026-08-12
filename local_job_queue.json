@@ -1,0 +1,88 @@
+{
+  "generated_at": "2026-08-08T22:25:57.552133",
+  "generated_by": "CodeBuddy CNB云端NPC (scripts/auto_gpt_trigger_config.py export)",
+  "source_config": "config/autogpt/triggers.yaml",
+  "scheduler": {
+    "name": "Windows Task Scheduler",
+    "note": "触发器参数（频率/时间/工作流）由 config/autogpt/triggers.yaml 统一定义，本文件仅含结构化任务清单，不含任何 schtasks 命令；由 Marvis 在本机按 params 部署。"
+  },
+  "note": "本文件标记需要 Marvis 在本机部署执行的任务。含金榜题名45元订单：客户信息落地（TJF/2026-08-09 01:18/北京）→ 云端已出稿，Marvis 本地转CDR交付 + 可复用模板沉淀完成。",
+  "jobs": [
+    {
+      "task_name": "xianyu_daily_post",
+      "file_path": "scripts/auto_xianyu_scheduler.py",
+      "params": {
+        "trigger_name": "AG_Xianyu_Post",
+        "cron": "0 9 * * *",
+        "schedule_human": "每日 09:00",
+        "workflow": "闲鱼自动化",
+        "action": "post",
+        "desc": "闲鱼定时上架 + 客服回复 + 数据统计"
+      }
+    },
+    {
+      "task_name": "credential_daily_check",
+      "file_path": "scripts/auto_gpt_orca_bridge.py",
+      "params": {
+        "trigger_name": "AG_Credential_Check",
+        "cron": "0 0 * * *",
+        "schedule_human": "每日 00:00",
+        "workflow": "通用",
+        "action": "credential_check",
+        "desc": "凭证过期巡检（CNB Token / GH PAT / Cookie）"
+      }
+    },
+    {
+      "task_name": "quant_dual_check",
+      "file_path": "scripts/quant_scheduler.py",
+      "params": {
+        "trigger_name": "AG_Quant_DualCheck",
+        "cron": "*/30 * * * *",
+        "schedule_human": "每 30 分钟",
+        "workflow": "量化策略",
+        "action": "dual_check",
+        "desc": "币安/嘉盛双仓巡检 + Marvis 三端一致性校验"
+      }
+    },
+    {
+      "task_name": "xianyu_crawler_poll",
+      "file_path": "scripts/auto_xianyu_scheduler.py",
+      "params": {
+        "trigger_name": "AG_Crawler_Poll",
+        "cron": "*/10 * * * *",
+        "schedule_human": "每 10 分钟",
+        "workflow": "闲鱼自动化",
+        "action": "crawler_poll",
+        "desc": "爬虫静默轮询 + 风控限速逻辑（自动降频）"
+      }
+    },
+    {
+      "task_name": "jinbang45_poster_delivery",
+      "file_path": "scripts/gen_jinbang_guofeng_poster.py",
+      "params": {
+        "trigger_name": "AG_Jinbang_Poster_45",
+        "cron": "once",
+        "schedule_human": "一次性：客户确认后落地（2026-08-08 当晚订单）",
+        "workflow": "企业接单",
+        "action": "poster_delivery",
+        "desc": "金榜题名升学宴海报45元订单：Marvis 本机协同——替换宴设信息占位符、SVG转CDR、交付客户",
+        "task_id": "20260808_222347_AG",
+        "requirement_checklist": "红调主视觉/古风人物插画/灯笼烟花装饰/金榜题名书法大字/版式排版/CDR源文件/当晚交付"
+      }
+    },
+    {
+      "task_name": "jinbang45_customer_info_landing",
+      "file_path": "scripts/jinbang_poster_reuse.py",
+      "params": {
+        "trigger_name": "AG_Jinbang_Customer_Landing",
+        "cron": "once",
+        "schedule_human": "一次性：客户真实信息落地（2026-08-09 凌晨 · 姓名TJF/时间2026年8月9日01:18/地点北京）",
+        "workflow": "企业接单",
+        "action": "poster_delivery",
+        "desc": "金榜题名升学宴海报45元订单·客户信息落地：替换txt_姓名/txt_时间/txt_地点三占位符为真实值，输出SVG+PNG+CDR交付文件+客户交付说明；沉淀可复用模板（templates/jinbang_poster + scripts/jinbang_poster_reuse.py）",
+        "task_id": "20260808_230405_AG",
+        "requirement_checklist": "人物v2验收/姓名TJF/时间2026年8月9日01:18/地点北京/SVG源文件/CDR可编辑/PNG预览/交付说明/可复用模板"
+      }
+    }
+  ]
+}

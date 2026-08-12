@@ -1,0 +1,132 @@
+# 龙虾五步法全域模板 · AutoGPT 可视化拖拽一键导入
+# ============================================================
+# 归属：AutoGPT 融合 ORCA 全链路（Issue #10 任务）
+# 用途：AutoGPT 面板「可视化拖拽」模式导入本模板后，
+#       自动生成五步法工作流节点，适配四大赛道（网盘萃取/企业接单/闲鱼自动化/量化策略）。
+# 兼容：AutoGPT Platform（forge/agbenchmark）Node Graph 格式
+# 导入方式：AutoGPT 面板 → 创建 Agent → 导入工作流模板 → 选择本文件
+# 说明：本文件为结构化 YAML/JSON 模板，非密钥文件，可安全入库。
+# ============================================================
+
+# ---------- 模板元信息 ----------
+template:
+  id: lobster_five_step_global_v1
+  name: "龙虾五步法全域模板（AutoGPT 可视化拖拽版）"
+  version: "1.0.0"
+  author: "ORCA 舰队 · 炼虚合道接单体系"
+  created: "2026-08-08"
+  applies_to: ["网盘萃取", "企业接单", "闲鱼自动化", "量化策略"]
+  description: >-
+    将龙虾五步法（精准备份→根因诊断→无命令不执行→验证修复→沉淀归档）
+    蒸馏为 AutoGPT 可视化工作流节点。用户仅需在 AutoGPT 面板自然语言输入需求，
+    本模板自动完成五步节点编排，顶层不要求人工编写分步指令。
+
+# ---------- 五步法节点图（AutoGPT Node Graph） ----------
+# 每个 step 对应 AutoGPT 一个可拖拽节点；node_type 映射 AutoGPT 内置能力：
+#   plan     → 任务拆解（自然语言 → 子任务）
+#   execute  → 执行脚本（调用 auto_gpt_orca_bridge.py dispatch）
+#   review   → 质量校验（≥80 分自动标记 PRODUCTION 商用技能）
+#   archive  → 沉淀归档（赛博书屋 / Obsidian / CNB 五大仓库 / SelfLearn_Record）
+#   trigger  → 定时触发器（schtasks / AutoGPT 定时任务）
+nodes:
+  - id: node_1_backup
+    name: "Step1 精准备份"
+    node_type: plan
+    description: "备份原始资源/需求/当前状态快照，不修改源文件。"
+    inputs: ["需求原文（自然语言）"]
+    outputs: ["备份清单 + 快照路径"]
+    action: "bash scripts/auto_gpt_orca_bridge.py dispatch --task <input>"
+
+  - id: node_2_diagnose
+    name: "Step2 根因诊断"
+    node_type: plan
+    description: "识别需求类型（四大赛道）、扫描资源/质量、估算处理时长与报价。"
+    inputs: ["备份清单"]
+    outputs: ["根因诊断报告"]
+    scoring:
+      method: "道层五维过滤模型"
+      pass_score: 80
+      on_pass: "标记为商用 PRODUCTION 技能"
+
+  - id: node_3_execute
+    name: "Step3 无命令不执行（AutoGPT 自主执行）"
+    node_type: execute
+    description: "AutoGPT 自动拆解为多级子任务，调度四大赛道入口脚本执行。"
+    inputs: ["根因诊断报告"]
+    outputs: ["执行产物（萃取结果/方案/交付物/策略报告）"]
+    command: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow {workflow} --task {task_json}"
+    security:
+      - "密钥零硬编码：CNB_TOKEN/GH_TOKEN/抖音/小红书 Cookie 全部环境变量注入"
+      - "复用 DPAPI Cookie 解密与现有鉴权体系"
+
+  - id: node_4_verify
+    name: "Step4 验证修复"
+    node_type: review
+    description: "质量校验、抽检准确率与覆盖率；失败自动生成故障日志进入自我净化。"
+    inputs: ["执行产物"]
+    outputs: ["验证报告 / 修复建议"]
+    rules:
+      - ">=80 分 → 自动标记 PRODUCTION 商用技能"
+      - "<80 分 → 回退 node_3 修复并记录踩坑"
+
+  - id: node_5_archive
+    name: "Step5 沉淀归档"
+    node_type: archive
+    description: "写入 SelfLearn_Record.md → 赛博书屋自主学习 → 同步 Obsidian 与 CNB 五大仓库。"
+    inputs: ["验证报告"]
+    outputs: ["技能卡片 / 知识库条目 / 归档记录"]
+
+# ---------- 四大赛道快速模板 ----------
+# AutoGPT 面板中选择任一赛道即可一键生成对应五步法工作流
+workflow_presets:
+  网盘萃取:
+    nodes: ["node_1_backup", "node_2_diagnose", "node_3_execute", "node_4_verify", "node_5_archive"]
+    entry: "auto_knowledge_extract.py"
+    bridge_cmd: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow 网盘萃取 --task <需求>"
+  企业接单:
+    nodes: ["node_1_backup", "node_2_diagnose", "node_3_execute", "node_4_verify", "node_5_archive"]
+    entry: "maris_dispatch.sh"
+    bridge_cmd: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow 企业接单 --task <客户需求>"
+  闲鱼自动化:
+    nodes: ["node_1_backup", "node_2_diagnose", "node_3_execute", "node_4_verify", "node_5_archive"]
+    entry: "auto_xianyu_scheduler.py"
+    config: "config/autogpt/xianyu_config.yaml"
+    actions: ["post", "reply", "stats", "crawler_poll"]
+    bridge_cmd: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow 闲鱼自动化 --task <定时上架/客服回复>"
+  量化策略:
+    nodes: ["node_1_backup", "node_2_diagnose", "node_3_execute", "node_4_verify", "node_5_archive"]
+    entry: "quant_scheduler.py"
+    config: "config/autogpt/quant_config.yaml"
+    actions: ["dual_check", "binance", "jiasheng", "marvis_verify"]
+    bridge_cmd: "python scripts/auto_gpt_orca_bridge.py dispatch --workflow 量化策略 --task <币安/嘉盛巡检>"
+
+# ---------- 定时触发器预设（调度参数统一在 config/autogpt/triggers.yaml） ----------
+# 注意：本段仅做面板展示预设，实际调度参数（cron/schedule_human/params）
+#      统一以 config/autogpt/triggers.yaml 为准，供 Marvis 本地部署消费。
+triggers:
+  闲鱼定时上架:
+    schedule: "0 9 * * *"
+    workflow: "闲鱼自动化"
+    action: "post"
+    desc: "上架巡检 + 客服回复 + 数据统计"
+  凭证过期巡检:
+    schedule: "0 0 * * *"
+    workflow: "通用"
+    action: "credential_check"
+    desc: "凭证过期巡检（CNB Token / GH PAT / Cookie）→ 自动告警"
+  量化双仓巡检:
+    schedule: "*/30 * * * *"
+    workflow: "量化策略"
+    action: "dual_check"
+    desc: "币安/嘉盛双仓巡检 + Marvis 三端一致性校验"
+  爬虫静默轮询:
+    schedule: "*/10 * * * *"
+    workflow: "闲鱼自动化"
+    action: "crawler_poll"
+    desc: "爬虫静默轮询 + 风控限速逻辑（自动降频）"
+
+# ---------- 半云半端说明 ----------
+architecture:
+  半端: "AutoGPT 本地处理可视化拖拽、任务拆解（E:\\龙虾AI主控中心\\AutoGPT-Agent）"
+  半云: "CNB 云端容器承载仓颉蒸馏、MCP 打包、ORCA 部署流水线"
+  bridge: "scripts/auto_gpt_orca_bridge.py 打通 AutoGPT 与 orca_deploy.py / mcp_packager.py"

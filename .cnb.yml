@@ -1,20 +1,102 @@
-# NPC 事件流水线 — orca-jiedan 三级链式（免费 mtga 社区镜像）
-# 参考: https://cnb.cool/set/npc-playground
-# mtga = docker.cnb.cool/npc/mtga:latest = 以鹅传鹅-Pro，社区免费 NPC 镜像
+# =============================================================================
+# NPC 事件流水线 — orca-jiedan 双路径架构（A 轻量化 / B 自定义镜像容器）
+# 基座：CNB 内置免费 DeepSeek-V4-Flash（npc:go 的 options.model 显式绑定）
+# 触发：Issue/PR 评论中 @claude-code / @codex → 自动拉起 AI Agent 并回写评论
+# 参考：https://docs.cnb.cool/zh/build/npc.md
+#       https://cnb.cool/set/npc-playground
+# 安全：本文件不包含任何密钥；模型鉴权通过 CNB 流水线环境变量注入
+# =============================================================================
+#
+# 【双路径说明】
+#   路径A（默认，$ 兜底）：CNB 内置 npc:go 轻量化运行时（逻辑蒸馏裁剪，开箱即用）
+#   路径B（增强，claude-code 角色）：自定义 Docker 镜像 + 独立容器，完整原版
+#         Claude-Code CLI + adapters/anthropic_to_cnb.py 适配层(127.0.0.1:8787)
+#         + scripts/quota_monitor.py 额度监控；不蒸馏、不裁剪原生 MCP/插件/Skill。
+# 切换方式：@claude-code → 走路径B（角色名顶层 key 覆盖 $ 兜底）；
+#           @codex / @lobster 等其它角色 → 走路径A（$ 兜底 npc:go）。
+# 详见 docs/claude_code_cloud_vs_local.md。
+# =============================================================================
 
+# ---- 路径B 角色配置（claude-code / hermes / codex 角色名顶层 key，随 include 合并）----
+include:
+  - .ci/npc-full.yml
+  - .ci/hermes.yml
+  - .ci/codex.yml
+
+# ---- 路径A 公共 NPC 任务模板（$ 兜底：所有未单独配置的角色）----
+# options.model 显式绑定 CNB 内置免费 deepseek-v4-flash，确保不落到外部付费模型
+# options.maxTurns 限制 Agent 轮次防失控；contextWindow 与模型对齐（128k）
 .npc_task: &npc_task
-  - stages:
-      - name: npc respond
-        image: docker.cnb.cool/npc/mtga:latest
+  - docker:
+      # 平台默认 NPC 运行镜像（免费，内置 cnb-cli / skills 等运行时）
+      image: cnbcool/default-npc:latest
+    env:
+      # 供适配层/监控脚本使用（非 CNB_ 保留前缀）
+      NPC_MODEL: deepseek-v4-flash
+      REASONING_EFFORT: high
+      QUOTA_LIMIT: "1600"
+    stages:
+      - name: npc go
+        type: npc:go
+        options:
+          # 显式绑定 CNB 内置免费 DeepSeek-V4-Flash 基座
+          model: deepseek-v4-flash
+          maxTurns: 12
+          contextWindow: "128k"
 
-codex:
+# ---- NPC 事件绑定 + 云原生开发环境（合并于同一 $ 兜底分支）----
+# 角色在 .cnb/settings.yml 中定义：claude-code、codex、lobster
+# claude-code 已被 .ci/npc-full.yml 顶层角色 key 覆盖为路径B
+$:
+  # ① 云原生开发：Hermes Studio Web GUI 云上复刻（需求②）
+  #    点击分支页「云原生开发」按钮 → 用 .ide/Dockerfile 构建镜像 →
+  #    Hermes Web UI(6060, 监听 0.0.0.0) + CNB 免费网关适配层(127.0.0.1:8787)
+  #    WebIDE PORTS 面板映射 → 浏览器打开 https://{id}-6060.cnb.run 即桌面版效果
+  #    ⚠️ 回收机制：10分钟无操作/最长18h/凌晨4-6点强制回收 → 定位为出差/兜底可视化
+  vscode:
+    - docker:
+        build: .ide/Dockerfile
+      runner:
+        cpus: 4
+      services:
+        - docker
+        - vscode
+      stages:
+        - name: start-proxy-container
+          script: |
+            docker run -d --name cnb-proxy --network host \
+              -v /workspace/cnb_proxy_clouddev.py:/proxy.py:ro \
+              python:3.11-alpine \
+              python /proxy.py --port 8080
+  # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）
   issue.comment@npc: *npc_task
   pull_request.comment@npc: *npc_task
 
-claude-code:
-  issue.comment@npc: *npc_task
-  pull_request.comment@npc: *npc_task
-
-lobster:
-  issue.comment@npc: *npc_task
-  pull_request.comment@npc: *npc_task
+# ---- 路径B 镜像构建/推送流水线（main.push 触发，构建自定义 NPC 镜像）----
+# 产物：制品库镜像 ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
+# 注意：
+#   - push 事件下 CNB_NPC_SLUG_LOWERCASE 不注入（仅 NPC 事件），必须用 CNB_REPO_SLUG_LOWERCASE
+#   - 同仓库自定义 NPC 时 CNB_REPO_SLUG_LOWERCASE == CNB_NPC_SLUG_LOWERCASE，镜像引用两侧一致
+#   - 仅在 Dockerfile / 适配层 / quota_monitor / entrypoint 变更时重新构建
+main:
+  push:
+    - name: build-npc-full-image
+      services:
+        - docker
+      ifModify:
+        - adapters/Dockerfile
+        - adapters/anthropic_to_cnb.py
+        - adapters/hermes_entry.sh
+        - scripts/quota_monitor.py
+        - claude/entrypoint.sh
+        - hermes/entrypoint.sh
+      stages:
+        - name: build npc full image
+          script: |
+            docker build \
+              -f adapters/Dockerfile \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0 \
+              .
+        - name: push npc full image
+          script: |
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0

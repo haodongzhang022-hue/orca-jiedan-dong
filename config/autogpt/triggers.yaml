@@ -1,0 +1,58 @@
+# ============================================================
+# AutoGPT 定时触发器配置（任务调度参数 / 触发器配置统一放这里）
+# 归属：AutoGPT 融合 ORCA 全链路（Issue #10 · 第二迭代）
+# 用途：供 scripts/auto_gpt_trigger_config.py 读取；
+#       本文件只描述"调度什么、什么时候调"，不含任何 Windows 计划任务创建逻辑。
+#       Marvis 在本机依据本文件 + local_job_queue.json 做实际部署（schtasks/任务计划）。
+# ============================================================
+
+# 调度器运行时（给 Marvis 参考，不在此生成 schtasks 命令）
+scheduler:
+  name: "Windows Task Scheduler"
+  note: "触发器参数（频率/时间/工作流）由本文件统一定义，本地部署时由 Marvis 落成计划任务"
+
+# 触发器注册表：name -> { cron, schedule_human, workflow, params, desc }
+#   cron            标准 5 段 cron 表达式（供参考/通用调度器）
+#   schedule_human  人类可读调度说明（供 Marvis 落 Windows 计划任务时直接使用）
+#   workflow        对应 auto_gpt_orca_bridge.py 四大赛道
+#   params          传给业务脚本的结构化参数（闲鱼/量化各赛道消费）
+triggers:
+  AG_Xianyu_Post:
+    cron: "0 9 * * *"
+    schedule_human: "每日 09:00"
+    workflow: "闲鱼自动化"
+    desc: "闲鱼定时上架 + 客服回复 + 数据统计"
+    params:
+      action: "post"
+      task_name: "xianyu_daily_post"
+      file_path: "scripts/auto_xianyu_scheduler.py"
+
+  AG_Credential_Check:
+    cron: "0 0 * * *"
+    schedule_human: "每日 00:00"
+    workflow: "通用"
+    desc: "凭证过期巡检（CNB Token / GH PAT / Cookie）"
+    params:
+      action: "credential_check"
+      task_name: "credential_daily_check"
+      file_path: "scripts/auto_gpt_orca_bridge.py"
+
+  AG_Quant_DualCheck:
+    cron: "*/30 * * * *"
+    schedule_human: "每 30 分钟"
+    workflow: "量化策略"
+    desc: "币安/嘉盛双仓巡检 + Marvis 三端一致性校验"
+    params:
+      action: "dual_check"
+      task_name: "quant_dual_check"
+      file_path: "scripts/quant_scheduler.py"
+
+  AG_Crawler_Poll:
+    cron: "*/10 * * * *"
+    schedule_human: "每 10 分钟"
+    workflow: "闲鱼自动化"
+    desc: "爬虫静默轮询 + 风控限速逻辑（自动降频）"
+    params:
+      action: "crawler_poll"
+      task_name: "xianyu_crawler_poll"
+      file_path: "scripts/auto_xianyu_scheduler.py"

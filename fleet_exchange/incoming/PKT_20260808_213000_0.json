@@ -1,0 +1,19 @@
+{
+  "task_id": "20260808_213000_0",
+  "task_type": "平面设计",
+  "source": "企业微信群「平面设计新人接单③群」",
+  "title": "平面设计接单批量评估与执行（云端接单）",
+  "description": "截图OCR识别7个订单：虚化实景直播间背景¥20/AI修图两张¥18/渐变统一¥9/渐变¥8（直接可接）；平面复刻与印刷设计需客户补素材（挂起）；宣传单卡片PPT批量物料走成熟流水线。详见任务卡MD。",
+  "priority": "高",
+  "deadline": "2026-08-09",
+  "created_at": "2026-08-08 21:30:00",
+  "order_candidates": [
+    {"order": "虚化实景图做直播间背景", "price": 20, "feasible": true},
+    {"order": "AI修图两张", "price": 18, "feasible": true},
+    {"order": "做渐变，保持统一", "price": 9, "feasible": true},
+    {"order": "做渐变", "price": 8, "feasible": true},
+    {"order": "平面设计复刻", "price": "报价", "feasible": "需确认"},
+    {"order": "印刷设计内页/外页", "price": "报价", "feasible": "需确认"},
+    {"order": "宣传单/卡片/PPT批量物料", "price": "按单", "feasible": true}
+  ]
+}

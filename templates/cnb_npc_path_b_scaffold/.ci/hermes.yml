@@ -1,0 +1,41 @@
+# =============================================================================
+# 路径B【增强模式：自定义 Docker 镜像容器 NPC】— hermes 角色专属流水线
+# =============================================================================
+# 说明：
+#   - 本文件通过 .cnb.yml 的 include 合并进主配置；
+#   - 顶层 key「hermes」与 .cnb/settings.yml 中 npc.roles[].name 精确匹配，
+#     当 @hermes 被提及时，走本路径B 自定义镜像容器（覆盖 $ 兜底路径A）；
+#   - 镜像内嵌【GitHub 原生 Hermes CLI（NousResearch/hermes-agent）】+ 额度监控；
+#     hermes 模型端点指向 CNB 内置免费 DeepSeek-V4-Flash 网关；
+#   - 不蒸馏、不裁剪原生编排/调度/技能能力，保留 Hermes 原生能力；
+#   - 鉴权密钥、模型参数全部从容器环境变量注入，镜像零硬编码密钥。
+# =============================================================================
+
+# ---- 路径B NPC 任务模板 ----
+.npc_task_full_hermes: &npc_task_full_hermes
+  - docker:
+      # 自定义镜像（原生 Hermes CLI + 额度监控）
+      # 由 .cnb.yml main.push 镜像构建流水线构建并推送至制品库
+      # ⭐ 强制基座锁定：CNB 内置免费 deepseek-v4-flash（有效期至 2026-12-31，1600核时/月免费配额）
+      image: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.6.0
+    env:
+      # 鉴权与模型参数全部环境变量注入（镜像零硬编码）
+      NPC_MODEL: deepseek-v4-flash        # ⭐强制锁定CNB内置免费基座，禁止默认切换付费模型
+      REASONING_EFFORT: high
+      QUOTA_LIMIT: "1600"
+    stages:
+      - name: npc-go-full-hermes-container
+        type: npc:go
+        options:
+          # ⭐ 双保险：options.model 同样显式绑定免费基座，防止落到其它模型
+          model: deepseek-v4-flash
+          # 跨仓库编排类任务（合并PR→等构建→逐仓克隆验收→触发NPC）单次会消耗大量轮次，
+          # 60 轮仍会触发 "Agent aborted: reached maxTurns limit"（构建 cnb-p0o-1jvgj2pvt 实证），
+          # 上调至 100 避免编排中途被截断；单仓轻任务不受影响
+          maxTurns: 100
+          contextWindow: "128k"
+
+# ---- hermes 角色：路径B（覆盖 $ 兜底的路径A）----
+hermes:
+  issue.comment@npc: *npc_task_full_hermes
+  pull_request.comment@npc: *npc_task_full_hermes
