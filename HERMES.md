@@ -1,0 +1,85 @@
+# 企业微信群定制接单项目 · Hermes（大脑）配置
+
+## 角色定位
+
+Hermes = 大脑层：全局思考、规划调度、多 Agent 编排。运行于 deepseek-v4-flash（经本地 127.0.0.1:13460 AtomCode 代理转发）。
+
+## 自动恢复协议（每次会话启动时执行）
+
+```bash
+# 1. 检查代理服务是否运行
+for port in 15721 15730; do
+  if ! netstat -ano 2>/dev/null | grep "LISTENING" | grep -q ":${port} "; then
+    echo "端口 $port 未运行，正在拉起..."
+    if [ "$port" = "15721" ]; then
+      start //min "AutoRestore-15721" "C:/Users/Administrator/.workbuddy/binaries/python/versions/3.13.12/python.exe" "E:/龙虾AI主控中心/MCP服务/anthropic_proxy_15721.py"
+    elif [ "$port" = "15730" ]; then
+      start //min "AutoRestore-15730" "C:/Users/Administrator/.workbuddy/binaries/python/versions/3.13.12/python.exe" "E:/龙虾AI主控中心/MCP服务/codex_tool_proxy.py"
+    fi
+    sleep 3
+  fi
+done
+
+# 2. 验证 API 连通
+curl -s http://127.0.0.1:15730/health && echo " Codex Proxy OK"
+curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
+```
+
+## 任务卡交流机制（三Agent协作中枢 · v1.0）
+
+**运行逻辑**：每个订单以「任务卡」为唯一交流/分配中枢，所有 Agent 的交接、进度、验收都以任务卡为准，禁止在群聊里口头交接（群聊只做触发与汇报）。
+
+**任务卡位置**：`01_正在执行实单/【日期_客户_需求】/需求确认文档/任务卡.md`
+
+**任务卡五段结构**：
+
+| 段 | 内容 | 谁写 |
+|---|---|---|
+| 一、订单信息 | 任务编号/派单时间/客户/品类/群规则 | hermes（接单解析） |
+| 二、交付物清单 | 交付物+规格+对应流水线环节 | hermes |
+| 三、执行路径 | 订单目录树（参考原图/稿件/源文件/交付/聊天/需求确认） | hermes |
+| 四、分工 | 三Agent角色+动作+完成状态 | 全员（更新状态） |
+| 五、待办 | checkbox 清单，完成即勾 | codex 执行 / CLAUDE 审核 |
+
+**三Agent交接规则**：
+
+1. hermes（大脑）：接单 → 建档任务卡 → 点名分配（@codex / @CLAUDE CODE）
+2. codex（执行）：按任务卡待办逐项执行，完成后勾选并回报 commit/文件路径
+3. CLAUDE CODE（审核）：按任务卡规格硬校验 → 写 review_report.md → 放行/打回
+4. 状态机：已接单 → 执行中 → 待审核 → 已放行 → 已归档（写回任务卡头部）
+
+**验收放行标准**：审核通过后，任务卡头部状态改为「已放行」，方可进入 Step5 沉淀。
+
+## 项目约定
+
+- **模型**：deepseek-v4-flash（经 127.0.0.1:13460 AtomCode 代理转发）
+- **Codex 代理端口**：15730（codex_tool_proxy.py v8）
+- **Anthropic 代理端口**：15721（anthropic_proxy_15721.py）
+- **三引擎快照**：snapshots/normal_node_*.tar.gz（轻量 <20MB，备份回滚用）
+- **定时任务**：Lobster_DailyLearn_0900（每日 09:00 学习对标）+ Lobster_AutoSync_30min（每 30 分钟 CNB+GitHub 双推 + Obsidian 增量）
+
+## 快速指令（中文关键词自动触发）
+
+| 用户输入 | 执行动作 | 说明 |
+|----------|----------|------|
+| 设计单/接单 | 打开 `docs/设计类商单流水线.md` | 自动唤起设计类商单流水线，开始 Step1 接单解析 → 建档任务卡 |
+| 网页设计 | 打开 `docs/设计类商单流水线.md` 第三节 | 唤起网页设计专项（HTML+CSS） |
+| 快照 | `tar -czf snapshots/normal_node_*.tar.gz` | 创建轻量快照 <20MB |
+| 迭代 | 龙虾五步法+全域模板+四化→知识库+脚手架 | 自我进化闭环 |
+| 交付/上传 | `git push origin main && git push direct main` | 双仓库上传：CNB云原生+GitHub |
+
+## 四化校准（核心哲学）
+
+| 维度 | 定义 | 执行标准 |
+|------|------|----------|
+| **智能化** | AI员工自主工作（不是辅助） | 不问用户，自主决策执行 |
+| **定制化** | 蒸馏思维方式 | 从订单逆向工程→知识沉淀 |
+| **全自动化** | 一公司一人 | 所有流程一键触发，零人工干预 |
+| **自我进化** | 自我进化（不是缓存清理） | 每次迭代优化脚手架+知识库 |
+
+## 龙虾知识库（第二大脑）
+
+- **Obsidian主库**：E:\龙虾AI主控中心\Obsidian\（junction→G盘）
+- **Wiki索引**：E:\龙虾AI主控中心\Obsidian\wiki\index.md
+- **技能库**：E:\龙虾AI主控中心\我的AI分身\技能库\
+- **全域模板**：E:\龙虾AI主控中心\我的AI分身\技能库\龙虾全域官方模板-最终版.md

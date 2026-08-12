@@ -147,6 +147,26 @@
 
 ---
 
+## 2026-08-12 · 三引擎正常节点快照 + 任务卡协作机制固化
+
+### 本次亮点
+- **正常节点确认**：hermes/codex/CLAUDE CODE 三引擎全部正常运转（deepseek-v4-flash 经 127.0.0.1:13460 代理），此前三类反复故障（doubao-proxy stdio/url 冲突、max 非法档位、代理 502）全部修复
+- **轻量快照**：`snapshots/normal_node_20260812_235516.tar.gz`（11M < 20M，排除 .git/对话记录/msgbus/fleet_exchange/worktrees/logs），备份回滚基线
+- **任务卡交流机制固化**：CLAUDE.md / CODEX.md / HERMES.md（新建）/ hermes/system_prompt.md 四处写入「任务卡五段结构 + 状态机（已接单→执行中→待审核→已放行→已归档）+ 三Agent交接规则」
+- **四化迭代**：wiki 入库 `Obsidian/wiki/舰队运维/三引擎正常节点快照与任务卡机制_20260812.md` + 复盘 `docs/技能沉淀/20260812_三引擎正常节点快照与任务卡机制_复盘.md`
+
+### 踩坑与解法
+| 坑 | 解法 |
+|----|------|
+| tar 打包时快照文件自身被读入（file changed as we read it） | 先打包到 /tmp 再 mv 回 snapshots/，避免自包含 |
+| HERMES.md 脚手架缺失（此前只有 CLAUDE.md/CODEX.md） | 新建 HERMES.md，与 hermes/system_prompt.md 双轨对齐 |
+| Obsidian 归档路径此前审核未落地 | 确认 E:\龙虾AI主控中心\Obsidian\wiki\ 实际存在，直接入库舰队运维/ |
+
+### 永久规则
+> 每个订单以「任务卡」为唯一交流/分配中枢，群聊只做触发与汇报；快照统一命名 `snapshots/normal_node_*.tar.gz` 且 <20M。
+
+---
+
 ## 自动追加区（桥接脚本实时写入）
 
 - [20260808_201532_AG] 企业接单 执行成功：20260808_201532_AG__AutoGPT_企业接单.md
