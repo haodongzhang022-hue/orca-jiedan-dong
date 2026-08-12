@@ -183,6 +183,34 @@
     </svg>
   </section>
 
+  <!-- ============ 踩坑排查 ============ -->
+  <section>
+    <h2>🛠️ 如果你看到这两个画面（最新踩坑：2026-08-12 实测反馈）</h2>
+
+    <div class="note red">
+      <b>情况A：打开出现「您似乎迷失在了代码的海洋里」+ 地址栏是 <code>cnb.cool/undefined/-/workspace/err...</code></b><br>
+      这是 <b>CNB 自己的「工作区不存在」报错页</b>，不是 Hermes 控制台。
+      <code>undefined</code> = 你的云端工作区<b>已被回收/已失效</b>（平台回收：10分钟无操作 / 最长18小时 / 每天凌晨4-6点强制回收），或你点开了<b>旧的/失效</b>的工作区链接。<b>不是代码问题</b>。
+    </div>
+    <pre>修复（不用改代码，代码已是修复版）：
+1. 关闭报错页，回到仓库主页 https://cnb.cool/TJF19770107/orca-jiedan
+2. 分支下拉框确认选 main（修复版，含 PR #38）
+3. 重新点顶部「云原生开发」按钮 → 等它重建出【新的】工作区
+4. 进新 WebIDE → 底部 PORTS 面板 → 添加 6060 → 点生成的真实地址
+⚠️ 工作区被回收后地址里的随机 id 会变，别存旧书签，每次从仓库按钮重新进。</pre>
+
+    <div class="note red">
+      <b>情况B：把 <code>curl http://127.0.0.1:8787/health</code> 输到了百度搜索框</b><br>
+      <code>curl</code> 是<b>终端命令</b>，不是网页搜索词。必须在你那个 <b>WebIDE 的「终端/Terminal」面板</b>里输入，不能粘贴到百度/浏览器地址栏。
+    </div>
+    <pre>在哪输入（WebIDE 打开后）：
+WebIDE 界面最底部 → 点「终端 / Terminal」标签页
+（没有的话：顶部菜单 Terminal → New Terminal，或快捷键 Ctrl+`）
+在弹出的终端里粘贴：  curl http://127.0.0.1:8787/health
+按回车 → 返回 {"model":"deepseek-v4-flash",...} = 免费网关适配层在跑 ✅
+💡 终端粘贴用 Ctrl+Shift+V；敲中文打不出就复制好再 Ctrl+Shift+V 粘贴。</pre>
+  </section>
+
   <!-- ============ 验证清单 ============ -->
   <section>
     <h2>✅ 验证成功标准（照表勾）</h2>
