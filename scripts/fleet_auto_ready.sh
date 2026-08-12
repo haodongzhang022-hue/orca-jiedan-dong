@@ -109,6 +109,32 @@ if [ -f "$CODEX_CONFIG" ] && [ -f "$(dirname "$RUNTIME_CONFIG")" ]; then
     echo "[OK] Codex runtime 配置已同步"
 fi
 
+# ---- 3.5 doubao-proxy stdio 净化（根治 url 不支持 stdio 报错）----
+# 根因：Codex++ 运行时把 doubao-proxy 覆写成 type=stdio + url 的坏形态
+# stdio 模式不允许 url/transport 字段，此处强制还原为标准形态
+PYEXE="C:/Users/Administrator/.workbuddy/binaries/python/versions/3.13.12/python.exe"
+if grep -q '^\[mcp_servers\.doubao-proxy\]' "$CODEX_CONFIG" 2>/dev/null && \
+   grep -A6 '^\[mcp_servers\.doubao-proxy\]' "$CODEX_CONFIG" | grep -q 'url\s*='; then
+    echo "[FIX] doubao-proxy 含非法 url（stdio 冲突），还原标准形态..."
+    cp "$CODEX_CONFIG" "$CODEX_CONFIG.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null
+    "$PYEXE" - "$CODEX_CONFIG" << 'PYEOF'
+import sys, re
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+good = '''[mcp_servers.doubao-proxy]
+type = "stdio"
+command = "cmd"
+args = ["/c", "python", "-m", "doubao_proxy_server"]
+
+'''
+m = re.search(r'\[mcp_servers\.doubao-proxy\][^\[]*', s)
+if m and 'url' in m.group(0):
+    open(p, 'w', encoding='utf-8').write(s[:m.start()] + good + s[m.end():])
+PYEOF
+    echo "[OK] doubao-proxy 已还原为标准形态"
+    ERRORS=$((ERRORS+1))
+fi
+
 # ---- 4. API 连通验证 ----
 for ENDPOINT in "http://127.0.0.1:15730/health" "http://127.0.0.1:15721/health"; do
     if curl -s --connect-timeout 3 "$ENDPOINT" > /dev/null 2>&1; then

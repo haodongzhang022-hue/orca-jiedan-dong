@@ -40,6 +40,35 @@ if [ -f "$CODEX_CONFIG" ] && [ -d "$(dirname "$RUNTIME_CONFIG")" ]; then
     cp "$CODEX_CONFIG" "$RUNTIME_CONFIG" 2>/dev/null
 fi
 
+# 3.5 doubao-proxy stdio 净化（根治 Codex++ 覆写导致的 url/stdio 报错）
+# 根因：Codex++ 运行时把 doubao-proxy 覆写成 type=stdio + url 的坏形态，
+# 而 stdio 模式不允许 url/transport 字段，强制还原为标准形态（command/args）。
+if [ -f "$CODEX_CONFIG" ]; then
+    if grep -q '^\[mcp_servers\.doubao-proxy\]' "$CODEX_CONFIG" 2>/dev/null; then
+        if grep -A6 '^\[mcp_servers\.doubao-proxy\]' "$CODEX_CONFIG" | grep -q 'url\s*='; then
+            cp "$CODEX_CONFIG" "$CODEX_CONFIG.bak.$(date +%Y%m%d_%H%M%S)" 2>/dev/null
+            "$PYEXE" - "$CODEX_CONFIG" << 'PYEOF'
+import sys, re
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+good = '''[mcp_servers.doubao-proxy]
+type = "stdio"
+command = "cmd"
+args = ["/c", "python", "-m", "doubao_proxy_server"]
+
+'''
+m = re.search(r'\[mcp_servers\.doubao-proxy\][^\[]*', s)
+if m and 'url' in m.group(0):
+    open(p, 'w', encoding='utf-8').write(s[:m.start()] + good + s[m.end():])
+    print('[fix] doubao-proxy 已还原为标准 stdio 形态（url/transport 已清除）')
+else:
+    print('[ok] doubao-proxy 已是标准形态')
+PYEOF
+            FIXED=1
+        fi
+    fi
+fi
+
 # 4. 验证
 ALL_OK=1
 for PORT in 15721 15730; do
