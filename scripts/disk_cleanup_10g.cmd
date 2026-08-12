@@ -2,10 +2,15 @@
 rem ============================================================
 rem  Lobster DiskCleanup - keep C/D/E/F above 10GB free
 rem  Safe cleanup ONLY: recycle bin + temp files older than 7 days + package caches
-rem  Scheduled daily 03:00 by schtasks task: Lobster_DiskCleanup_0300
-rem  Log: logs/disk_cleanup.log
+rem  NOTE: upgrade candidate; ACTIVE scheduled task is
+rem        Lobster_DiskCleanup_Daily -> scripts/cleanup_disk.cmd (daily 03:00)
+rem  This file is wired via run_disk_cleanup.cmd (ASCII wrapper) but is
+rem  NOT attached to any schtasks task yet - kept as the 10G-guard upgrade.
+rem  Log: <project>/logs/disk_cleanup.log
+rem  ASCII-only on purpose: GBK cmd cannot render UTF-8 Chinese paths.
 rem ============================================================
-set LOGDIR=E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目\logs
+set SCRIPT_DIR=%~dp0
+set LOGDIR=%SCRIPT_DIR%..\logs
 if not exist "%LOGDIR%" mkdir "%LOGDIR%"
 echo [%date% %time%] CLEANUP START >> "%LOGDIR%\disk_cleanup.log"
 
