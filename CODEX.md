@@ -76,6 +76,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 网页设计 | 打开 `docs/设计类商单流水线.md` 第三节 | 唤起网页设计专项（HTML+CSS） |
 | 一人一公司/AUTOGAT/agency/公司化运营 | 加载 `E:\龙虾AI主控中心\我的AI分身\技能库\agency-agents\` | 一人一公司技能集：17部门200+角色，按需求选角色执行（设计单→design/8角色，营销→marketing/30角色，antigravity/184 SKILL.md 可直接加载） |
 | 交付/上传 | `git push origin main && git push direct main` | 双仓库上传：CNB云原生+GitHub |
+| 三载体联动/联动迭代/记忆资产同步/DeepSeek运维/群聊链路优化 | 联动迭代三载体 | 五步法v4.0(§14)+全域模板#301+本脚手架，五部分执行指令默认加载 |
 
 **重要**：执行完命令后，将输出结果直接返回给用户。如果代理已正常运行，命令会自动跳过恢复步骤，不影响任何对话和任务数据。
 
@@ -103,3 +104,17 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | Step3 规划 | 参考 项目交付/项目规范总览 |
 | Step4 执行 | 执行过程中记录到 daily/ |
 | Step5 沉淀 | 蒸馏到 wiki/ + SKILL.md |
+
+## 三载体联动迭代（v4.0 · 2026-08-13）
+
+**规则：每次迭代必须三载体同步（否则融合）：**
+1. **龙虾五步法** → `技能库\lobster_task_standard_workflow_v3.0\龙虾五步法V3.6·PR#21闭环版（成本优先置顶）SKILL.md`（v4.0 §14）
+2. **全域模板** → `技能库\龙虾全域官方模板-最终版.md`（#301）
+3. **项目脚手架** → 本文件（CLAUDE.md / CODEX.md / HERMES.md 三份同步）
+
+**执行侧职责（五部分指令对应）：**
+- 记忆资产同步：执行记忆→Obsidian 归档链路，产出物按分类落 wiki/技能沉淀/副业变现
+- DeepSeek 运维：按配置锁存参数执行（禁止误改 URL/漏写 s），密钥只读环境变量
+- 群聊链路：按任务卡执行（Codex=执行层），长任务分片并行，结果回写 Obsidian
+- 补强事项：执行 Obsidian 同步脚本、E/G 双盘 mklink、中文日志、book-to-skill 上传
+- 复盘闭环：每轮任务完成自动生成复盘文档，反向更新三份记忆卡片
