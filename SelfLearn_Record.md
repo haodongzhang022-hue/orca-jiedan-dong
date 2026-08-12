@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-08-12 · 设计类商单流水线落地 + 定时任务真实注册 + 夜星空01首单
+
+### 本次亮点
+- `docs/设计类商单流水线.md` v1.0 落地（五步闭环 + 网页专项 + 双仓库 + 自我进化 + 关键词触发）
+- CLAUDE.md 注册触发：`设计单/接单` `网页设计` `交付/上传`
+- 定时任务 **schtasks 真实注册成功**：`Lobster_DailyLearn_0900`（每日09:00学习对标）+ `Lobster_AutoSync_30min`（每30分钟双推+Obsidian增量）
+- 夜星空01（task08121841139602）任务卡建档 + 网页骨架交付（web/index.html + style.css）
+- CNB 云原生推送成功：c132f1b→acd6597
+
+### 踩坑与解法（定时任务注册）
+| 坑 | 解法 |
+|----|------|
+| 之前只有 .sh 脚本没真实注册计划任务（schtasks 查询不到） | 建 `.cmd` 包装脚本指向 git-bash，`schtasks /create /sc daily /st 09:00` 与 `/sc minute /mo 30` 注册成功 |
+| git-bash 调 schtasks 时 `/query` `/tr` 被 MSYS 路径转换破坏 | 加 `MSYS_NO_PATHCONV=1` 前缀，路径双反斜杠+引号包裹 |
+| GitHub 直连 443 超时（网络中断） | 交由 30 分钟同步任务自动重试 `git push direct main`，不阻塞交付 |
+
+### 待办（下一迭代）
+- Step3 设计执行：PSD（Logo/Banner/海报 1920px·72PPI）+ Word 交付文档
+- Step4 审核验收：CLAUDE CODE review_report.md
+- GitHub 推送：网络恢复后由 Lobster_AutoSync_30min 兜底
+
+### 四化状态
+- [x] 智能化：流水线自动唤起，接单即建档
+- [x] 定制化：客户风格蒸馏为设计偏好模板（Obsidian/副业变现）
+- [x] 全自动化：定时学习对标 + 双同步托管
+- [x] 自我进化：沉淀即进化，本记录 + wiki 案例回灌
+
+---
+
 ## 2026-08-08 · AutoGPT 融合 ORCA 全链路（Issue #10 首轮交付）
 
 ### 本次亮点
