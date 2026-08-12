@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-08-13 · 双雄思维蒸馏 + 磁盘清理定时任务 + 对话框保存确认（三载体联动 #302）
+
+### 本次亮点
+- **马斯克×巴菲特思维蒸馏 Skill v1.0 落地**：`技能库\马斯克巴菲特思维蒸馏_SKILL.md`——第一性原理（创造）+能力圈（取舍）双雄合流，接单研判→能力圈三问、报价→成本×安全边际、复盘→失败即数据+复利回灌
+- **磁盘清理定时任务真实注册**：`Lobster_DiskCleanup_Daily`（每日03:00，schtasks 实测成功），脚本 `scripts\cleanup_disk.cmd`（GBK+CRLF 编码防 cmd 中文乱码）首跑效果：E盘 1.1G→3.9G、回收站全清
+- **对话框保存机制确认**：群聊实时落盘 `C:\Users\Administrator\.hermes-web-ui\hermes-web-ui.db`（SQLite+WAL），附件在 group-chat\attachments\；知识沉淀仍需任务卡+SelfLearn+Obsidian 回灌
+- **三载体注册完成**：五步法 §11.3 新增「思维蒸馏/磁盘清理」触发词两行 + 全域模板 #302 + 脚手架三文件触发行
+
+### 踩坑
+- **cmd 批处理中文路径乱码**：.cmd 脚本含中文路径且 UTF-8 无 BOM 会被 cmd 按 GBK 解析乱码（报「找不到路径」）——必须用 GBK 编码 + CRLF 行尾 + 纯 ASCII 命令体
+- **schtasks 注册**：Git Bash 下 `//create` 无效，需 `MSYS_NO_PATHCONV=1 schtasks /create /tn ... /tr "完整路径" /sc daily /st 03:00 /f`
+
+---
+
 ## 2026-08-13 · 夜星空01 Step4终验放行 + Step5闭环（任务卡状态机→已放行）
 
 ### 本次亮点

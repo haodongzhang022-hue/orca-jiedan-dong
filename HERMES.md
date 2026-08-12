@@ -69,6 +69,8 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 一人一公司/AUTOGAT/agency/公司化运营 | 加载 `E:\龙虾AI主控中心\我的AI分身\技能库\agency-agents\` | 一人一公司技能集：17部门200+角色，按需求选角色执行（设计单→design/8角色，营销→marketing/30角色，antigravity/184 SKILL.md 可直接加载） |
 | 交付/上传 | `git push origin main && git push direct main` | 双仓库上传：CNB云原生+GitHub |
 | 三载体联动/联动迭代/记忆资产同步/DeepSeek运维/群聊链路优化 | 联动迭代三载体 | 五步法v4.0(§14)+全域模板#301+本脚手架，五部分执行指令默认加载 |
+| 马斯克/巴菲特/对标/第一性原理/能力圈/护城河/思维蒸馏 | 加载 `E:\龙虾AI主控中心\我的AI分身\技能库\马斯克巴菲特思维蒸馏_SKILL.md` | 双雄思维弹药库：第一性原理拆解(创造)+能力圈取舍(接单)，接单研判/报价/执行/复盘全场景可用 |
+| 磁盘清理/清理磁盘/释放空间/盘满了 | 运行 `scripts\cleanup_disk.cmd`（定时任务 Lobster_DiskCleanup_Daily 每日03:00） | 清理C/D/E/F盘回收站+临时目录+包缓存，保持10G以上 |
 
 ## 四化校准（核心哲学）
 
