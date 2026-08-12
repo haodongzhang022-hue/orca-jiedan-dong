@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-wecom_order_monitor.py — 企业微信群自动接单扫描（本地附件轮询版 v1.0）
+wecom_order_monitor.py — 企业微信群自动接单扫描（本地附件轮询版 v1.1）
 
 归属：企业微信群定制接单项目 · 自动化接单扫描方案 A（本地合规边界内）
-创建：2026-08-13 | 依据：方案对比中 A 现状半自动 + B 会话存档框架的过渡落地
+创建：2026-08-13 | v1.1（2026-08-13）：预埋视觉模型识别引擎（Qwen3-VL-8B）
+依据：方案对比中 A 现状半自动 + B 会话存档框架的过渡落地
 
 职责（纯本地、零外部授权、不读取加密消息库）：
   1. 轮询 Hermes 群聊附件目录，发现新截图（png/jpg）
-  2. 对新图调用 tesseract OCR（chi_sim）识别文字
+  2. 识别文字：优先 Qwen3-VL-8B 视觉模型（看懂版式/编号/需求，远强于 OCR）；
+     视觉被套餐锁定（403）或失败时自动回退 tesseract OCR（chi_sim）
   3. 关键词识别：接单/扣1/任务编号/task/设计/海报/logo/网页/美工/报价/需求/尺寸
   4. 命中接单关键词 → 自动生成「任务卡草案」到 01_正在执行实单/_自动接单池/
   5. 记录已处理图片清单（state.json），避免重复处理
@@ -19,6 +21,12 @@ wecom_order_monitor.py — 企业微信群自动接单扫描（本地附件轮�
   python scripts/wecom_order_monitor.py --dryrun       # 预演（不写任务卡）
   python scripts/wecom_order_monitor.py --scan-all     # 强制重扫全部图片
 
+引擎说明（v1.1 实测结论 2026-08-13）：
+  - deepseek-v4-flash 是纯文本/编程模型，无视觉模态，看图必须靠外部识别；
+  - Qwen/Qwen3-VL-8B-Instruct 视觉模型在 /v1/models 可见，但 Lite 套餐调用返回
+    HTTP 403 "model is not enabled for codingplan 'Lite'"——需 Pro 及以上解锁；
+  - 本脚本已预埋视觉分支：Pro 解锁后无需改脚本自动启用，当前自动回退 OCR。
+
 合规边界：
   - 只读本群附件目录（用户已发送的截图），不碰企微加密消息库（SQLCipher）
   - 会话存档 API 属外部授权，见 docs/自动化接单扫描_方案B_会话存档.md（预留框架）
@@ -26,12 +34,15 @@ wecom_order_monitor.py — 企业微信群自动接单扫描（本地附件轮�
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import re
 import shutil
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
@@ -44,6 +55,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ORDER_POOL = PROJECT_ROOT / "01_正在执行实单" / "_自动接单池"
 STATE_FILE = PROJECT_ROOT / "config" / "wecom_monitor_state.json"
 TESSERACT = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+# ── 视觉识别引擎（v1.1 预埋，Pro 解锁后自动生效） ──────────
+VISION_API = "http://127.0.0.1:13460/v1/chat/completions"
+VISION_MODEL = "Qwen/Qwen3-VL-8B-Instruct"
+VISION_PROMPT = (
+    "你是接单群截图识别器。请原样输出这张截图里的全部文字与订单信息："
+    "订单编号（如071/072）、客户名、交付物（海报/名片/logo/网页等）、"
+    "规格尺寸、报价金额、时间要求。看不清的写'不可辨识'，不要编造。"
+)
 
 # ── 接单关键词（命中任一即视为候选订单） ───────────────────
 ORDER_KEYWORDS = [
@@ -79,18 +99,59 @@ def save_state(state: Dict) -> None:
     )
 
 
-def ocr_image(img: Path) -> str:
-    """调用 tesseract 识别中文。失败返回空串。"""
+def vision_recognize(img: Path) -> Optional[str]:
+    """调用 Qwen3-VL-8B 视觉模型识别截图。被套餐锁定(403)或失败返回 None。"""
+    try:
+        b64 = base64.b64encode(img.read_bytes()).decode()
+        payload = {
+            "model": VISION_MODEL,
+            "messages": [{
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": VISION_PROMPT},
+                    {"type": "image_url",
+                     "image_url": {"url": f"data:image/png;base64,{b64}"}},
+                ],
+            }],
+            "max_tokens": 500,
+        }
+        req = urllib.request.Request(
+            VISION_API, data=json.dumps(payload).encode(),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=90) as r:
+            out = json.loads(r.read().decode())
+            text = out["choices"][0]["message"]["content"]
+            return text.strip() if text else None
+    except urllib.error.HTTPError as e:
+        # 403 = 套餐未解锁视觉模型（Lite），属预期，静默回退 OCR
+        if e.code == 403:
+            return None
+        return None
+    except Exception:
+        return None
+
+
+def ocr_image(img: Path) -> Tuple[str, str]:
+    """双引擎识别：先视觉模型（Pro 解锁后生效），失败自动回退 tesseract。
+
+    返回 (识别文本, 引擎名)，引擎名用于日志对账：vision / ocr / none。
+    """
+    if img.suffix.lower() == ".png":
+        text = vision_recognize(img)
+        if text:
+            return text, "vision"
     if not TESSERACT or not Path(TESSERACT).exists():
-        return ""
+        return "", "none"
     try:
         r = subprocess.run(
             [TESSERACT, str(img), "stdout", "-l", "chi_sim", "--psm", "6"],
             capture_output=True, timeout=60,
         )
-        return r.stdout.decode("utf-8", errors="ignore").strip()
+        text = r.stdout.decode("utf-8", errors="ignore").strip()
+        return text, ("ocr" if text else "none")
     except Exception:
-        return ""
+        return "", "none"
 
 
 def is_order_candidate(text: str) -> Tuple[bool, List[str]]:
@@ -167,16 +228,16 @@ def main() -> int:
             if fhash in processed and not args.scan_all:
                 continue
             new_found += 1
-            text = ocr_image(img)
+            text, engine = ocr_image(img)
             ok, hits = is_order_candidate(text)
             if ok:
                 orders += 1
-                print(f"[候选订单] {img.name} 命中: {hits}")
+                print(f"[候选订单] {img.name} 命中: {hits}（引擎: {engine}）")
                 if not args.dryrun:
                     draft = write_order_draft(img, text, hits)
                     print(f"[已生成] 任务卡草案: {draft}")
             else:
-                print(f"[非订单] {img.name}（未命中接单关键词）")
+                print(f"[非订单] {img.name}（引擎: {engine}，未命中接单关键词）")
             processed.add(fhash)
 
     state["processed"] = sorted(processed)
