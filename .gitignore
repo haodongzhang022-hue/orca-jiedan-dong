@@ -74,3 +74,4 @@ nul
 
 # CNB Bridge Token (auto-generated)
 bridge_cnb_npc/config/token_config.json
+config/wecom_monitor_state.json
