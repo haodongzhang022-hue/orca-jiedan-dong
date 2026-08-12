@@ -1,0 +1,29 @@
+# NPC 事件流水线 — 一键拉起云上Deepseek V4-Flash 标准版（codex / claude-code）
+# 参考: https://docs.cnb.cool/zh/build/npc.md + https://cnb.cool/cnb/cool/default-codebuddy-npc
+# 说明:
+#  1. 角色名（codex / claude-code）必须与 .cnb/settings.yml 中 npc.roles[].name 完全一致
+#  2. type: npc:go 内置任务，模型通过 options.model 传入（官方 internal-steps#npc 文档，所有事件下均生效）
+#  3. 默认镜像 default-codebuddy-npc 内置 CodeBuddy CLI / cnb-cli / Skills，零成本运行
+#  4. $ 兜底分支：未显式匹配到角色时也允许走默认 NPC 行为（Maris/其他调度均可触发）
+
+.npc_task: &npc_task
+  - docker:
+      image: cnbcool/default-codebuddy-npc:latest
+    stages:
+      - name: npc go
+        type: npc:go
+        options:
+          model: deepseek-v4-flash
+
+codex:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task
+
+claude-code:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task
+
+# 角色未显式匹配时（兜底），也允许走默认 NPC 行为
+$:
+  issue.comment@npc: *npc_task
+  pull_request.comment@npc: *npc_task

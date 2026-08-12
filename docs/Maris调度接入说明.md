@@ -94,11 +94,37 @@ ls -lt fleet_exchange/results/ | head -5
 
 ## 五、云端 NPC 协作
 
-| NPC | 触发方式 | 职责 |
-|-----|---------|------|
-| @codex | Issue/PR 评论 `@codex` | 代码执行、脚本生成 |
-| @claude-code | Issue/PR 评论 `@claude-code` | 代码审计、质量校验 |
-| @CodeBuddy | Issue/PR 评论 `@CodeBuddy` | 终审、方案建议 |
+| NPC | 触发方式（完整格式） | 职责 |
+|-----|---------------------|------|
+| Codex | Issue/PR 评论 `@TJF19770107/orca-jiedan(codex)` | 代码执行、脚本生成 |
+| Claude Code | Issue/PR 评论 `@TJF19770107/orca-jiedan(claude-code)` | 代码审计、质量校验 |
+| CodeBuddy | Issue/PR 评论 `@CodeBuddy` | 终审、方案建议 |
+
+> ⚠️ 必须用完整格式 `@TJF19770107/orca-jiedan(codex)`，简写 `@codex` 平台不识别；评论需勾选「替我上班」才能让 NPC 读写代码。
+
+## 五点五、标准脚手架模板
+
+批量部署/新项目初始化请使用改名后的标准模板（原 `orca_fleet_scaffold_v1.4`）：
+
+```
+templates/一键拉起云上Deepseek V4-Flash 标准版/
+├── .cnb.yml                  # NPC 事件绑定（options.model: deepseek-v4-flash）
+├── .cnb/settings.yml         # NPC 角色定义
+├── .orca/setup.sh            # ORCA 打开项目自动就绪
+├── 脚手架README.md           # 模板说明
+├── fleet_exchange/           # 任务流转区模板
+└── scripts/
+    ├── apply_scaffold.sh     # ★ 一键批量部署（单项目/多项目/--all）
+    ├── 一键拉起_CNB云原生DeepSeekV4Flash.bat
+    ├── orca_init_worktrees.sh
+    ├── maris_dispatch.sh
+    └── maris_gen_readme.sh
+```
+
+```bash
+# 一键部署到新项目
+bash "templates/一键拉起云上Deepseek V4-Flash 标准版/scripts/apply_scaffold.sh" "E:/龙虾AI主控中心/我的AI分身/你的新项目"
+```
 
 ## 六、故障排查
 
