@@ -56,3 +56,13 @@ triggers:
       action: "crawler_poll"
       task_name: "xianyu_crawler_poll"
       file_path: "scripts/auto_xianyu_scheduler.py"
+
+  AG_Secret_Cleanup:
+    cron: "0 2 * * *"
+    schedule_human: "每日 02:00"
+    workflow: "安全基线"
+    desc: "P0-1 密钥定时扫描+自动脱敏（检测 sk-/ghp_/tp-/api_key 明文入库）"
+    params:
+      action: "redact"
+      task_name: "secret_cleanup_scan"
+      file_path: "scripts/secret_scan_cleanup.py"
