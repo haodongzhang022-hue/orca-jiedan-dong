@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-08-13 16:06 · codex max防线本轮复核 + 新基线快照 160650（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖"）
+
+### 本轮新增事实（区别于 16:00 条，本轮为收尾复核 + 新基线）
+- **身份澄清（回答"不是ATOMCODE吗"）**：修复动作归属 hermes（大脑），运行载体是 AtomCode（13460 代理 → deepseek-v4-flash）——两种说法都对，动作归 hermes、载体是 AtomCode
+- **新回滚基线**：`snapshots/normal_node_20260813_160650.tar.gz`（17.0MB < 20M），BASELINE.md 已更新为新基线；快照踩坑：`--exclude=./xxx` 需带 `./` 前缀且须排除 `对话记录/`（32M 聊天备份，属外部备份非项目状态）
+- **防线四层复核全通过**：①源头 `Hermes Studio\resources\webui\dist\server\index.js` grep max = 0 ②`Lobster_CodexCatalogGuard` 就绪（10 分钟周期，catalog_guard.log 15:45-16:05 连续输出）③`fleet_auto_restore.cmd` 第 5.5 步启动兜底在库 ④3 个 catalog JSON 全合法（none/minimal/low…，零 max）
+- **踩坑要点**：打包时 `对话记录/` 目录会膨胀快照体积（本次首包 25.9M 超限，排除后 17M），与 BASELINE 约定（排除 .git/对话记录/msgbus/worktrees/logs/snapshots）一致；防线核查四层独立存活，任何单层被 Hermes 更新覆盖其余层仍拦截
+
+## 2026-08-13 16:00 · codex max根防线落实复核 + 新基线快照（codex 执行 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖"）
+
+### 本次新增事实（区别于 15:56 条，本轮为根防线落实）
+- **身份澄清**：修复动作归属 hermes（大脑）手动改 catalog，运行载体是 AtomCode（13460 代理 → deepseek-v4-flash）——"不是ATOMCODE吗"的答案是：载体是 AtomCode，动作是 hermes 做的，两种说法都对
+- **新回滚基线**：`snapshots/normal_node_20260813_155724.tar.gz`（16.9MB < 20M），BASELINE.md 已更新
+- **防生成根防线实锤**：index.js 档位集合无 max（xhigh 8 处+合法集合）+ 3 份 .bak 防覆盖；`Lobster_CodexCatalogGuard` 守护任务 Ready（10 分钟巡检）；fleet_auto_restore.cmd 第 5.5 步启动兜底在库；当前 catalog 第 34 行 effort=xhigh 零 max 残留
+- **踩坑要点**：核查防线要看四层（源头 index.js / 守护任务 / 启动兜底 / 脚本双副本），单层被 Hermes 更新覆盖时其余层仍拦截——「防生成拦截写入」由源头无 max + 模板自愈写回机制落实
+
 ## 2026-08-13 15:56 · codex max防线端到端实测 + 新基线快照（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖"）
 
 ### 本次新增事实（区别于 15:43 条，本轮为端到端实测）
