@@ -135,6 +135,23 @@ PYEOF
     ERRORS=$((ERRORS+1))
 fi
 
+# ---- 3.6 codex model_catalog 防生成预修复（max 非法档位根防线）----
+# 根因：Hermes 新建群聊会话重新生成 codex-model-catalog.json 时可能写入
+# 非法档位 "effort":"max"（Codex 只认 none/minimal/low/medium/high/xhigh）。
+# 三层防线（缺一不可）：
+#   1) 本段：舰队启动时预修复一次（启动即修复）
+#   2) Lobster_CodexCatalogGuard 定时任务每 5 分钟巡检（运行中兜底）
+#   3) codex_catalog_guard.py 第2层：检测 index.js 生成源被 Hermes 更新覆盖
+#      后自动重打补丁（防覆盖，杜绝升级后复发）
+GUARD_PY="E:/龙虾AI主控中心/我的AI分身/企业微信群定制接单项目/scripts/codex_catalog_guard.py"
+if [ -f "$GUARD_PY" ]; then
+    echo "[OK] codex catalog 防生成预修复（启动即修复）..."
+    "$PYEXE" "$GUARD_PY" 2>&1 | grep -E "修复|扫描|patch" | head -5
+else
+    echo "[!] catalog guard 脚本缺失：$GUARD_PY"
+    ERRORS=$((ERRORS+1))
+fi
+
 # ---- 4. API 连通验证 ----
 for ENDPOINT in "http://127.0.0.1:15730/health" "http://127.0.0.1:15721/health"; do
     if curl -s --connect-timeout 3 "$ENDPOINT" > /dev/null 2>&1; then

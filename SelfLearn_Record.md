@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-08-13 16:40 · codex max防生成根防线落实 + 防覆盖固化（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本次新增事实（区别于 16:06 条，本轮为防覆盖固化 + 新基线）
+- **身份澄清（回答"不是ATOMCODE吗"）**：修复动作归属 hermes（大脑）+ 守护脚本（codex_catalog_guard.py），运行载体是 AtomCode（13460 代理 → deepseek-v4-flash）——动作归 hermes/codex，载体是 AtomCode，两种说法都对
+- **guard 检测误报修复（本轮实修）**：`codex_catalog_guard.py` 原用裸 `"max"` 字符串判断 index.js 是否被 Hermes 更新覆盖 → minified 代码中任何含 max 的字符串都误触发备份。已改为 `has_bad_effort()` 精确正则（仅匹配 `effort:"max"` 形态），修复后巡检输出「生成源已带补丁（无 effort:max 残留），无需重打」，不再冗余备份
+- **新回滚基线**：`snapshots/normal_node_20260813_163939.tar.gz`（10.6MB < 20M，11,110,713B），BASELINE.md 已更新；首包 24.3M 超限（未排除 fleet_exchange/tools 5M+2.8M），排除后达标
+- **防覆盖四层实锤**：①生成源 index.js 合法六档无 max ②`Lobster_CodexCatalogGuard` 每 5 分钟巡检（16:25/16:32/16:36 连续日志）③fleet_auto_restore.cmd 第 5.5 步启动兜底 ④4+ 份 .bak 备份（含 bak_guard_auto 自动备份）
+- **长期稳定确认**：13460 代理健康（deepseek-v4-flash + Qwen3-VL-8B 在线）、15721 健康、15730 旧代理未监听但现役链路走 13460 不受影响、3 个 catalog 零 max
+- **踩坑要点**：①打包必须排除 fleet_exchange/（5M 会话交换）+tools/（2.8M），否则超 20M ②guard 检测判断要用精确正则防误报——「防覆盖」的代码本身也要防 bug
+
 ## 2026-08-13 16:06 · codex max防线本轮复核 + 新基线快照 160650（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖"）
 
 ### 本轮新增事实（区别于 16:00 条，本轮为收尾复核 + 新基线）
