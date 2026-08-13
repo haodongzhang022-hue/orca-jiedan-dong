@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-08-13 16:48 · codex max防线四层复核 + 新基线快照 164828（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本轮新增事实（区别于 16:40 条，本轮为防线四层独立复核 + 云端推送补缺）
+- **身份澄清（再答"不是ATOMCODE吗"）**：修复动作归属 hermes（大脑）手动改 catalog + 守护脚本自动兜底；运行载体是 AtomCode（13460 代理 → deepseek-v4-flash）——动作归 hermes/codex、载体是 AtomCode，两种说法都对
+- **防线四层独立复核全通过（本轮实测）**：①源头 `Hermes Studio\resources\webui\dist\server\index.js` 合法六档（none/minimal/low/medium/high/xhigh）零 `effort:max` 残留，7 份 .bak 备份在库 ②`Lobster_CodexCatalogGuard` 每 5 分钟巡检（16:25/16:27/16:35/16:45 连续日志，fixed 0 catalog = 防线生效）③`fleet_auto_restore.cmd` 第 5.5 步启动兜底在库（watch_codex_catalog.py --once）④guard 脚本精确正则（`has_bad_effort` + 三种 effort:max 形态替换）防误报
+- **新回滚基线**：`snapshots/normal_node_20260813_164828.tar.gz`（10.6MB < 20M，11,137,389B），BASELINE.md 已更新为当前基线，163939 降为可用
+- **云端推送补缺（关键）**：并行会话防线根治提交 `4fe8631` 此前仅本地 HEAD、远端停在 e9ca715——本轮确认后推送 CNB，实现"防覆盖"的云端备份闭环（被覆盖可从远端恢复）
+- **长期稳定确认**：13460 双模型在线（deepseek-v4-flash + Qwen3-VL-8B）、15721 健康、15730 旧代理未监听但现役链路走 13460 不受影响、3 个 catalog 零 max
+- **踩坑要点**：防覆盖不仅要本地多层防线，还要**推送远端**——本地文件被 Hermes 更新覆盖时，远端提交 + 快照 tar.gz 是最后恢复锚点
+
 ## 2026-08-13 16:40 · codex max防生成根防线落实 + 防覆盖固化（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本次新增事实（区别于 16:06 条，本轮为防覆盖固化 + 新基线）
