@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-08-13 16:58 · codex max防线防覆盖收尾复核 + 新基线快照 165823（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本轮新增事实（区别于 16:48 条，本轮为防线复核确认 + 最新基线）
+- **身份澄清（再答"不是ATOMCODE吗"）**：修复动作归属 hermes（大脑）手动改 catalog + 守护脚本自动兜底；运行载体是 AtomCode（13460 代理 → deepseek-v4-flash）——动作归 hermes/codex、载体是 AtomCode，两种说法都对
+- **防覆盖复核全通过（本轮实测，防线未被 16:53 提交 463b908 覆盖）**：①生成源 `Hermes Studio\resources\webui\dist\server\index.js` `effort:"max"` 计数 0、合法六档齐全 ②7 份 .bak 备份在库（1430/1525_ultra/max_fix/guard_auto×4）③`Lobster_CodexCatalogGuard` 就绪（每 5 分钟），`catalog_guard.log` 16:09→16:55 连续 16 条全部 `fixed 0` = 防线生效 ④`fleet_auto_restore.cmd:158-164` 第 5.5 步启动兜底在库 ⑤双脚本独立存活（guard v1.1 精确正则防误报）
+- **新回滚基线**：`snapshots/normal_node_20260813_165823.tar.gz`（10.6MB < 20M，11,138,026B，tar 校验 OK），BASELINE.md 已更新为当前基线，164828 降为可用
+- **长期稳定确认**：13460 代理 HTTP 200（deepseek-v4-flash + Qwen3-VL-8B 双模型在线）；CNB 远端 HEAD=463b908=本地零差异
+- **踩坑要点**：防覆盖四层独立存活（源头净化/定时巡检/启动兜底/入库备份），任何单层被 Hermes 更新覆盖其余层仍拦截——「不要被覆盖」= 脚本入库（git）+ 备份在库（.bak）+ 云端推送（CNB）三重锚点
+
 ## 2026-08-13 16:48 · codex max防线四层复核 + 新基线快照 164828（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本轮新增事实（区别于 16:40 条，本轮为防线四层独立复核 + 云端推送补缺）
