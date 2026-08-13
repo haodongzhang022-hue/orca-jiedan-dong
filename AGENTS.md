@@ -39,6 +39,20 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 # bash scripts/fleet_auto_ready.sh
 ```
 
+## ⚠️ Python 环境禁用条目（2026-08-13 固化，防复发 P0）
+
+**禁止用 `E:\VNPY` 的 Python 启动 MCP 代理。**
+
+- **真根因**：系统默认 `python` → `E:\VNPY\python.exe`，该环境缺 `_ssl.pyd` 二进制绑定，`codex_tool_proxy.py` 第 20 行 `import ssl` 即崩 → 15730 空转 → 桌面 Codex `Reconnecting...`
+- **必须使用**：`C:\Users\Administrator\.workbuddy\binaries\python\versions\3.13.12\python.exe`（OpenSSL 3.5.7，ssl 完整）
+- **适用范围**：
+  1. AGENTS.md 自动恢复协议（第 13、15 行已用 workbuddy Python ✅）
+  2. `fleet_guardian.py`（第 34 行 `PYTHON_EXE` 已硬编码 ✅，启动自检已加 ✅）
+  3. `scripts/fleet_auto_restore.cmd`（启动脚本，必须用 workbuddy Python）
+  4. 任何手动拉起代理的命令（禁止裸 `python`，必须全路径指向 workbuddy）
+- **违反后果**：代理启动即崩，端口空转，桌面客户端持续 Reconnecting
+- **参考**：[[vnpy_python缺ssl导致codex代理崩_20260813]]（Obsidian 故障库）
+
 ## 项目约定
 
 - **模型**：mimo-v2.5-pro（通过 xiaomimimo20260612 provider）

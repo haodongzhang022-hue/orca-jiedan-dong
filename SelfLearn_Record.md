@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-08-13 18:04 · codex max根防线终验 + 新基线快照 180341 + 修复归属链路澄清（hermes 大脑执行 · 1234 调用 · 用户点名"不是ATOMCODE吗"）
+
+### 本轮新增事实（四层防线 18:04 全实测存活）
+- **新回滚基线**：`snapshots/normal_node_20260813_180341.tar.gz`（10M < 20M，11,116,285B），BASELINE.md 同步更新
+- **四层防线全存活**：L1 catalog 34行 xhigh 0残留 / L2 index.js 模板 8处xhigh拦截 max=0 备份5份 / L3 双守护脚本（watch_codex_catalog.py v1.2 + codex_catalog_guard.py v1.0）/ L4 定时任务 WatchCodexCatalog + Lobster_CodexCatalogGuard 双 Ready，日志每10分钟落盘
+- **修复归属链路（回答用户）**：修复动作=hermes 执行，运行底座=AtomCode 代理 13460 转发 deepseek-v4-flash——"执行者 vs 运行环境"不冲突
+- **踩坑新增**：快照打包须排除 `对话记录`（32M，首打 24M 超限），排除后 10M；定时任务查询用 PowerShell Get-ScheduledTask 更稳（schtasks 中文 locale 易空）
+
 ## 2026-08-13 17:53 · codex max防线四层复核 + 新基线快照 175335 + 源头JS防覆盖备份补齐（hermes 大脑执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本轮新增事实（区别于 17:39 条，本轮为四层防线全量复核 + 补源头 JS 防覆盖备份）
