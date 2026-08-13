@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-08-13 · codex max防生成拦截根治（根本防线）+ 新快照 + 守护双任务注册（#307 · 1234机制调用）
+
+### 本次亮点
+- **根本防线落地（防生成非事后修复）**：用户明确要求"防生成拦截写入而非事后修复，不要被覆盖"。落实四层：①index.js 档位数组已无 max（`["default","none","minimal","low","medium","high","xhigh"]` 实测）②`watch_codex_catalog.py` v1.2 模板自愈（Hermes 更新带回 max 自动剔除，正则覆盖对象/数组/顺序变体）③`Lobster_CodexCatalogGuard` 每 10 分钟巡检兜底 ④日志落盘防静默失效
+- **守护机制加固**：`FleetGuardian_AutoStart` 开机自启（onlogon）已注册——之前 fleet_guardian 只有脚本无计划任务，8/8 后无日志，属潜在空转
+- **新快照**：`snapshots/normal_node_20260813_150547.tar.gz`（11MB < 20M）——排除 02_候选设计稿/PNG/PSD/zip 等大文件后达标，作为当前回滚基线
+
+### 踩坑表
+| 坑 | 根因 | 解法 |
+|---|---|---|
+| 修复后仍复发（第4次） | Hermes 更新覆盖 index.js 带回 max，事后修复治标不治本 | 防生成拦截（模板剔除+自愈正则）+ 巡检定时任务双保险 |
+| fleet_guardian 无计划任务 | 只有脚本未注册 onlogon | `schtasks /create /tn FleetGuardian_AutoStart /sc onlogon` |
+| 快照超 20M（24MB） | 未排除 02_候选设计稿 及 PNG/PSD/zip 产物 | tar 排除大产物目录+通配符，压缩到 11MB |
+
+### 沉淀位置
+- Obsidian wiki：`E:\龙虾AI主控中心\Obsidian\wiki\codex_max_防生成拦截根治_20260813.md`
+- 脚本：`scripts\watch_codex_catalog.py`（v1.2）+ `.bat`；守护：`MCP服务\fleet_guardian.py`
+
+---
+
 ## 2026-08-13 · codex max防线加固 v1.2 + 正常节点快照（三载体联动 #306 · 1234机制调用）
 
 ### 本次亮点
