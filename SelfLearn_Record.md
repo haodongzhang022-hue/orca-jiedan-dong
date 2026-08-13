@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-08-13 17:34 · codex max防线终验 + 新基线快照 173255（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本轮新增事实（区别于 17:24 条，本轮为新基线快照 173255 + 根防线独立终验）
+- **新回滚基线**：`snapshots/normal_node_20260813_173255.tar.gz`（10.8MB < 20M，11,332,228B），BASELINE.md 已更新为当前基线（172421 降为可用）
+- **终验独立实测（17:34）**：当前会话 catalog 第 34 行 `"effort": "xhigh"` 仅合法六档 **零 max 残留**；生成源 index.js `effort:"max"` 计数 **0** / `effort:"xhigh"` 命中 **2**（补丁存活）；守护脚本 `codex_catalog_guard.py` 17:34 巡检实测：扫描 3 个 catalog 修复 0 处 + 生成源已带补丁无需重打
+- **守护任务实测**：`Lobster_CodexCatalogGuard` 就绪，**每 5 分钟**运行（下次 17:37），指向 `run_codex_catalog_guard.cmd`；备份证据链 `codex-model-catalog.json.bak_20260813_max_fix` 在盘
+- **身份澄清（终答"不是ATOMCODE吗"）**：运行载体是 AtomCode（127.0.0.1:13460 代理 → deepseek-v4-flash）；修复动作归属 hermes 手动改 catalog + codex 复核 + 守护脚本自动兜底——「Agent 手动修 + 根防线自动拦」三层协作，非单一归属
+- **踩坑要点（勿被覆盖）**：根防线=防生成（拦截写入）而非事后修复；四层防线（index.js 生成源拦截 / 每5分钟扫描 / 开机自愈 fleet_auto_restore.cmd / 多份 .bak 备份）任一被 Hermes 更新覆盖，其余层仍拦截；本轮实测全部存活
+
 ## 2026-08-13 17:24 · codex max防线终验 + 新基线快照 172421（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本轮新增事实（区别于 17:18 条，本轮为终验复核 + 最新基线快照）
