@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-08-13 15:56 · codex max防线端到端实测 + 新基线快照（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖"）
+
+### 本次新增事实（区别于 15:43 条，本轮为端到端实测）
+- **新回滚基线**：`snapshots/normal_node_20260813_155209.tar.gz`（10.7MB < 20M），tar 完整性 OK（710 文件）
+- **身份澄清**：修复动作归属 hermes（大脑），运行载体是 AtomCode（13460 代理 → deepseek-v4-flash）——"谁修的"两种说法都对
+- **端到端实测**：`watch_codex_catalog.py --once` 输出 `fixed 0 catalog(s), template_self_heal=False`（源头已净，无需修复）；3 个 catalog JSON 校验全 OK；全目录零 effort-max 残留（state_5.sqlite 内为会话历史文本，非 catalog，不影响解析）
+- **定时任务真实运行**：catalog_guard.log 15:54/15:55 连续输出，`Lobster_CodexCatalogGuard` 10 分钟周期存活
+- **踩坑要点**：排查残留时 grep 命中 state_5.sqlite（SQLite 会话库）里的旧报错文本，需区分"catalog JSON"与"会话历史库"——只有前者影响 codex 解析
+
 ## 2026-08-13 15:43 · codex max防线四要素复核 + 新基线快照（codex 执行 · 1234 调用 · 用户点名"长期稳定+防生成勿被覆盖"）
 
 ### 本次新增事实（区别于 15:36 条，本轮为独立复核）
