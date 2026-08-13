@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-08-13 · codex max档位防复发根治（三载体联动 #305 · 1234机制调用）
+
+### 本次亮点
+- **codex 掉线根治（三层根因链）**：①模板源头 `Hermes Studio\resources\webui\dist\server\index.js` 档位数组含 max（`["default","none","minimal","low","medium","high","xhigh","max"]`）→ 备份后剔除；②自愈失效：`watch_codex_catalog.py` 自愈函数只查对象格式 `{effort:"max"}`，而模板实际是数组格式 `"xhigh","max"` → 新增 `TEMPLATE_ARRAY_MAX` 数组剔除；③执行环境：`watch_codex_catalog.bat` Python 回退链漏 .workbuddy，系统默认 python 是损坏 VNPY（`_socket` 缺失）→ bat 首选 .workbuddy 3.13.12
+- **防复发机制**：`WatchCodexCatalog` 定时任务 + 30秒轮询扫描全部 catalog，实测全 coding-agent 目录无活跃 max 残留
+
+### 踩坑表
+| 坑 | 根因 | 解法 |
+|---|---|---|
+| codex 反复报 unknown variant max | Hermes 新会话重新生成 catalog 带出模板 max | 根治模板数组 + 自愈函数支持数组格式 |
+| 守护脚本从未生效 | 自愈函数查对象格式，模板是数组格式 | TEMPLATE_ARRAY_MAX 数组剔除 |
+| 定时任务跑不通 | bat Python 回退链漏 .workbuddy，系统 python 是坏 VNPY | bat 首选 .workbuddy 3.13.12 |
+
+### 沉淀位置
+- 五步法 §15 + 全域模板 #305 + 脚手架三文件触发行（codex掉线/max报错/调用1234修复）
+- 脚本：（v1.1 数组自愈版）
+
+---
+
 ## 2026-08-13 · 双雄思维蒸馏 + 磁盘清理定时任务 + 对话框保存确认（三载体联动 #302）
 
 ### 本次亮点
