@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-08-13 · codex max防线加固 v1.2 + 正常节点快照（三载体联动 #306 · 1234机制调用）
+
+### 本次亮点
+- **防覆盖实锤 + 定时任务静默失效根因**：`WatchCodexCatalog` 原任务指向已不存在的 Python312（`No such file or directory`）——14:40 Hermes 更新覆盖 index.js 模板后，自动防线实际静默失败，仅靠手动运行修复；已 `/change` 改挂 `.workbuddy 3.13.12` + 接单项目版本化脚本，`/run` 手动触发成功
+- **脚本升级 v1.2**：`scripts/watch_codex_catalog.py` 模板自愈支持对象/数组/顺序变体正则（`"xhigh","max"` / `"max","xhigh"` / `,"max"]`）+ 日志落盘 `logs/catalog_guard.log`——日志成为"定时任务是否真实执行"的验收依据（避免此前的静默失败重演）
+- **双目录同步**：接单项目 `scripts/`（git 版本化）+ AtomCode `scripts/`（原位置）双副本，防单点丢失
+- **正常节点快照**：`snapshots/normal_node_20260813_150118.tar.gz`（11MB < 20M）为当前回滚基线
+
+### 踩坑表
+| 坑 | 根因 | 解法 |
+|---|---|---|
+| 定时任务静默失效 | 任务指向的 Python312 已被卸载/迁移 | schtasks `/change` 改指 .workbuddy 3.13.12（bat 回退链同款） |
+| 模板被更新覆盖 | Hermes 更新重写 index.js 带回 max | 守护脚本模板自愈正则化 + 日志留痕，可验证每轮真实执行 |
+| 无法确认任务是否跑 | 无日志无输出 | v1.2 起每次运行写 `logs/catalog_guard.log`，验收先看日志 |
+
+### 沉淀位置
+- 五步法 §15 + 全域模板 #305/#306 + 脚手架三文件触发行（codex掉线/max报错/调用1234修复）
+- 脚本：`企业微信群定制接单项目\scripts\watch_codex_catalog.py`（v1.2）+ `.bat`
+
+---
+
 ## 2026-08-13 · codex max档位防复发根治（三载体联动 #305 · 1234机制调用）
 
 ### 本次亮点
