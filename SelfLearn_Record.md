@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-08-13 17:53 · codex max防线四层复核 + 新基线快照 175335 + 源头JS防覆盖备份补齐（hermes 大脑执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本轮新增事实（区别于 17:39 条，本轮为四层防线全量复核 + 补源头 JS 防覆盖备份）
+- **新回滚基线**：`snapshots/normal_node_20260813_175335.tar.gz`（8.0MB < 20M，9,248,109B，排除 .git/worktrees/logs/snapshots/对话记录/群聊库/zip/__pycache__，tar 校验 OK），BASELINE.md 已更新为当前基线（173935 降为可用）
+- **四层防线全部实测存活**：
+  1. **源头防生成**：`hermes-agent/apps/desktop/dist/assets/index-CaSHPAQ_.js`（生成 catalog 的源头，22MB，6/14 版本）实测 `effort.*max` 零命中、xhigh 5 处——Hermes Studio 桌面端补丁在库未被覆盖
+  2. **防覆盖备份（本轮补齐）**：`index-CaSHPAQ_.js.bak_20260813`（22M）已创建——Hermes Studio 更新覆盖 index.js 时可一键还原补丁（此前 assets 目录无 .bak，这是唯一缺口，已补）
+  3. **当前 catalog**：34 行 = `"effort": "xhigh"` 仅合法六档零 max，JSON 校验 OK（此前 grep 命中的 max 在 .bak_20260813_max_fix 备份与 state_5.sqlite 库内，非生效文件）
+  4. **双守护任务实跑**：WatchCodexCatalog（10分钟，.workbuddy 3.13.12，指向 watch_codex_catalog.py --once）+ Lobster_CodexCatalogGuard（5分钟，run_codex_catalog_guard.cmd）双兜底
+- **身份澄清（再答"不是ATOMCODE吗"）**：**AtomCode = 运行载体**（CLI + 127.0.0.1:13460 代理 → deepseek-v4-flash）；**根因源头 = Hermes Studio 桌面端**（hermes-agent/apps/desktop/dist，其生成 catalog 逻辑曾硬编码 max）；**修复动作 = hermes 手动改 catalog + 源头 JS 补丁 + 守护脚本自动兜底**——载体、源头、动作三者定位清晰，修复不是 AtomCode 本体做的，而是 Agent 协作+防线机制
+- **踩坑要点（勿被覆盖）**：根防线=防生成（拦截写入）而非事后修复；本轮新发现缺口——源头 JS 的 .bak 防覆盖备份此前缺失（只有 catalog 的 .bak），已补 index-CaSHPAQ_.js.bak_20260813；四层防线任一被 Hermes 更新覆盖，其余层仍拦截
+
+---
+
 ## 2026-08-13 17:39 · codex max防线独立复核 + 新基线快照 173935（hermes 大脑执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本轮新增事实（区别于 17:34 条，本轮为 hermes 大脑独立核查 + 16.5M 新基线）

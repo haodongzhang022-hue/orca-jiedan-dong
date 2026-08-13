@@ -1,13 +1,14 @@
 # 正常节点快照 · 基线索引（2026-08-13）
 
-> 回滚基线：**`normal_node_20260813_173935.tar.gz`（当前最新）**
-> 更新：2026-08-13 17:39 · hermes 大脑执行 · 1234 调用触发·轻量快照（16.5MB）+max防线独立复核后节点（三引擎正常/代理健康/根防线防覆盖自愈在库/当前catalog零max/守护任务双任务实跑）
+> 回滚基线：**`normal_node_20260813_175335.tar.gz`（当前最新）**
+> 更新：2026-08-13 17:53 · hermes 大脑执行 · 1234 调用触发·轻量快照（8MB）+max防线四层复核后节点（三引擎正常/源头JS零max+防覆盖备份.bak_20260813已建/当前catalog零max/守护任务双任务实跑 WatchCodexCatalog+Lobster_CodexCatalogGuard）
 
 ## 快照清单
 
 | 文件 | 大小 | 状态 | 说明 |
 |------|------|------|------|
-| `normal_node_20260813_173935.tar.gz` | 16.5MB | ✅ **当前回滚基线** | hermes 大脑 1234 轻量快照（2026-08-13 17:39，排除 .git/worktrees/logs/snapshots/对话记录/群聊库，tar 打包 16,501,732B <20M，max 防线独立复核+当前catalog零max+WatchCodexCatalog 17:35 结果0 实测，三引擎正常） |
+| `normal_node_20260813_175335.tar.gz` | 8.0MB | ✅ **当前回滚基线** | hermes 大脑 1234 轻量快照（2026-08-13 17:53，排除 .git/worktrees/logs/snapshots/对话记录/群聊库/zip/__pycache__，tar 打包 9,248,109B <20M，max 防线四层复核：源头JS index-CaSHPAQ_零max+防覆盖备份已建+当前catalog零max(34行=xhigh)+双守护任务实跑，三引擎正常） |
+| `normal_node_20260813_173935.tar.gz` | 16.5MB | ✅ 可用 | hermes 大脑 1234 轻量快照（2026-08-13 17:39，排除 .git/worktrees/logs/snapshots/对话记录/群聊库，tar 打包 16,501,732B <20M，max 防线独立复核+当前catalog零max+WatchCodexCatalog 17:35 结果0 实测，三引擎正常） |
 | `normal_node_20260813_173255.tar.gz` | 10.8MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 17:32，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools，tar 打包 11,332,228B <20M，max 防线终验+当前catalog零max+守护任务 17:34 实测运行，三引擎正常） |
 | `normal_node_20260813_172421.tar.gz` | 9.5MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 17:24，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools/*.zip，tar 打包 9,518,037B <20M，max 防线终验+当前catalog零max，三引擎正常） |
 | `normal_node_20260813_170407.tar.gz` | 9.1MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 17:04，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools/*.zip，tar 打包 9,516,403B <20M，含防覆盖固化收尾 463b908 及之后防线，三引擎正常节点） |
