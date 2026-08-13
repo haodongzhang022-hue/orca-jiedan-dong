@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-08-13 17:39 · codex max防线独立复核 + 新基线快照 173935（hermes 大脑执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本轮新增事实（区别于 17:34 条，本轮为 hermes 大脑独立核查 + 16.5M 新基线）
+- **新回滚基线**：`snapshots/normal_node_20260813_173935.tar.gz`（16.5MB < 20M，16,501,732B，排除 .git/worktrees/logs/snapshots/对话记录/群聊库），BASELINE.md 待更新
+- **模板源头再次确认干净**：index.js（15:33 更新）档位数组 6 档无 max，effort 3 处均 xhigh；grep "max" 命中全是 `Math.max` 原生代码，非档位残留——补丁在库未被动过
+- **守护脚本实测**：`.workbuddy 3.13.12 watch_codex_catalog.py --once` = fixed 0 / template_self_heal=False，扫描全 OK
+- **定时任务实锤**：WatchCodexCatalog（上次 17:35 结果 0=成功，下次 17:45，挂 .workbuddy）+ Lobster_CodexCatalogGuard（每 5 分钟）双任务并存互为兜底
+- **长期稳定确认**：13460 代理 HTTP 200（deepseek-v4-flash + Qwen3-VL-8B）；三引擎正常应答
+- **身份澄清（再答"不是ATOMCODE吗"）**：AtomCode=运行载体（CLI/13460 代理→deepseek-v4-flash）；修复动作=hermes 大脑执行，codex 复核，守护脚本兜底——载体与动作分工明确
+
+---
+
 ## 2026-08-13 17:34 · codex max防线终验 + 新基线快照 173255（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本轮新增事实（区别于 17:24 条，本轮为新基线快照 173255 + 根防线独立终验）
