@@ -143,3 +143,32 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 - 日志：`logs/catalog_guard.log`（每次运行落盘，排查定时任务是否真实执行）
 - 手工修复：`python scripts/watch_codex_catalog.py --once` 或 `bash scripts/fix_codex_model_catalog.sh`
 - **防覆盖约定**：本防线为三引擎（Hermes 模板自愈 + 守护任务 + 启动兜底）三层独立存在，任何单层被覆盖/失效不影响整体；迭代脚手架时不得删除本段与 `Lobster_CodexCatalogGuard` 任务。
+
+## Codex / Hermes 终端隔离 + GLM-5.2 共用无冲突（架构共识 · 2026-08-13 固化）
+
+**背景**：用户问「跟 Hermes 终端有冲突吗、你是在 Codex 终端吗、共用 GLM-5.2 有问题吗」，结论需固化为架构共识,防止后续迭代中被覆盖或重新争论。
+
+### 一、终端隔离（无冲突）
+
+| 维度 | Codex / AtomCode（本终端） | Hermes |
+|------|------|------|
+| 终端 | Codex 终端 / 当前 AtomCode 房间 | Hermes 终端 |
+| 工作目录 | `E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目\`（master） | 同项目根,但通过任务卡交接,不抢同一 worktree |
+| 交流方式 | **任务卡**(`任务卡.md`),禁止群聊口头交接 | 同上 |
+| 物理端口 | Codex 代理 15730 | Anthropic 代理 15721 |
+
+**唯一物理冲突点 = 端口**,由 `fleet_guardian.py` 守护,与 Hermes 不抢同一端口 → **无冲突**。
+
+### 二、GLM-5.2 共用无冲突
+
+1. GLM-5.2 是**无状态推理引擎**,多终端并发调用只是多开 HTTP 请求,模型本身不保存会话状态 → **不存在"串线"**。
+2. 真正的状态隔离靠**会话上下文 + 任务卡**,不靠模型层。每个终端的 context window 独立压缩,互不污染。
+3. 唯一理论上限 = **provider 侧 QPS / 并发数**(mimo-v2.5-pro via xiaomimimo20260612)。两端同时发起长请求可能排队等 token——这是**吞吐问题**,不是**冲突问题**,日常接单量下感知不到。
+
+> **排查提示**:如果哪天看到两个终端的回复"风格趋同"或"引用对方上下文",那不是模型串了,而是**任务卡同步没做好**——查任务卡头部状态机即可定位。
+
+### 三、防覆盖约定
+
+- 本段为**架构共识固化**,迭代脚手架时不得删除。
+- 三份脚手架(CLAUDE.md / CODEX.md / HERMES.md)需**同步本结论**——由 `scripts/sync_scaffold_to_all.sh` 在脚手架变更后自动同步。
+- 若后续 GLM 模型升级(如 GLM-6.x)或 provider 切换,需在本段追加「升级验证记录」,不得直接覆盖旧结论。
