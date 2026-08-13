@@ -1,13 +1,14 @@
 # 正常节点快照 · 基线索引（2026-08-13）
 
-> 回滚基线：**`normal_node_20260813_170407.tar.gz`（当前最新）**
-> 更新：2026-08-13 17:04 · codex 执行 · 1234 调用触发·轻量快照（9.5MB）+max防线四层复核后节点（三引擎正常/代理健康）
+> 回滚基线：**`normal_node_20260813_171822.tar.gz`（当前最新）**
+> 更新：2026-08-13 17:18 · codex 执行 · 1234 调用触发·轻量快照（11.6MB）+max防线四层复核后节点（三引擎正常/代理健康/根防线防覆盖自愈在库）
 
 ## 快照清单
 
 | 文件 | 大小 | 状态 | 说明 |
 |------|------|------|------|
-| `normal_node_20260813_170407.tar.gz` | 9.1MB | ✅ **当前回滚基线** | codex 1234 轻量快照（2026-08-13 17:04，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools/*.zip，tar 打包 9,516,403B <20M，含防覆盖固化收尾 463b908 及之后防线，三引擎正常节点） |
+| `normal_node_20260813_171822.tar.gz` | 11.6MB | ✅ **当前回滚基线** | codex 1234 轻量快照（2026-08-13 17:18，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools/*.zip，tar 打包 11,577,523B <20M，含 max 根防线防覆盖四层复核后节点，三引擎正常） |
+| `normal_node_20260813_170407.tar.gz` | 9.1MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 17:04，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools/*.zip，tar 打包 9,516,403B <20M，含防覆盖固化收尾 463b908 及之后防线，三引擎正常节点） |
 | `normal_node_20260813_165823.tar.gz` | 10.6MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 16:58，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools，tar 打包 11,138,026B <20M，含防覆盖固化收尾 463b908） |
 | `normal_node_20260813_164828.tar.gz` | 10.6MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 16:48，排除 .git/snapshots/对话记录/msgbus/worktrees/logs/fleet_exchange/tools，tar 打包 11,137,389B <20M，含防线根治提交 4fe8631） |
 | `normal_node_20260813_163939.tar.gz` | 10.6MB | ✅ 可用 | codex 1234 轻量快照（2026-08-13 16:39，排除对话记录/msgbus/fleet_exchange/tools/worktrees/logs/snapshots，tar 打包 11,110,713B <20M） |

@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-08-13 17:18 · codex max防线复核 + 新基线快照 171822（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
+
+### 本轮新增事实（区别于 17:04 条，本轮为新基线快照 + 防生成根防线端到端实测）
+- **身份澄清（三答"不是ATOMCODE吗"）**：运行载体是 AtomCode（127.0.0.1:13460 代理 → deepseek-v4-flash，HTTP 200）；修复动作归属 hermes 手动改 catalog + codex 复核 + 守护脚本自动兜底
+- **新回滚基线**：`snapshots/normal_node_20260813_171822.tar.gz`（11.6MB < 20M，11,577,523B，tar 校验 OK），BASELINE.md 已更新为当前基线（170407 降为可用）
+- **防生成根防线（拦截写入）端到端实测**：index.js effort:max 计数 0 / xhigh 计数 8；.bak 备份 7 份在盘；guard 第 2 层 check_patch() 防覆盖自动重打逻辑在库
+- **巡检双任务实锤**：Lobster_CodexCatalogGuard（5分钟，上次结果 0）+ WatchCodexCatalog（10分钟，上次结果 0）均就绪；fleet_auto_restore.cmd 5.5 步启动兜底在册
+- **长期稳定确认**：当前会话 catalog 34 行=xhigh；doubao-proxy 已改 http 型无 stdio 冲突；三引擎正常应答
+- **踩坑要点**：防覆盖五重锚点（源拦截/双巡检/启动自愈/备份在盘/脚本入库），任何单层被 Hermes 更新覆盖其余层仍拦截
+
 ## 2026-08-13 17:04 · codex max防线复核 + 新基线快照 170407（codex 执行 · 1234 调用 · 用户点名"不是ATOMCODE吗+防生成勿被覆盖+长期稳定"）
 
 ### 本轮新增事实（区别于 16:58 条，本轮为新基线快照 + 防线存活再实测）
