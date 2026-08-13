@@ -155,8 +155,18 @@ if exist "%CODEX_CONFIG%" (
 
 echo.
 
-:: === 5. 分支同步 ===
-echo [5/7] 分支同步...
+:: === 5.5 Codex model-catalog 防线预修复（防生成+事后兜底） ===
+echo [5.5/7] Codex catalog 防线预修复...
+:: watch_codex_catalog.py 三重防线（根治 "unknown variant max"）：
+::   1) 全量扫描所有 codex-model-catalog.json：max -> xhigh（事后兜底）
+::   2) 模板源头自愈：剔除 Hermes 模板 index.js 中的 max 档（防生成，Hermes 更新后 10 分钟内自动再剔除，不被覆盖）
+::   3) 日志落盘 logs/catalog_guard.log（10 分钟定时任务 Lobster_CodexCatalogGuard 同脚本）
+"%PYEXE%" "%PROJECT%\scripts\watch_codex_catalog.py" --once
+
+echo.
+
+:: === 6. 分支同步 ===
+echo [6/7] 分支同步...
 cd /d "%PROJECT%"
 for %%b in (claude codex hermes) do (
     if exist "worktrees\%%b" (
@@ -173,8 +183,8 @@ for %%b in (claude codex hermes) do (
 
 echo.
 
-:: === 6. 端口验证 ===
-echo [6/7] 端口验证...
+:: === 7. 端口验证 ===
+echo [7/8] 端口验证...
 set "all_ok=1"
 netstat -an | findstr ":15721 " | findstr "LISTENING" >nul 2>&1
 if errorlevel 1 (echo   [FAIL] 15721 未启动 & set "all_ok=0") else (echo   [OK] 15721)
@@ -183,8 +193,8 @@ if errorlevel 1 (echo   [FAIL] 15730 未启动 & set "all_ok=0") else (echo   [O
 
 echo.
 
-:: === 7. 汇总 ===
-echo [7/7] 汇总
+:: === 8. 汇总 ===
+echo [8/8] 汇总
 echo ============================================
 if "%all_ok%"=="1" (
     echo  ✅ 龙虾舰队全部正常！

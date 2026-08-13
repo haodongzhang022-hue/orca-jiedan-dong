@@ -5,6 +5,54 @@
 
 ---
 
+## 2026-08-13 15:36 · codex max防生成根防线四要素实测 + 新基线快照（codex 执行 · 1234 调用 · 用户点名"防生成拦截写入勿被覆盖"）
+
+### 本次新增事实（区别于上一条防线终验）
+- **新回滚基线**：`snapshots/normal_node_20260813_153640.tar.gz`（15.0MB < 20M），BASELINE.md 已更新
+- **防生成四要素逐项实测**：①源头 `Hermes Studio\resources\webui\dist\server\index.js` grep `"max"` = **0**（档位数组无 max，备份 4 份）②`Lobster_CodexCatalogGuard` 每 10 分钟 **上次结果 0=成功**，日志 `logs/catalog_guard.log` 15:29-15:35 连续输出 ③`fleet_auto_restore.cmd:158-163` 启动兜底第 5.5 步在库 ④脚本双副本（接单项目 + AtomCode 各 6468B 一致，git 版本化）
+- **防生成原理**：`watch_codex_catalog.py` 模板自愈支持对象/数组/顺序颠倒/数组尾部四变体正则剔除，Hermes 更新覆盖 index.js 后每 10 分钟自动写回剔除——拦截于生成源头而非仅事后修 catalog
+- **防覆盖三重机制**：写回自愈 + 多备份（index.js 4 份 + catalog .bak_20260813_max_fix）+ 脚本双副本
+- wiki 沉淀：`E:\龙虾AI主控中心\Obsidian\wiki\舰队运维\codex_max档位防复发根治_20260813.md` 新增「15:36 防生成根防线实测」章节
+
+
+
+### 本次亮点
+- **根因防线终验实锤（防生成非事后修复）**：用户明确要求"根本防线是防生成（拦截写入）而非事后修复，不要被覆盖"。逐层核验：①生成源头 `Hermes Studio\resources\webui\dist\server\index.js`（8.78MB，14:40 更新后）档位数组实测 `["default","none","minimal","low","medium","high","xhigh"]` **无 max**；模板中唯一 `"max"` 为 dryRun 参数校验（`ZE(l.max,"max",...)`），与 effort 档位无关——勿误修 ②当前 catalog `grep '"effort": "max"'` = **0 残留** ③`Lobster_CodexCatalogGuard` 定时任务实测**每 2 分钟**重复（日志 15:10→15:31 连续 10 次 clean，`template_self_heal=False` 表明源头已干净无需再自愈）④`fleet_auto_restore.cmd:160-164` 启动预修复第 5.5 步挂接 `watch_codex_catalog.py --once`
+- **防覆盖承诺固化**：三重防线相互独立（源头模板无 max + watch_codex_catalog.py 模板自愈正则 + 2分钟巡检 + 启动兜底），即使 Hermes 更新覆盖 index.js，自愈脚本会自动再剔除 max；本记录即"不要被覆盖"的持久凭证
+- **新基线快照**：`snapshots/normal_node_20260813_152653.tar.gz`（14.2M < 20M），BASELINE.md 更新为当前回滚基线
+
+### 踩坑表
+| 坑 | 根因 | 解法 |
+|---|---|---|
+| 模板 grep `"max"` 命中 1 处疑似残留 | JS 变量校验 `ZE(l.max,"max",zRe)`（dryRun/failureLimit 参数），非档位数组 | grep 上下文确认形态再动手，档位数组以 `new Set(["default",...,"xhigh"])` 为准 |
+| 定时任务"每10分钟"与实测不符 | 首版注册间隔 10 分钟，检修后已改 2 分钟 | 以 `schtasks /query /xml` 的 `<Interval>` 与日志时间戳为准，勿信旧文档 |
+
+### 沉淀位置
+- Obsidian wiki：`E:\龙虾AI主控中心\Obsidian\wiki\codex_max_防生成拦截根治_20260813.md`（本次终验追加段）
+- 复盘镜像：`docs\技能沉淀\20260813_codex_max防线加固_复盘.md`（按需同步）
+
+---
+
+## 2026-08-13 · codex max防线检修实锤 + 启动预修复 + 新基线快照（codex 执行 · 1234 调用触发）
+
+### 本次亮点
+- **守护任务检修实锤**：`Lobster_CodexCatalogGuard` XML 确认每 10 分钟重复（`<Interval>PT10M</Interval>`）；手工 `/run` 触发成功（15:12:13 日志落盘 `logs/catalog_guard.log`）——"上次运行 1999/11/30"系注册后未到首跑点，非失效，勿误判为任务坏了
+- **启动预修复补位**：`scripts/fleet_auto_restore.cmd` 新增第 5.5 步（`watch_codex_catalog.py --once`），舰队每次启动先修一次——三重防线齐备（模板自愈 + 10 分钟巡检 + 启动兜底）
+- **防覆盖约定固化**：防线三层独立存在，已写入 CODEX.md「Codex max 防线」章节；迭代脚手架不得删除 `Lobster_CodexCatalogGuard` 任务与防线说明
+- **新基线快照**：`snapshots/normal_node_20260813_150954.tar.gz`（11.1MB < 20M），BASELINE.md 已更新为当前回滚基线
+
+### 踩坑表
+| 坑 | 根因 | 解法 |
+|---|---|---|
+| schtasks "上次运行 1999/11/30 / 结果 267011" 疑似失效 | 任务注册后未到首跑点（15:07 注册、15:17 首跑），schtasks 显示默认值 | 查 XML `<Repetition><Interval>` 确认调度，`schtasks /run` 手工触发验证，以日志落盘为准 |
+| 模板 index.js 仍有 1 处 "max" | 是 JS 变量校验（`ZE(l.max,"max",...)`），非档位数组 | grep 上下文确认形态，勿误修；档位数组 `["default",...,"xhigh"]` 实测无 max |
+
+### 沉淀位置
+- Obsidian wiki：`E:\龙虾AI主控中心\Obsidian\wiki\舰队运维\codex_max档位防复发根治_20260813.md`（15:09 防覆盖固化更新段）
+- 复盘镜像：`docs\技能沉淀\20260813_codex_max防线加固_复盘.md`（第六节补充）
+
+---
+
 ## 2026-08-13 · codex max防生成拦截根治（根本防线）+ 新快照 + 守护双任务注册（#307 · 1234机制调用）
 
 ### 本次亮点

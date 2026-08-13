@@ -127,3 +127,19 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 - 群聊链路：按任务卡执行（Codex=执行层），长任务分片并行，结果回写 Obsidian
 - 补强事项：执行 Obsidian 同步脚本、E/G 双盘 mklink、中文日志、book-to-skill 上传
 - 复盘闭环：每轮任务完成自动生成复盘文档，反向更新三份记忆卡片
+
+## Codex max 防线（防复发根治 · 2026-08-13）
+
+**故障**：Hermes 新建群聊会话重新生成 `codex-model-catalog.json` 时写入非法档位 `"effort": "max"`，Codex 只认 `none/minimal/low/medium/high/xhigh`，JSON 解析失败 → `unknown variant max`（反复复发）。
+
+**根本防线 = 防生成（拦截写入），非仅事后修复**（三重兜底，任一失效其余接管）：
+
+| # | 防线 | 机制 | 落点 |
+|---|------|------|------|
+| 1 | **模板源头自愈（防生成）** | 剔除 Hermes 模板 `webui/dist/server/index.js` 中的 max 档位；Hermes 更新覆盖后 10 分钟内自动再剔除 | `scripts/watch_codex_catalog.py` `self_heal_template()` |
+| 2 | **10 分钟定时巡检** | 全量扫描 `~/.hermes-web-ui/coding-agent` 下所有 catalog，`max`→`xhigh` | 计划任务 `Lobster_CodexCatalogGuard`（schtasks，每 10 分钟 `--once`） |
+| 3 | **启动预修复** | 舰队启动脚本内置 catalog 预修复 | `scripts/fleet_auto_restore.cmd` 第 5.5 步 |
+
+- 日志：`logs/catalog_guard.log`（每次运行落盘，排查定时任务是否真实执行）
+- 手工修复：`python scripts/watch_codex_catalog.py --once` 或 `bash scripts/fix_codex_model_catalog.sh`
+- **防覆盖约定**：本防线为三引擎（Hermes 模板自愈 + 守护任务 + 启动兜底）三层独立存在，任何单层被覆盖/失效不影响整体；迭代脚手架时不得删除本段与 `Lobster_CodexCatalogGuard` 任务。
