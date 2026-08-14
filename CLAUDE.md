@@ -117,6 +117,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 四化迭代 Obsidian 知识库（快捷4） | 四化迭代 Obsidian 知识库 | 记忆修改→归档Obsidian对应库→知识库反向赋能，三载体同频 |
 | 名字/数字执行细则 | 名字快捷调用执行手册 | 详见 `docs\数字快捷调用执行手册.md`（名字触发+数字快捷双通道，每项含加载资源+执行步骤+产出路径） |
 | codex掉线/max报错/unknown variant/catalog修复/调用1234修复 | 按五步法§15+全域模板#305根治：catalog max→xhigh+模板数组剔除+自愈脚本 | 命令：.workbuddy python watch_codex_catalog.py --once；WatchCodexCatalog定时任务兜底 |
+| GLM/GLM-5.2/NVIDIA/NVIDIA接口/glm52 | 按五步法§15.6+全域模板#306执行：429限流判定表+按需调用通道 | 命令：bash scripts/glm52_call.sh "问题"；GLM=重思考（研判/报价/复盘），deepseek=高频群聊，双链路互不影响 |
 
 **重要**：执行完命令后，将输出结果直接返回给用户。如果代理已正常运行，命令会自动跳过恢复步骤，不影响任何对话和任务数据。
 

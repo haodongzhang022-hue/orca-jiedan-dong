@@ -5,9 +5,28 @@
 
 ---
 
+## 2026-08-14 · GLM-5.2（NVIDIA 免费）接入三引擎 + 429 限流判定（hermes 大脑执行 · 用户"调用1234执行"）
+
+### 核心结论（实测）
+- 13460 代理池已含 `z-ai/glm-5.2`（NVIDIA，免费）——不是"没配上"，是 NVIDIA 免费档 **429 短时限流** + 三引擎 launch.ps1 仍硬编码 deepseek-v4-flash
+- 双链路并存互不影响：GLM-5.2=重思考（研判/报价/复盘），deepseek=高频群聊，Qwen3-VL=视觉（Pro 解锁）
+- 固化三载体：五步法 §15.6 + 全域模板 #306 + 脚手架三文件 GLM 触发行
+- 调用通道：`bash scripts/glm52_call.sh "问题"`
+
+### 踩坑（勿再犯）
+- NVIDIA 免费档 429 是短时限流非故障，等待自然恢复即可；AtomCode 免费 GLM-5.2 与 NVIDIA GLM-5.2 是**两条独立通道**，互不覆盖
+- AtomCode 通道 GLM-5.2 需 Pro 权益（Lite 403 锁定），NVIDIA 通道不受 AtomCode 套餐限制
+
+### 防复发
+- 触发词「GLM/GLM-5.2/NVIDIA」已在脚手架三文件注册 → 按判定表执行，不再误判"配不上"
+
+---
+
 ## 2026-08-14 · 桌面微信打不开修复闭环（审核 CLAUDE CODE 执行 · 用户"调用1234修复"）
 
-### 根因（两层，实测定位）
+### 根因（三层，实测定位；L3 为本次补充）
+- **L3 桌面快捷方式失效（本次补充）**：桌面 `WeChatSetup.exe` 是 symlink → 指向 `F:\金山毒霸搬家目录\桌面大文件\wechatsetup.exe`，该 F 盘目录已消失（搬家目录被清）→ 双击无反应。已备份改名失效链接，新建 `微信.lnk` 指向 `C:\Program Files\Tencent\weixin\Weixin.exe`（微信4.0本体）；更新残留 `Weixin.exe.tmp` 已备份改名
+- 防复发：新增 `scripts/disk_health_check.cmd`（纯 ASCII）每日校验 C盘空间(<2GB告警)/桌面快捷方式目标/xwechat crashinfo
 - **L1 断链 junction（主因）**：`C:\Users\Administrator\AppData\Roaming\Tencent\xwechat` 是 junction → 指向 `F:\c盘瘦身搬家目录(勿删改)\软件\微信\应用数据\10104\xwechat\`，但该 F 盘目标目录**已不存在**（搬家目录被清理/移动）→ 微信 crashpad 崩溃上报组件 `CreateDirectory ...xwechat\crashinfo` 报错 `系统找不到指定的路径 (0x3)` → **进程启动即自终止**（debug.log 0812~0814 连续 7 次同错，时间 15:29-15:35）
 - **L2 C 盘 100% 满（隐患）**：C 盘 155G 用 155G，仅剩 ~962MB，微信启动写盘随时失败；大头占用：Docker 14.7G、Programs 6.7G、wsl 4.5G、SPChrome 2.3G（已清回收站 + 跑 cleanup_disk.cmd，仅腾 ~90MB，杯水车薪）
 
