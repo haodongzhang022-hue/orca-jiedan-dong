@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-08-14 · NVIDIA API 免费 GLM-5.2 接入修复闭环（审核 CLAUDE CODE 执行 · 用户要求"一定要用 NVIDIA GLM-5.2 接单，0成本"）
+
+### 三层断链定位（实测）
+- L1 NVIDIA 端点 `https://integrate.api.nvidia.com/v1`：✅ HTTP 200，102 免费模型，`z-ai/glm-5.2` 在册；无 key 调 chat → 401 `authorization was missing`
+- L2 13460 代理池：✅ 已含 `z-ai/glm-5.2`（owned_by NVIDIA，0 价），实测转发对话 **HTTP 200 返回正常**（"OK"）
+- L3 launch.ps1 注入：❌ 曾硬编码 `deepseek-v4-flash` ×5 处；**根因 = 房间 Agent 绑定层**：`hermes-web-ui.db` `gc_room_agents` 表 hermes 已切 `custom:nvidia-glm5.2`/`z-ai/glm-5.2`，但 claude/codex 仍绑 `custom:atomcode-v4-local`/`deepseek-v4-flash`
+- config.json：`custom:atomcode-glm-5.2` provider 已注册，preferred=GLM-5.2（界面层早已配好，只是运行注入脱节）
+
+### 修复动作（已落地，DeepSeek 零改动）
+- 备份 `hermes-web-ui.db.bak_glmswitch_*` 后，`UPDATE gc_room_agents SET provider='custom:nvidia-glm5.2', model='z-ai/glm-5.2' WHERE roomId='msormerbrbfg44' AND removedAt=0 AND agent IN ('claude','codex')`
+- 切换后三 Agent 绑定一致：hermes/claude/codex 均 = `custom:nvidia-glm5.2` / `z-ai/glm-5.2`
+- **终验双通过**：GLM-5.2 经 13460 → 200（内容"OK"）；deepseek-v4-flash 回归 → 200（未破坏）
+
+### 踩坑沉淀
+- **"配了不用"根因 = 界面配置(provider) ≠ 房间绑定(gc_room_agents) ≠ launch.ps1 注入，三层各自为政**——切换模型必须三层对齐（config.json provider → DB 房间绑定 → 新会话 launch.ps1），只改界面层无效
+- launch.ps1 每次新会话重新生成，改临时文件会被覆盖；持久化修复点在 `gc_room_agents` 表绑定
+- NVIDIA 免费层限速约 40 req/min；GLM-5.2 适合文本/编程主力，看图仍需 Qwen3-VL-8B（Pro 解锁）
+
 ## 2026-08-13 18:04 · codex max根防线终验 + 新基线快照 180341 + 修复归属链路澄清（hermes 大脑执行 · 1234 调用 · 用户点名"不是ATOMCODE吗"）
 
 ### 本轮新增事实（四层防线 18:04 全实测存活）
