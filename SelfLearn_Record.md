@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-08-14 · 桌面微信打不开修复闭环（审核 CLAUDE CODE 执行 · 用户"调用1234修复"）
+
+### 根因（两层，实测定位）
+- **L1 断链 junction（主因）**：`C:\Users\Administrator\AppData\Roaming\Tencent\xwechat` 是 junction → 指向 `F:\c盘瘦身搬家目录(勿删改)\软件\微信\应用数据\10104\xwechat\`，但该 F 盘目标目录**已不存在**（搬家目录被清理/移动）→ 微信 crashpad 崩溃上报组件 `CreateDirectory ...xwechat\crashinfo` 报错 `系统找不到指定的路径 (0x3)` → **进程启动即自终止**（debug.log 0812~0814 连续 7 次同错，时间 15:29-15:35）
+- **L2 C 盘 100% 满（隐患）**：C 盘 155G 用 155G，仅剩 ~962MB，微信启动写盘随时失败；大头占用：Docker 14.7G、Programs 6.7G、wsl 4.5G、SPChrome 2.3G（已清回收站 + 跑 cleanup_disk.cmd，仅腾 ~90MB，杯水车薪）
+
+### 修复动作（已落地）
+1. `MSYS_NO_PATHCONV=1 cmd /c "rmdir C:\Users\Administrator\AppData\Roaming\Tencent\xwechat"`（删断链 junction，EXIT=0）
+2. `mkdir -p ...\xwechat\crashinfo` 重建真实目录（微信启动自动补全 config/log/net/radium/uh/update/xplugin）
+3. `Start-Process 'C:\Program Files\Tencent\Weixin\Weixin.exe'` 重启
+
+### 终验（实测）
+- 微信进程 **4 个稳定存活 20s+**（Weixin.exe + WeChatAppEx.exe×3），debug.log 无新增崩溃记录
+- 踩坑：bash 下 `cmd //c rmdir` 中文路径被 MSYS 路径转换破坏报"语法不正确"，须加 `MSYS_NO_PATHCONV=1`（老坑复用）
+
+### 遗留（非阻塞，需 owner 关注）
+- **C 盘只剩 ~1GB**：Docker 14.7G 镜像缓存、wsl 4.5G 可考虑清理，否则微信/其他软件随时再崩；建议升级磁盘清理脚本加入 Docker 裁剪
+
 ## 2026-08-14 · NVIDIA API 免费 GLM-5.2 接入修复闭环（审核 CLAUDE CODE 执行 · 用户要求"一定要用 NVIDIA GLM-5.2 接单，0成本"）
 
 ### 三层断链定位（实测）
