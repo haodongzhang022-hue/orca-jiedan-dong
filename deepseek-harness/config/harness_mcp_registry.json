@@ -119,6 +119,27 @@
       "health": null,
       "env": {},
       "depends_on": ["agent_orchestrator"]
+    },
+    "gateway_3080_mcp": {
+      "enabled": true,
+      "kind": "mcp_plugin",
+      "dual_mode": true,
+      "title": "双模式 MCP 插件 · 本机 3080 网关（gateway_3080.py）",
+      "desc": "统一可安装 MCP 插件：模式一=MCP stdin/stdout（可被 Codex/Hermes/DeepSeek-Harness 加载）；模式二=HTTP 网关兼容 127.0.0.1:3080/v1。出站 HTTPS 调 CNB 免费 DeepSeek-V4-Flash / GLM-5.2。密钥仅读 CNB_TOKEN 环境变量，零明文。",
+      "source": "deploy/dsh-desktop/gateway_3080.py",
+      "install_path": "deepseek-harness/plugins/gateway_3080/gateway_3080.py",
+      "mcp_tools": ["chat_completions", "get_models", "health"],
+      "start_cmd_mcp": ["python3", "plugins/gateway_3080/gateway_3080.py"],
+      "start_cmd_http": ["python3", "plugins/gateway_3080/gateway_3080.py", "--http", "--port", "${GW_PORT:-3080}"],
+      "spawn": "lazy",
+      "kill": "idle_reap",
+      "health": "/health",
+      "env": {
+        "CNB_TOKEN": "${env:CNB_TOKEN}",
+        "CNB_AI_GATEWAY": "${env:CNB_AI_GATEWAY}",
+        "CNB_MODEL": "deepseek-v4-flash"
+      },
+      "depends_on": []
     }
   },
   "dependencies_graph": {
@@ -129,7 +150,8 @@
     "mcp_memory": ["agent_orchestrator"],
     "mcp_role_hermes": ["agent_orchestrator"],
     "mcp_role_codex": ["agent_orchestrator", "mcp_tool_runner"],
-    "mcp_role_claude_code": ["agent_orchestrator"]
+    "mcp_role_claude_code": ["agent_orchestrator"],
+    "gateway_3080_mcp": []
   },
   "spawn_kill_matrix": {
     "note": "spawn 条件 + kill 时机，实现按需启停。enabled=false 的服务启动时跳过。",
@@ -140,7 +162,8 @@
       {"service": "mcp_tool_runner", "spawn_at": "first_skill_call", "kill_at": "idle_300s"},
       {"service": "mcp_role_hermes", "spawn_at": "boot", "kill_at": "never"},
       {"service": "mcp_role_codex", "spawn_at": "when_enabled", "kill_at": "idle_300s"},
-      {"service": "mcp_role_claude_code", "spawn_at": "when_enabled", "kill_at": "idle_300s"}
+      {"service": "mcp_role_claude_code", "spawn_at": "when_enabled", "kill_at": "idle_300s"},
+      {"service": "gateway_3080_mcp", "spawn_at": "first_skill_call", "kill_at": "idle_300s"}
     ]
   }
 }
