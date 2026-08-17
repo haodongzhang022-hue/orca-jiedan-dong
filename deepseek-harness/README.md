@@ -3,6 +3,10 @@
 > **非 Hermes Studio** — 独立自研的 DeepSeek 超 Agent 编排 harness，云端容器内纯 Python 运行。
 > 基座：CNB 内置免费 **DeepSeek-V4-Flash**（MoE 284B/激活13B，免费至 2026-12-31）。
 > 定位：企业微信群定制接单 · 规划→委派→执行→汇总 全自动闭环。
+>
+> 🧭 本目录同时作为 **CNB NPC 角色 `@deepseek-harness`**（路径B 自定义镜像容器）的运行时：
+> 在 Issue/PR 评论中 `@deepseek-harness` 即可召唤，与 Hermes/Codex/Claude Code 并列。
+> 详见 `docs/DeepSeekHarness_CNB_NPC角色_接入指南.md`。
 
 ---
 

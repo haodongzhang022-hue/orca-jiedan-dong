@@ -260,6 +260,8 @@ class HarnessHandler(BaseHTTPRequestHandler):
         elif self.path == "/" or self.path == "/console":
             self._send(open(os.path.join(os.path.dirname(__file__), "web_console.html"), "rb").read(),
                        ctype="text/html; charset=utf-8")
+        elif self.path in ("/v1/orders/list", "/orders/list"):
+            self._handle_order_list()
         elif self.path.startswith("/harness"):
             self._handle_harness_get()
         else:
