@@ -12,6 +12,8 @@
 #         loopback，对外 8080 访问靠 `docker run -p 8080:8080` 端口映射完成。
 #   C. 后台启动自研 harness，监听 127.0.0.1:8081（容器内网，不对外）。
 #      → 保留 /v1/orders 企微接单、/harness 编排接口，接单流水线不中断。
+#   C2. 后台启动本机 3080 网关（双模式 MCP 插件，HTTP 兼容模式 127.0.0.1:3080）。
+#      → 供本机/内网工具 base_url=http://127.0.0.1:3080 出站调用 CNB 免费模型。
 #   D. 前台保持存活，便于容器被监控/重建。
 #
 # 环境变量（全部运行时注入）：
@@ -20,6 +22,7 @@
 #   CNB_MODEL             → 模型名（默认 deepseek-v4-flash）
 #   DSH_WEB_PORT          → 原版 WebUI 监听端口（默认 8080）
 #   HARNESS_PORT          → 自研 harness 监听端口（默认 8081）
+#   GW_PORT               → 本机 3080 网关监听端口（默认 3080）
 # =============================================================================
 set -euo pipefail
 
@@ -92,11 +95,26 @@ else
   echo "[dsh-entrypoint] ⚠️ 自研 harness 脚本缺失，跳过（接单接口不可用）"
 fi
 
+# ---- 4b. 启动本机 3080 网关（双模式 MCP 插件，HTTP 兼容模式 127.0.0.1:3080）----
+# 内置进镜像；若需 MCP 模式供宿主工具加载，可去掉 --http 直接无参启动。
+GW_PORT="${GW_PORT:-3080}"
+if [ -f "$SELF_HARNESS_DIR/gateway_3080.py" ]; then
+  echo "[dsh-entrypoint] 启动本机 3080 网关 (127.0.0.1:${GW_PORT}, HTTP 兼容模式) ..."
+  cd "$SELF_HARNESS_DIR"
+  CNB_TOKEN="${CNB_TOKEN:-}" CNB_AI_GATEWAY="${GATEWAY:-}" \
+    nohup python3 gateway_3080.py --http --port "$GW_PORT" >/tmp/gw3080.log 2>&1 &
+  GW3080_PID=$!
+  echo "[dsh-entrypoint] 3080 网关 PID: ${GW3080_PID}"
+else
+  GW3080_PID=""
+  echo "[dsh-entrypoint] ⚠️ gateway_3080.py 缺失，跳过 3080 网关"
+fi
+
 # ---- 5. 等待端口就绪并打印状态 ----
 sleep 5
 echo "------------------------------------"
 echo "[dsh-entrypoint] 端口状态："
-for p in "$DSH_WEB_PORT" "$HARNESS_PORT"; do
+for p in "$DSH_WEB_PORT" "$HARNESS_PORT" "$GW_PORT"; do
   if (exec 3<>"/dev/tcp/127.0.0.1/$p") 2>/dev/null; then
     exec 3>&- 3<&- || true
     echo "  ✅ :${p} 已监听"
@@ -111,6 +129,7 @@ cleanup() {
   echo "[dsh-entrypoint] 容器退出，清理子进程..."
   [ -n "${DSH_WEB_PID:-}" ] && kill "$DSH_WEB_PID" 2>/dev/null || true
   [ -n "${SELF_HARNESS_PID:-}" ] && kill "$SELF_HARNESS_PID" 2>/dev/null || true
+  [ -n "${GW3080_PID:-}" ] && kill "$GW3080_PID" 2>/dev/null || true
 }
 trap cleanup EXIT
 
@@ -120,5 +139,5 @@ if [ "$#" -gt 0 ]; then
   exec "$@"
 fi
 
-echo "[dsh-entrypoint] 容器前台存活中（8080 原版 WebUI + 8081 内网自研 harness）..."
+echo "[dsh-entrypoint] 容器前台存活中（8080 原版 WebUI + 8081 内网自研 harness + 3080 网关）..."
 tail -f /dev/null
