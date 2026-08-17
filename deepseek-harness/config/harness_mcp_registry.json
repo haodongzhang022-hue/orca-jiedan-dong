@@ -1,0 +1,146 @@
+{
+  "version": "1.0.0",
+  "comment": "MCP 统一注册中心（骨架）。NPC/Workspace 各自以本文件为唯一依据，按需 spawn/kill MCP 子进程，基座 harness_proxy.py + harness_agent.py 固定不动。进程隔离即沙箱，配置文件控制加载卸载。",
+  "meta": {
+    "registry_version": "1.0.0",
+    "updated_at": "2026-08-18",
+    "owner": "hermes (大脑层·全域模板调度)",
+    "loader": "harness_mcp_loader (插件层，按需 spawn/kill，不修改基座)"
+  },
+  "globals": {
+    "spawn_policy": "lazy",
+    "kill_policy": "idle_reap",
+    "idle_reap_seconds": 300,
+    "process_sandbox": "subprocess",
+    "max_concurrent": 8,
+    "default_timeout_seconds": 60,
+    "env_prefix": "HARNESS_MCP_"
+  },
+  "services": {
+    "chat_gateway": {
+      "enabled": true,
+      "kind": "http",
+      "title": "CNB 免费 DeepSeek-V4-Flash 对话网关",
+      "desc": "OpenAI 兼容 /v1/chat/completions，非流式自动聚合，基座核心。",
+      "start_cmd": ["python3", "harness_proxy.py", "--port", "${HARNESS_PORT:-8080}"],
+      "spawn": "lazy",
+      "kill": "keep",
+      "health": "/health",
+      "env": {
+        "CNB_TOKEN": "${env:CNB_TOKEN}",
+        "CNB_AI_GATEWAY": "${env:CNB_AI_GATEWAY}",
+        "CNB_MODEL": "deepseek-v4-flash"
+      },
+      "depends_on": []
+    },
+    "agent_orchestrator": {
+      "enabled": true,
+      "kind": "library",
+      "title": "超 Agent 编排（规划→委派→执行→汇总）",
+      "desc": "harness_agent.py，基座固定不动，模型/技能由配置注入。",
+      "start_cmd": ["python3", "harness_agent.py"],
+      "spawn": "lazy",
+      "kill": "keep",
+      "health": null,
+      "env": {
+        "HARNESS_SKILLS_INDEX": "config/harness_skills.json",
+        "HARNESS_PLUGIN_MANIFEST": "config/harness_plugins.json"
+      },
+      "depends_on": ["chat_gateway"]
+    },
+    "mcp_order_intake": {
+      "enabled": true,
+      "kind": "http",
+      "title": "企微接单 → 任务卡建档",
+      "desc": "/v1/orders 派单解析、任务卡五段结构建档。生产运行于 NPC 内网，不对外暴露。",
+      "start_cmd": ["python3", "harness_proxy.py", "--port", "${HARNESS_ORDER_PORT:-8081}"],
+      "spawn": "lazy",
+      "kill": "keep",
+      "health": "/health",
+      "env": {"HARNESS_ORDER_DIR": "./harness_orders"},
+      "depends_on": []
+    },
+    "mcp_tool_runner": {
+      "enabled": true,
+      "kind": "process",
+      "title": "进程级工具沙箱（代码/脚本执行）",
+      "desc": "以受限子进程执行 code/design/web/research 等技能产物，替代 Docker-in-Docker。",
+      "start_cmd": ["python3", "harness_sandbox_runner.py"],
+      "spawn": "lazy",
+      "kill": "idle_reap",
+      "health": null,
+      "env": {"SANDBOX_TIMEOUT": "60", "SANDBOX_NETWORK": "none"},
+      "depends_on": []
+    },
+    "mcp_memory": {
+      "enabled": true,
+      "kind": "library",
+      "title": "会话记忆 / 订单记忆 JSONL",
+      "desc": "harness_agent 内置记忆层，会话与任务卡落盘。",
+      "start_cmd": [],
+      "spawn": "on_demand",
+      "kill": "keep",
+      "health": null,
+      "env": {"HARNESS_MEMORY_DIR": "./harness_memory"},
+      "depends_on": []
+    },
+    "mcp_role_hermes": {
+      "enabled": true,
+      "kind": "role_plugin",
+      "title": "Hermes 角色插件（大脑层·全域模板调度）",
+      "desc": "由 harness_plugins.json 控制启停，绑定 skillset: global_schedule/fleet_orchestration。",
+      "start_cmd": [],
+      "spawn": "lazy",
+      "kill": "keep",
+      "health": null,
+      "env": {},
+      "depends_on": ["agent_orchestrator"]
+    },
+    "mcp_role_codex": {
+      "enabled": false,
+      "kind": "role_plugin",
+      "title": "Codex 角色插件（执行）",
+      "desc": "默认禁用，按需开启。绑定 skillset: code_runner/design_pipeline/web_pipeline。",
+      "start_cmd": [],
+      "spawn": "lazy",
+      "kill": "idle_reap",
+      "health": null,
+      "env": {},
+      "depends_on": ["agent_orchestrator", "mcp_tool_runner"]
+    },
+    "mcp_role_claude_code": {
+      "enabled": false,
+      "kind": "role_plugin",
+      "title": "Claude-Code 角色插件（审核）",
+      "desc": "默认禁用，按需开启。绑定 skillset: code_review/hard_verify。",
+      "start_cmd": [],
+      "spawn": "lazy",
+      "kill": "idle_reap",
+      "health": null,
+      "env": {},
+      "depends_on": ["agent_orchestrator"]
+    }
+  },
+  "dependencies_graph": {
+    "chat_gateway": [],
+    "agent_orchestrator": ["chat_gateway"],
+    "mcp_order_intake": [],
+    "mcp_tool_runner": [],
+    "mcp_memory": ["agent_orchestrator"],
+    "mcp_role_hermes": ["agent_orchestrator"],
+    "mcp_role_codex": ["agent_orchestrator", "mcp_tool_runner"],
+    "mcp_role_claude_code": ["agent_orchestrator"]
+  },
+  "spawn_kill_matrix": {
+    "note": "spawn 条件 + kill 时机，实现按需启停。enabled=false 的服务启动时跳过。",
+    "matrix": [
+      {"service": "chat_gateway", "spawn_at": "boot", "kill_at": "never"},
+      {"service": "agent_orchestrator", "spawn_at": "first_harness_call", "kill_at": "never"},
+      {"service": "mcp_order_intake", "spawn_at": "boot", "kill_at": "never"},
+      {"service": "mcp_tool_runner", "spawn_at": "first_skill_call", "kill_at": "idle_300s"},
+      {"service": "mcp_role_hermes", "spawn_at": "boot", "kill_at": "never"},
+      {"service": "mcp_role_codex", "spawn_at": "when_enabled", "kill_at": "idle_300s"},
+      {"service": "mcp_role_claude_code", "spawn_at": "when_enabled", "kill_at": "idle_300s"}
+    ]
+  }
+}

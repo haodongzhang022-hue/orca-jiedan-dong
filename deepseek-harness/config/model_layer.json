@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "comment": "模型层映射扩展（骨架）。预留在 GLM-5.2 / DeepSeek-V4-Flash / Qwen3-VL 等多模型间切换，仅改此配置与对应环境变量，基座 harness_proxy.py / harness_agent.py 代码不动。密钥一律环境变量注入，本文件零明文。",
+  "meta": {
+    "model_layer_version": "1.0.0",
+    "updated_at": "2026-08-18",
+    "loader": "harness_proxy.py (_resolve_gateway/_resolve_token) + 环境变量覆盖",
+    "default_active": "deepseek-v4-flash"
+  },
+  "providers": {
+    "cnb-deepseek-v4-flash": {
+      "enabled": true,
+      "kind": "openai-completions",
+      "desc": "CNB 内置免费 DeepSeek-V4-Flash（MoE 284B/激活13B），免费至 2026-12-31",
+      "gateway": "${env:CNB_AI_GATEWAY:-https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions}",
+      "api_key": "${env:CNB_TOKEN}",
+      "models": {
+        "deepseek-v4-flash": {"desc": "主力免费模型", "stream_required": true, "non_stream_auto_aggregate": true}
+      },
+      "notes": "CNB 免费网关硬约束：仅支持流式，非流式在 harness_proxy 内自动聚合"
+    },
+    "nvidia-glm-5.2": {
+      "enabled": false,
+      "kind": "openai-completions",
+      "desc": "NVIDIA 免费层 GLM-5.2（文本/编程主力），个人账号约 40 req/min 限速",
+      "gateway": "https://integrate.api.nvidia.com/v1",
+      "api_key": "${env:NVIDIA_API_KEY}",
+      "models": {
+        "z-ai/glm-5.2": {"desc": "文本/编程主力", "stream_required": false, "non_stream_auto_aggregate": false}
+      },
+      "notes": "三层联动检查：界面配置=运行注入=代理转发，三者需对齐；免费层 429 限流需回退到 DeepSeek"
+    },
+    "cnb-qwen3": {
+      "enabled": false,
+      "kind": "openai-completions",
+      "desc": "CNB 免费 Qwen3 235B（备选通用文本）",
+      "gateway": "${env:CNB_AI_GATEWAY}",
+      "api_key": "${env:CNB_TOKEN}",
+      "models": {
+        "qwen3-235b-a22b": {"desc": "备选通用文本", "stream_required": true, "non_stream_auto_aggregate": true}
+      },
+      "notes": ""
+    },
+    "cnb-qwen3-vl": {
+      "enabled": false,
+      "kind": "openai-completions",
+      "desc": "CNB/本地视觉模型（接单扫描看图，Pro 解锁）",
+      "gateway": "http://127.0.0.1:13460/v1",
+      "api_key": "${env:CNB_TOKEN}",
+      "models": {
+        "Qwen/Qwen3-VL-8B-Instruct": {"desc": "视觉/看图接单", "stream_required": false, "non_stream_auto_aggregate": false}
+      },
+      "notes": "能力圈分工：GLM-5.2 写代码 + DeepSeek 兜底 + Qwen3-VL 视觉，不互斥"
+    }
+  },
+  "role_model_binding": {
+    "note": "各角色插件默认绑定的模型；切换模型只改此映射或对应环境变量，基座不动",
+    "binding": {
+      "hermes": "cnb-deepseek-v4-flash/deepseek-v4-flash",
+      "codex": "cnb-deepseek-v4-flash/deepseek-v4-flash",
+      "claude_code": "cnb-deepseek-v4-flash/deepseek-v4-flash"
+    },
+    "switch_method": [
+      "改 role_model_binding.binding 对应项",
+      "设置环境变量 HARNESS_MODEL_BINDING_<role>=<provider>/<model>",
+      "模型层仅配置驱动，harness_proxy/_agent 代码零修改"
+    ]
+  },
+  "fallback_chain": ["cnb-deepseek-v4-flash", "nvidia-glm-5.2", "cnb-qwen3"],
+  "rate_limit_notes": {
+    "nvidia_free": "约 40 req/min，超限 429；需回退到 DeepSeek，禁止阻塞接单主链路",
+    "cnb_free": "免费档 428/429 为触顶信号，非模型切换问题"
+  }
+}
