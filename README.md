@@ -189,3 +189,28 @@ curl -s -X POST http://127.0.0.1:8080/api/chat/completions \
 ### 新增文件
 
 `deploy/dsh-desktop/Dockerfile` · `deploy/dsh-desktop/entrypoint.sh` · `deploy/dsh-desktop/README.md` · `.cnb.yml`（新增 `build-dsh-desktop-image` 流水线任务）
+
+### ✅ 实测闭环（2026-08-18 · PR #46 合并后 CI 自动触发）
+
+`main.push` 事件自动触发了 `build-dsh-desktop-image` 流水线（构建号 `cnb-35l-1k08ivpkk`），`ifModify` 精准命中 dsh 相关文件（`build-npc-full-image` 正确跳过）：
+
+| 环节 | 结果 | 证据 |
+|---|---|---|
+| 镜像构建 | ✅ success（73s） | stage-0 `build dsh-desktop reusable image` |
+| 镜像推送 | ✅ success（22s） | stage-1 push → `docker.cnb.cool/tjf19770107/orca-jiedan:dsh-2.0.1` digest `sha256:c0f1dd9d...313` |
+| 模型对接（内网 8081） | ✅ 非流式/流式均返回 `deepseek-v4-flash` | `/health`=ok；非流式回复 `OK`；流式 SSE 正常 |
+| 企微接单 | ✅ 任务卡建档 | `/v1/orders` → `HW1786994893` |
+| /v1/models | ✅ 列全免费模型 | `deepseek-v4-flash` / `deepseek-r1` / `qwen3-235b-a22b` |
+
+**容器启动命令（镜像实例化）**：
+```bash
+docker run -d --name dsh-desktop -p 8080:8080 \
+  -e CNB_TOKEN="${CNB_TOKEN}" \
+  -e CNB_AI_GATEWAY="${CNB_AI_GATEWAY}" \
+  -e CNB_MODEL="deepseek-v4-flash" \
+  -e DSH_WEB_PORT=8080 -e HARNESS_PORT=8081 \
+  --restart unless-stopped \
+  docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.1
+```
+> 后续任何一次对 `deploy/dsh-desktop/*` 或 `deepseek-harness/*` 的 `main.push` 改动，都会自动重新构建并推送镜像，无需手动。
+
