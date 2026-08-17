@@ -170,14 +170,21 @@ main:
         - deepseek-harness/harness_proxy.py
         - deepseek-harness/harness_agent.py
         - deepseek-harness/harness_skills.json
+        - deepseek-harness/harness_mcp_loader.py
+        - deepseek-harness/harness_plugin_loader.py
         - deepseek-harness/run_harness.sh
+        - deepseek-harness/config/harness_mcp_registry.json
+        - deepseek-harness/config/harness_plugins.json
+        - deepseek-harness/config/model_layer.json
+        - deepseek-harness/plugins/gateway_3080/gateway_3080.py
+        - scripts/install_mcp_plugin.sh
       stages:
         - name: build dsh-desktop reusable image
           script: |
             docker build \
               -f deploy/dsh-desktop/Dockerfile \
-              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.2 \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.3 \
               .
         - name: push dsh-desktop reusable image
           script: |
-            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.2
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.3

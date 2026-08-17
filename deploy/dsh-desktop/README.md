@@ -45,14 +45,14 @@
 
 **示例完整镜像名**：
 ```
-docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.1
+docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.3
 ```
 
 ### 3.2 版本标签规则
 
 - **标签格式**：`dsh-<desktop版本>`，其中 `<desktop版本>` 取自 `anywhere-labs/deepseek-harness-desktop` 根 `package.json` 的 `version`（当前 `2.0.1`）。
 - **跟随上游升级**：上游发新版 → 更新镜像 tag → 重新构建推送，容器升级只需 `docker run` 用新 tag。
-- **与既有 NPC 镜像共存**：现有 `:1.6.0` 是 NPC 运行镜像（claude-code/codex/hermes/deepseek-harness 角色），本 `dsh-2.0.1` 是独立可复用 WebUI 镜像，两者互不冲突、可并行存在。
+- **与既有 NPC 镜像共存**：现有 `:1.6.0` 是 NPC 运行镜像（claude-code/codex/hermes/deepseek-harness 角色），本 `dsh-2.0.3` 是独立可复用 WebUI 镜像，两者互不冲突、可并行存在。
 
 ---
 
@@ -64,7 +64,7 @@ docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.1
 # 在仓库根目录执行（需 Docker + buildx）
 DOCKER_REGISTRY=docker.cnb.cool
 REPO_SLUG=TJF19770107/orca-jiedan
-TAG=dsh-2.0.1
+TAG=dsh-2.0.3
 
 docker build \
   -f deploy/dsh-desktop/Dockerfile \
@@ -84,7 +84,7 @@ docker push ${DOCKER_REGISTRY}/${REPO_SLUG}:${TAG}
 ### 5.1 标准启动（对外暴露 8080 + 内网 8081）
 
 ```bash
-IMG=docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.1
+IMG=docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.3
 
 docker run -d \
   --name dsh-desktop \
@@ -129,7 +129,7 @@ docker run -d \
 docker stop dsh-desktop && docker rm dsh-desktop
 
 # 2. （可选）确保本地有最新镜像
-docker pull docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.1
+docker pull docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.3
 
 # 3. 从镜像重新实例化一个全新容器（见 5.1 完整命令）
 #    容器重建后状态隔离、干净启动，接单链路 / 编排能力自动恢复
@@ -161,6 +161,62 @@ curl -s -X POST http://127.0.0.1:8080/api/chat/completions \
 ```
 
 > 注：官方 Harness 通过其内部 `/api/*` 网关路由转发模型请求，实际端点以容器内 `dsh web` 打印的 URL 为准；也可在 WebUI「设置 → 模型」中选择 `cnb-deepseek-v4-flash` 发起会话验证。
+
+---
+
+## 七·A、双模式 MCP 插件安装与集成（gateway_3080）
+
+`gateway_3080.py` 已升级为**统一可安装 MCP 插件（双模式架构）**，并安装进 DeepSeek Harness，随镜像内置。
+
+### 安装路径
+
+| 项 | 路径 |
+|---|---|
+| 插件源文件 | `deploy/dsh-desktop/gateway_3080.py` |
+| 插件安装位置（harness 内） | `deepseek-harness/plugins/gateway_3080/gateway_3080.py` |
+| MCP 统一加载器 | `deepseek-harness/harness_mcp_loader.py` |
+| 角色插件加载器 | `deepseek-harness/harness_plugin_loader.py` |
+| MCP 注册中心 | `deepseek-harness/config/harness_mcp_registry.json`（已登记 `gateway_3080_mcp` 服务） |
+| 角色插件清单 | `deepseek-harness/config/harness_plugins.json` |
+| 模型层映射 | `deepseek-harness/config/model_layer.json` |
+| 一键安装/集成脚本 | `scripts/install_mcp_plugin.sh` |
+
+### 两种模式
+
+| 模式 | 启动参数 | 协议 | 适用 |
+|---|---|---|---|
+| **模式一 标准 MCP** | 无参数（默认） | MCP stdin/stdout | Codex / Hermes / DeepSeek-Harness 作为插件加载 |
+| **模式二 HTTP 兼容** | `--http --port 3080` | OpenAI `/v1` | 老工具表单填 `base_url=http://127.0.0.1:3080` |
+
+### 一键安装与集成（镜像内已内置，也可手动跑）
+
+```bash
+bash scripts/install_mcp_plugin.sh   # 安装 + 语法校验 + 注册中心校验 + 冒烟验证 health
+```
+
+### 调用示例（免费 DeepSeek-V4-Flash）
+
+```bash
+# 模式一 MCP：对话
+python3 deepseek-harness/harness_mcp_loader.py --tool chat_completions \
+  --args '{"messages":[{"role":"user","content":"你好"}],"model":"deepseek-v4-flash"}' --mode mcp
+
+# 模式一 MCP：健康自检
+python3 deepseek-harness/harness_mcp_loader.py --tool health --mode mcp
+
+# 模式二 HTTP：对话
+python3 deepseek-harness/harness_mcp_loader.py --tool chat_completions \
+  --args '{"messages":[{"role":"user","content":"你好"}],"model":"deepseek-v4-flash"}' --mode http
+
+# 角色插件清单
+python3 deepseek-harness/harness_plugin_loader.py --list
+```
+
+### 已验证（本仓库云端容器内）
+
+- ✅ 模式一 MCP：`health` + `chat_completions` 均返回免费模型结果
+- ✅ 模式二 HTTP：`/health`、`/v1/models`、`/v1/chat/completions` 均正常
+- ✅ 全部走 CNB 免费 `deepseek-v4-flash`，密钥零明文（仅读 `CNB_TOKEN` 环境变量）
 
 ---
 

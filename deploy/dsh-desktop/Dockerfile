@@ -78,10 +78,19 @@ RUN mkdir -p /opt/deepseek-harness
 COPY deepseek-harness/harness_proxy.py /opt/deepseek-harness/harness_proxy.py
 COPY deepseek-harness/harness_agent.py /opt/deepseek-harness/harness_agent.py
 COPY deepseek-harness/harness_skills.json /opt/deepseek-harness/harness_skills.json
+COPY deepseek-harness/harness_mcp_loader.py /opt/deepseek-harness/harness_mcp_loader.py
+COPY deepseek-harness/harness_plugin_loader.py /opt/deepseek-harness/harness_plugin_loader.py
 COPY deepseek-harness/run_harness.sh /opt/deepseek-harness/run_harness.sh
-# 本机 3080 网关（双模式 MCP 插件）内置进镜像，启动环境可直接调用
+# 「一切皆插件」配置（MCP 注册中心 / 角色插件清单 / 模型层）内置进镜像
+COPY deepseek-harness/config/ /opt/deepseek-harness/config/
+# 双模式 MCP 插件（gateway_3080）：既放 harness 根目录（entrypoint HTTP 模式用），
+# 也装进 plugins 插件目录（harness_mcp_loader MCP 模式用，install_path 对齐）
 COPY deploy/dsh-desktop/gateway_3080.py /opt/deepseek-harness/gateway_3080.py
-RUN chmod +x /opt/deepseek-harness/*.sh /opt/deepseek-harness/gateway_3080.py
+COPY deploy/dsh-desktop/gateway_3080.py /opt/deepseek-harness/plugins/gateway_3080/gateway_3080.py
+COPY deepseek-harness/plugins/gateway_3080/gateway_3080.py /opt/deepseek-harness/plugins/gateway_3080/gateway_3080.py
+# 一键安装/集成脚本内置进镜像
+COPY scripts/install_mcp_plugin.sh /opt/deepseek-harness/install_mcp_plugin.sh
+RUN chmod +x /opt/deepseek-harness/*.sh /opt/deepseek-harness/gateway_3080.py /opt/deepseek-harness/plugins/gateway_3080/gateway_3080.py /opt/deepseek-harness/install_mcp_plugin.sh
 
 # ---- 7. 启动脚本（生成 provider 配置 + 拉起两个服务）----
 COPY deploy/dsh-desktop/entrypoint.sh /usr/local/bin/dsh-entrypoint.sh

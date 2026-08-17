@@ -37,6 +37,13 @@
 | `harness_agent.py` | 超 Agent 编排：规划器→子 Agent 委派→记忆→汇总 |
 | `web_console.html` | 云端操作控制台（接单 + 编排对话） |
 | `harness_skills.json` | 技能索引（design/web/code/research/wechat_order） |
+| `harness_mcp_loader.py` | **MCP 统一加载器**：读取 `config/harness_mcp_registry.json` 按需 spawn/kill MCP 子进程，调用双模式插件工具 |
+| `harness_plugin_loader.py` | **角色插件加载器**：读取 `config/harness_plugins.json` 按需加载 Hermes/Codex/Claude-Code |
+| `config/harness_mcp_registry.json` | MCP 统一注册中心（已登记 `gateway_3080_mcp` 双模式插件） |
+| `config/harness_plugins.json` | 角色插件清单（enabled 开关 + 技能绑定） |
+| `config/model_layer.json` | 模型层映射（DeepSeek-V4-Flash / GLM-5.2 / Qwen3-VL） |
+| `plugins/gateway_3080/gateway_3080.py` | 双模式 MCP 插件安装位置（MCP stdin/stdout + HTTP 兼容） |
+| `install_mcp_plugin.sh` | 一键安装 + 集成 + 冒烟验证脚本（源：`scripts/install_mcp_plugin.sh`） |
 | `harness_orders/` | 企微派单 → 任务卡（运行时生成） |
 | `harness_memory/` | 会话记忆 JSONL（运行时生成） |
 
