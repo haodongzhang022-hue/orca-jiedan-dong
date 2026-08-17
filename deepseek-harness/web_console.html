@@ -23,6 +23,31 @@
   button.secondary { background:#21262d; }
   button:disabled { opacity:.5; cursor:not-allowed; }
   .out { background:#0d1117; border:1px solid var(--border); border-radius:6px; padding:10px; margin-top:10px; font-size:12px; white-space:pre-wrap; max-height:260px; overflow:auto; font-family:ui-monospace,monospace; }
+  /* ---- MCP 插件可视化面板 ---- */
+  .plugin { border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:12px; background:#0d1117; }
+  .plugin-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .plugin-head b { color:var(--accent); font-size:14px; }
+  .plugin-desc { color:#8b949e; font-size:12px; margin:6px 0; }
+  .tag { display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600; }
+  .tag.on { background:#1f6feb; color:#fff; }
+  .tag.off { background:#21262d; color:#8b949e; }
+  .tag.ok { background:var(--ok); color:#000; }
+  .tag.warn { background:#d29922; color:#000; }
+  .tag.err { background:#f85149; color:#fff; }
+  .tag.info { background:#21262d; color:#8b949e; }
+  .model-chip { display:inline-block; font-size:11px; background:#21262d; color:#8b949e; border:1px solid var(--border); border-radius:10px; padding:2px 8px; margin:2px; }
+  .plugin-meta { display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-size:12px; color:#8b949e; }
+  .switch { position:relative; display:inline-block; width:44px; height:24px; margin-left:auto; }
+  .switch input { opacity:0; width:0; height:0; }
+  .slider { position:absolute; cursor:pointer; inset:0; background:#21262d; border-radius:24px; transition:.2s; }
+  .slider:before { content:""; position:absolute; height:18px; width:18px; left:3px; bottom:3px; background:#8b949e; border-radius:50%; transition:.2s; }
+  .switch input:checked + .slider { background:#1f6feb; }
+  .switch input:checked + .slider:before { transform:translateX(20px); background:#fff; }
+  .plugin-detail { display:none; margin-top:10px; border-top:1px solid var(--border); padding-top:10px; font-size:12px; }
+  .plugin-detail.open { display:block; }
+  .model-list { margin-top:6px; }
+  .btn-sm { padding:4px 10px; font-size:11px; margin:0 4px 0 0; }
+  .hl { color:#2f81f7; font-weight:600; }
   .order-item { border-bottom:1px solid var(--border); padding:8px 0; font-size:13px; }
   .order-item b { color:var(--accent); }
   .stat { display:flex; gap:20px; margin-bottom:16px; font-size:13px; color:#8b949e; }
@@ -64,6 +89,12 @@
     <h2>📁 已接订单（任务卡）</h2>
     <div id="orderList">（加载中…）</div>
   </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>🧩 MCP 插件管理 <span class="sub" id="regVersion" style="margin-left:8px;"></span></h2>
+    <div class="sub">读取 <span class="hl">config/harness_mcp_registry.json</span> · 命令行链路（harness_mcp_loader.py）不受影响 · 切换即时写回注册中心</div>
+    <div id="pluginList">（加载中…）</div>
+  </div>
 </div>
 
 <script>
@@ -79,6 +110,7 @@ async function init(){
     document.getElementById('gw').textContent = h.status==='ok' ? '✅ 在线 '+(h.model||'') : '⚠️ 异常';
   }catch(e){ document.getElementById('gw').textContent='❌ 无法连接'; }
   refreshOrders();
+  loadPlugins();
 }
 async function refreshOrders(){
   try{
@@ -111,6 +143,76 @@ async function runHarness(){
   }
 }
 function v(id){ return document.getElementById(id).value.trim(); }
+
+/* ========== MCP 插件可视化面板 ========== */
+const tagMap = {
+  on:   ['启用', 'tag.on'],   off:   ['禁用', 'tag.off'],
+  ok:   ['正常', 'tag.ok'],   warn:  ['警告', 'tag.warn'],
+  err:  ['异常', 'tag.err'],  unreachable:['不可达','tag.err'],
+  disabled:['禁用','tag.off'], unknown:['未知','tag.info']
+};
+function tag(cls, label){
+  const t = tagMap[cls] || [cls, 'tag.info'];
+  return `<span class="tag ${t[1]}">${t[0]}</span>`;
+}
+function pluginCard(p){
+  const models = (p.models||[]).map(m=>`<span class="model-chip">${m.id}</span>`).join('') || '';
+  const modeTag = p.dual_mode ? (p.mode==='http' ? tag('warn','http') : tag('info','mcp')) : '';
+  return `
+  <div class="plugin" id="plugin-${p.name}">
+    <div class="plugin-head">
+      <b>${p.title||p.name}</b>
+      <span class="tag ${p.enabled?'on':'off'}">${p.enabled?'启用':'禁用'}</span>
+      ${p.dual_mode?'<span class="tag info">双模式</span>':''}
+      ${modeTag}
+      <span class="tag ${p.health==='ok'?'ok':(p.health==='unreachable'?'err':'info')}">健康：${p.health==='ok'?'正常':(p.health==='unreachable'?'不可达':'—')}</span>
+      <label class="switch" title="${p.enabled?'禁用':'启用'} ${p.name}">
+        <input type="checkbox" data-name="${p.name}" ${p.enabled?'checked':''} onchange="togglePlugin('${p.name}', this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="plugin-desc">${p.desc||''}</div>
+    <div class="plugin-meta">
+      <span>类型：<span class="hl">${p.kind||'—'}</span></span>
+      <span>模式：<span class="hl">${p.mode? (p.mode==='http'?'HTTP 网关':'MCP(stdin/stdout)'):'—'}</span></span>
+      <button class="secondary btn-sm" onclick="toggleDetail('${p.name}')">详情/模型</button>
+    </div>
+    <div class="plugin-detail" id="detail-${p.name}">
+      <div><b>生效模型清单：</b></div>
+      <div class="model-list">${models || '<span class="tag info">—</span>'}</div>
+      <div style="margin-top:8px;color:#8b949e;">健康详情：${p.health_detail||'—'}</div>
+      <div style="margin-top:4px;color:#8b949e;">工具：${(p.name==='gateway_3080_mcp')?'chat_completions / get_models / health':'（见注册中心）'}</div>
+    </div>
+  </div>`;
+}
+async function loadPlugins(){
+  const el = document.getElementById('pluginList');
+  try{
+    const d = await api('/plugins');
+    document.getElementById('regVersion').textContent = '注册中心 v'+(d.registry_version||'—');
+    el.innerHTML = (d.plugins||[]).map(pluginCard).join('') || '<div class="sub">（无插件）</div>';
+  }catch(e){
+    el.innerHTML = '<div class="sub">❌ 插件接口加载失败：'+e+'</div>';
+  }
+}
+async function togglePlugin(name, enabled){
+  try{
+    const r = await api(`/plugins/${name}/toggle`, 'POST', {enabled});
+    if(r.ok){
+      await loadPlugins();
+    }else{
+      alert('切换失败：'+(r.error||'未知'));
+      await loadPlugins();
+    }
+  }catch(e){
+    alert('切换失败：'+e);
+    await loadPlugins();
+  }
+}
+function toggleDetail(name){
+  const el = document.getElementById('detail-'+name);
+  if(el) el.classList.toggle('open');
+}
 init();
 </script>
 </body>

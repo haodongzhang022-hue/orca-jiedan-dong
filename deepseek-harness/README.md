@@ -57,6 +57,9 @@
 | `/v1/orders` | POST | 企业微信派单 → 任务卡建档 |
 | `/v1/orders/list` | GET | 已接订单列表 |
 | `/harness` | POST | 编排 Agent：规划→委派→执行→汇总 |
+| `/plugins` | GET | MCP 插件/服务列表（读取注册中心，含模式/健康/模型） |
+| `/plugins/<name>` | GET | 单个插件详情 |
+| `/plugins/<name>/toggle` | POST | 启用/禁用插件（写回注册中心） |
 | `/console` | GET | Web 操作控制台 |
 
 ## 五、快速本地测试
