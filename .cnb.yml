@@ -72,6 +72,7 @@ $:
             - deepseek-harness/harness_skills.json
             - deepseek-harness/run_harness.sh
             - deepseek-harness/entrypoint.sh
+            - deploy/dsh-desktop/gateway_3080.py
             - .ide/start.sh
         # 构建失败时的回退镜像（自带 code-server，可进 WebIDE）
         image: cnbcool/default-dev-env:latest
@@ -165,6 +166,7 @@ main:
       ifModify:
         - deploy/dsh-desktop/Dockerfile
         - deploy/dsh-desktop/entrypoint.sh
+        - deploy/dsh-desktop/gateway_3080.py
         - deepseek-harness/harness_proxy.py
         - deepseek-harness/harness_agent.py
         - deepseek-harness/harness_skills.json
@@ -174,8 +176,8 @@ main:
           script: |
             docker build \
               -f deploy/dsh-desktop/Dockerfile \
-              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1 \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.2 \
               .
         - name: push dsh-desktop reusable image
           script: |
-            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.2

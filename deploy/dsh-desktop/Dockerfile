@@ -25,8 +25,8 @@
 #   - 放弃改造本地 web_console.html 的旧方案
 #
 # 构建（在 CNB 流水线执行，见 .cnb.yml）：
-#   docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1 .
-#   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1
+#   docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.2 .
+#   docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.2
 # =============================================================================
 
 # ---- 基础镜像：Node 22（官方 Harness 要求 node ^22.19.0 || >=24.0.0）----
@@ -79,7 +79,9 @@ COPY deepseek-harness/harness_proxy.py /opt/deepseek-harness/harness_proxy.py
 COPY deepseek-harness/harness_agent.py /opt/deepseek-harness/harness_agent.py
 COPY deepseek-harness/harness_skills.json /opt/deepseek-harness/harness_skills.json
 COPY deepseek-harness/run_harness.sh /opt/deepseek-harness/run_harness.sh
-RUN chmod +x /opt/deepseek-harness/*.sh
+# 本机 3080 网关（双模式 MCP 插件）内置进镜像，启动环境可直接调用
+COPY deploy/dsh-desktop/gateway_3080.py /opt/deepseek-harness/gateway_3080.py
+RUN chmod +x /opt/deepseek-harness/*.sh /opt/deepseek-harness/gateway_3080.py
 
 # ---- 7. 启动脚本（生成 provider 配置 + 拉起两个服务）----
 COPY deploy/dsh-desktop/entrypoint.sh /usr/local/bin/dsh-entrypoint.sh
@@ -87,8 +89,8 @@ RUN chmod +x /usr/local/bin/dsh-entrypoint.sh
 
 # ---- 8. 端口约定 ----
 # 8080 原版 WebUI（对外靠 docker run -p 映射）| 8081 内网自研 harness（不对外）
-# | 6060 Hermes Studio（保留）
-EXPOSE 8080 8081 6060
+# | 6060 Hermes Studio（保留）| 3080 本机网关（HTTP 兼容模式，仅本机/内网）
+EXPOSE 8080 8081 6060 3080
 
 ENTRYPOINT ["/usr/local/bin/dsh-entrypoint.sh"]
 CMD []
