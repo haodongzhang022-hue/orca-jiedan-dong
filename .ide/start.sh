@@ -1,31 +1,29 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CNB 云原生开发环境 · Hermes Studio Web GUI 启动脚本
+# CNB 云原生开发环境 · DeepSeek Harness 云端控制台启动脚本
 # =============================================================================
 # 职责：
-#   1. 后台拉起 CNB 内置免费 DeepSeek-V4-Flash 网关适配层（127.0.0.1:8787，
-#      Anthropic 协议 → CNB OpenAI Chat Completions 免费网关）
-#   2. 前台运行 Hermes Web UI（node dist/server/index.js，端口 6060，监听 0.0.0.0）
-#   3. 通过 CNB_WELCOME_CMD 或环境变量可注入 token（仅运行时，不落镜像）
+#   1. 启动 DeepSeek Harness OpenAI 兼容网关（harness_proxy.py，端口 8080）
+#   2. 网关内集成：/v1/chat/completions(免费V4Flash流式) /v1/models
+#      /v1/orders(企业微信接单建档) /harness(编排Agent) /console(控制台)
+#   3. 鉴权全程环境变量注入（CNB_TOKEN），镜像零硬编码密钥
 #
-# 环境变量（全部运行时注入，镜像零硬编码密钥）：
-#   CNB_TOKEN / ACC_PRODUCT_CONFIG_V2   → CNB 免费网关鉴权
-#   CNB_MODEL                           → 默认 deepseek-v4-flash
-#   CNB_AI_GATEWAY                      → 网关地址（可选，默认自动解析）
-#   PORT / BIND_HOST                    → Web UI 监听（默认 6060 / 0.0.0.0）
+# 通过 CNB WebIDE PORTS 端口映射，浏览器打开 https://{id}-8080.cnb.run 即控制台
 # =============================================================================
 set -euo pipefail
 
-# ---- 1. 启动 CNB 免费网关适配层（后台，失败不阻断 Web UI）----
-if command -v python3 >/dev/null 2>&1 && [ -f /usr/local/bin/anthropic_to_cnb.py ]; then
-  echo "[cnb-hermes-studio] 启动 CNB 免费 DeepSeek-V4-Flash 网关适配层 (127.0.0.1:8787)..."
-  nohup python3 /usr/local/bin/anthropic_to_cnb.py >/tmp/anthropic_to_cnb.log 2>&1 &
-  echo "[cnb-hermes-studio] 适配层 PID: $!"
+echo "[cnb-harness] ==== DeepSeek Harness 云端控制台启动 ===="
+echo "[cnb-harness] 模型基座 = ${CNB_MODEL:-deepseek-v4-flash}（CNB 免费）"
+
+# ---- 1. 环境变量注入校验（不打印密钥明文，仅提示）----
+if [ -n "${CNB_TOKEN:-}" ]; then
+  echo "[cnb-harness] CNB_TOKEN 已注入（前缀 ${CNB_TOKEN:0:6}...）✅"
 else
-  echo "[cnb-hermes-studio] ⚠️ 适配层不可用，Web UI 将以默认 provider 运行"
+  echo "[cnb-harness] ⚠️ CNB_TOKEN 未注入，免费网关调用将失败（容器内默认环境可能自动注入）"
 fi
 
-# ---- 2. 前台运行 Hermes Web UI（官方入口）----
-echo "[cnb-hermes-studio] 启动 Hermes Web UI (PORT=${PORT:-6060}, BIND_HOST=${BIND_HOST:-0.0.0.0})..."
-cd /app || cd /
-exec node dist/server/index.js
+# ---- 2. 启动 DeepSeek Harness 网关（前台保持存活）----
+PORT="${HARNESS_PORT:-8080}"
+echo "[cnb-harness] 启动 DeepSeek Harness 网关 (0.0.0.0:$PORT)..."
+cd /opt/deepseek-harness
+exec python3 harness_proxy.py --port "$PORT" --host 0.0.0.0

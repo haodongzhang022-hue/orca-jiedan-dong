@@ -1,71 +1,47 @@
 # =============================================================================
-# CNB 云原生开发环境 · Hermes Studio Web GUI 云上复刻
+# CNB 云原生开发环境 · DeepSeek Harness 云端控制台（替代 Hermes Studio 方案）
 # =============================================================================
 # 用途：
-#   在 CNB「云原生开发」工作区中复刻 Hermes Studio 的 Web 控制台（hermes-web-ui），
-#   浏览器直接打开 → 本地桌面版的效果，纯云端算力 + CNB 免费 DeepSeek-V4-Flash 网关。
+#   在 CNB「云原生开发」工作区中部署独立自研的 DeepSeek Harness 云端运行时，
+#   浏览器直接打开 → 企业微信接单控制台 + 免费 DeepSeek-V4-Flash 编排 Agent。
 #
-# 原料（官方已验证，2026-08-09 核验）：
-#   - 官方镜像 ekkoye8888/hermes-web-ui:v0.6.39（约 1.49GB，基于 nousresearch/hermes-agent）
-#   - 官方 Dockerfile：ENTRYPOINT node dist/server/index.js，EXPOSE 6060
-#   - docker-compose 端口：6060(Web UI) / 8651(预览前端) / 56121(OAuth 回调)
+# ❌ 非 Hermes Studio：本镜像【不】使用 ekkoye8888/hermes-web-ui，而是
+#    自带轻量 Python 运行时（harness_proxy + harness_agent + web_console），
+#    零外部依赖、零积分、免费 DeepSeek-V4-Flash 基座。
 #
-# 与 NPC 一次性容器的区别：
-#   - NPC 路径B 容器：事件触发即用即毁，无 GUI
-#   - 云原生开发工作区：可常驻（有回收机制，见下），WebIDE 端口映射直达 6060
-#
-# 回收机制（CNB 平台文档确认）：
-#   - 10 分钟无操作自动回收 / 最长保持 18 小时 / 凌晨 4-6 点强制回收
-#   → 本工作区定位为「出差/兜底可视化」，日常编排仍以本地桌面版为主
-#
-# ⚠️ 修复说明（Issue #27「怎么修改」）：
-#   提交 075191d 曾把本文件改成空壳（cnbcool/default-dev-env + python3），
-#   导致云原生开发环境 6060 端口无 Hermes Web UI 监听 → 访问
-#   https://{id}-6060.cnb.run 返回 connection refused。本文件已恢复为基于
-#   ekkoye8888/hermes-web-ui:v0.6.39 的完整镜像。
+# 与旧 Hermes Web UI 方案的区别：
+#   - 旧：1.49GB hermes-web-ui 镜像 + node dist/server/index.js（重，回收即失）
+#   - 新：纯 Python HTTP 网关 + 编排 Agent + 静态控制台（轻，<100MB 基础镜像）
 #
 # 安全红线：
-#   - 镜像【严禁写入任何密钥】；模型网关鉴权全部来自环境变量/个人环境变量注入
+#   - 镜像【严禁写入任何密钥】；模型网关鉴权全部来自环境变量注入（CNB_TOKEN）
 # =============================================================================
 
-# 官方 Hermes Web UI 镜像（含 Hermes Agent 运行时 + 完整 Web 控制台）
-# ⚠️ tag 必须带 v 前缀：Docker Hub 上仓库 tag 为 v0.6.39（0.6.39 不存在，404）
-FROM ekkoye8888/hermes-web-ui:v0.6.39
+FROM python:3.11-slim
 
-# ---- 1. 基础工具链（云原生开发环境常规需求）----
-USER root
+# ---- 1. 基础工具链 ----
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       ca-certificates curl wget unzip git git-lfs openssh-server \
-       python3 python3-pip procps ripgrep jq \
-       fonts-noto-cjk \
-    && rm -rf /var/lib/apt/lists/* \
-    && git lfs install || true
+       ca-certificates curl wget git procps jq fonts-noto-cjk \
+    && rm -rf /var/lib/apt/lists/*
 
-# ---- 2. CNB CLI / Skills 运行时（便于在工作区直接操作仓库/NPC）----
-RUN npm install -g @cnbcool/cnb-cli skills \
-    && npx skills add https://cnb.cool/cnb/skills/cnb-skill.git -g -y || true
+# ---- 2. 复制 DeepSeek Harness 运行时 ----
+WORKDIR /opt/deepseek-harness
+COPY deepseek-harness/harness_proxy.py .
+COPY deepseek-harness/harness_agent.py .
+COPY deepseek-harness/web_console.html .
+RUN chmod +x harness_proxy.py harness_agent.py
 
-# ---- 3. CNB 内置免费网关适配层（Hermes Studio 的 provider 可指向本层，复用仓库已验收协议）----
-COPY adapters/anthropic_to_cnb.py /usr/local/bin/anthropic_to_cnb.py
-RUN chmod +x /usr/local/bin/anthropic_to_cnb.py
+# ---- 3. CNB CLI / Skills（便于在云端容器内操作仓库/NPC/接单流水线）----
+RUN pip install --no-cache-dir --quiet \
+    && npm install -g @cnbcool/cnb-cli skills 2>/dev/null || true
 
-# ---- 4. 端口与监听地址 ----
-# Hermes Web UI 需监听 0.0.0.0 才能被 CNB 端口映射 {id}-{{port}}.cnb.run 访问
-ENV PORT=6060
-ENV BIND_HOST=0.0.0.0
-ENV HERMES_HOME=/home/agent/.hermes
-ENV HERMES_WEB_UI_MANAGED_GATEWAY=1
-ENV HERMES_WEB_UI_XAI_CALLBACK_BIND_HOST=0.0.0.0
-ENV HERMES_ALLOW_ROOT_GATEWAY=1
-ENV PATH=/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# ---- 4. 端口 ----
+# HARNESS_PORT=8080：控制台 + OpenAI 兼容网关 + 企微接单入口
+EXPOSE 8080
 
-EXPOSE 6060 8651 56121
-
-# ---- 5. 启动入口：后台拉起 CNB 免费网关适配层 + 前台跑 Hermes Web UI ----
-COPY .ide/start.sh /usr/local/bin/cnb-hermes-studio-start.sh
-RUN chmod +x /usr/local/bin/cnb-hermes-studio-start.sh
-
-# 官方镜像入口是 node dist/server/index.js；此处改为包裹脚本以同时拉起适配层
-ENTRYPOINT ["/usr/local/bin/cnb-hermes-studio-start.sh"]
+# ---- 5. 启动入口 ----
+COPY .ide/start.sh /usr/local/bin/cnb-harness-start.sh
+RUN chmod +x /usr/local/bin/cnb-harness-start.sh
+ENTRYPOINT ["/usr/local/bin/cnb-harness-start.sh"]
 CMD []

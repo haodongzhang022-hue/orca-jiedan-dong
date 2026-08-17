@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepSeek Harness · 云端企业微信接单控制台</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --border:#30363d; --fg:#e6edf3; --accent:#2f81f7; --ok:#3fb950; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--fg); min-height:100vh; }
+  .wrap { max-width:1100px; margin:0 auto; padding:24px; }
+  h1 { font-size:22px; margin-bottom:4px; display:flex; align-items:center; gap:10px; }
+  .sub { color:#8b949e; font-size:13px; margin-bottom:20px; }
+  .badge { background:var(--ok); color:#000; font-size:12px; padding:2px 8px; border-radius:10px; font-weight:600; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media(max-width:800px){ .grid{grid-template-columns:1fr;} }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px; }
+  .card h2 { font-size:15px; margin-bottom:12px; color:var(--accent); }
+  label { display:block; font-size:12px; color:#8b949e; margin:8px 0 4px; }
+  input,textarea,select { width:100%; background:#0d1117; border:1px solid var(--border); color:var(--fg); border-radius:6px; padding:8px; font-size:13px; }
+  textarea { resize:vertical; min-height:70px; }
+  button { background:var(--accent); color:#fff; border:none; border-radius:6px; padding:8px 16px; font-size:13px; cursor:pointer; margin-top:10px; }
+  button.secondary { background:#21262d; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .out { background:#0d1117; border:1px solid var(--border); border-radius:6px; padding:10px; margin-top:10px; font-size:12px; white-space:pre-wrap; max-height:260px; overflow:auto; font-family:ui-monospace,monospace; }
+  .order-item { border-bottom:1px solid var(--border); padding:8px 0; font-size:13px; }
+  .order-item b { color:var(--accent); }
+  .stat { display:flex; gap:20px; margin-bottom:16px; font-size:13px; color:#8b949e; }
+  .stat span b { color:var(--fg); font-size:20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧠 DeepSeek Harness <span class="badge">免费 DeepSeek-V4-Flash</span></h1>
+  <div class="sub">云端企业微信接单 · 超级 Agent 运行时 · 非 Hermes Studio · 独立自研</div>
+
+  <div class="stat" id="stats">
+    <span>网关状态：<b id="gw">检测中…</b></span>
+    <span>已接订单：<b id="cnt">0</b></span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>📋 企业微信派单 → 任务卡建档</h2>
+      <label>客户名</label><input id="customer" placeholder="如：汤嘉锋">
+      <label>品类</label><input id="category" placeholder="如：海报/网页/PPT">
+      <label>需求描述</label><textarea id="demand" placeholder="如：1080x1080 海报，暗黑科技风"></textarea>
+      <label>规格/尺寸</label><input id="spec" placeholder="如：1080x1080, PSD+PNG">
+      <label>结算/报价</label><input id="settle" placeholder="如：支付宝 128 元">
+      <button onclick="createOrder()">接单并建档任务卡</button>
+      <div class="out" id="orderOut">（等待接单…）</div>
+    </div>
+
+    <div class="card">
+      <h2>🤖 对话 Harness 编排 Agent</h2>
+      <label>会话 ID</label><input id="session" value="default">
+      <label>任务/需求</label><textarea id="task" placeholder="让 DeepSeek Harness 规划并执行一个订单"></textarea>
+      <button onclick="runHarness()">规划 → 委派 → 执行 → 汇总</button>
+      <div class="out" id="agentOut">（等待编排…）</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>📁 已接订单（任务卡）</h2>
+    <div id="orderList">（加载中…）</div>
+  </div>
+</div>
+
+<script>
+async function api(path, method='GET', body=null){
+  const opt = {method, headers:{'Content-Type':'application/json'}};
+  if(body) opt.body = JSON.stringify(body);
+  const r = await fetch(path, opt);
+  return r.json();
+}
+async function init(){
+  try{
+    const h = await api('/health');
+    document.getElementById('gw').textContent = h.status==='ok' ? '✅ 在线 '+(h.model||'') : '⚠️ 异常';
+  }catch(e){ document.getElementById('gw').textContent='❌ 无法连接'; }
+  refreshOrders();
+}
+async function refreshOrders(){
+  try{
+    const d = await api('/v1/orders/list');
+    const list = d.orders||[];
+    document.getElementById('cnt').textContent = list.length;
+    document.getElementById('orderList').innerHTML = list.map(o=>`<div class="order-item">📄 ${o}</div>`).join('') || '（暂无）';
+  }catch(e){}
+}
+async function createOrder(){
+  const order = {
+    customer: v('customer'), category: v('category'), demand: v('demand'),
+    spec: v('spec'), settle: v('settle'),
+    deliverables: v('demand')?[v('demand')]:[]
+  };
+  const d = await api('/v1/orders','POST',order);
+  document.getElementById('orderOut').textContent = JSON.stringify(d, null, 2);
+  refreshOrders();
+}
+async function runHarness(){
+  const session = v('session')||'default';
+  const task = v('task')||'设计一张企业宣传单';
+  document.getElementById('agentOut').textContent = '正在调用 DeepSeek-Harness 编排（免费 V4-Flash）…';
+  try{
+    const r = await fetch(`/harness?session=${encodeURIComponent(session)}&task=${encodeURIComponent(task)}`);
+    const txt = await r.text();
+    document.getElementById('agentOut').textContent = txt;
+  }catch(e){
+    document.getElementById('agentOut').textContent = '调用失败: '+e;
+  }
+}
+function v(id){ return document.getElementById(id).value.trim(); }
+init();
+</script>
+</body>
+</html>
