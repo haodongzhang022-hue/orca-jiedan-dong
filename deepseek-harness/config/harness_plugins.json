@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "comment": "插件清单（角色插件 = Hermes/Codex/Claude-Code 可开关 + 各自绑定技能集）。基座 harness_agent.py 固定不动，仅由此清单控制角色插件的启用/禁用与技能映射。原 harness_skills.json 作为基础技能索引继续被基座读取，本清单在其上做角色化扩展，二者互补不改动基座。",
+  "meta": {
+    "manifest_version": "1.0.0",
+    "updated_at": "2026-08-18",
+    "base_skills_index": "config/harness_skills.json",
+    "loader": "harness_plugin_loader (进程级沙箱按需加载/卸载插件)"
+  },
+  "globals": {
+    "load_policy": "config_driven",
+    "default_enabled": false,
+    "sandbox": "subprocess",
+    "env_override": "HARNESS_PLUGIN_ENABLED_"
+  },
+  "roles": {
+    "hermes": {
+      "enabled": true,
+      "title": "Hermes（大脑层·全域模板调度·多Agent编排）",
+      "desc": "全局调度/方案设计/最终交付；读插件清单按需委派 codex/claude-code。",
+      "bind_skills": [
+        {"key": "global_schedule", "desc": "全域模板调度·龙虾五步法", "entry": "fleet_scheduler"},
+        {"key": "fleet_orchestration", "desc": "多Agent任务编排/跨Agent接力/进度跟踪", "entry": "orchestrator"},
+        {"key": "task_analysis", "desc": "任务拆解/意图识别/资源缺口", "entry": "planner"}
+      ],
+      "system_prompt": "config/orca/hermes_system_prompt.md",
+      "base_layer": true
+    },
+    "codex": {
+      "enabled": false,
+      "title": "Codex（执行）",
+      "desc": "负责写代码/跑脚本/生成交付产物，按需启用。",
+      "bind_skills": [
+        {"key": "code_runner", "desc": "代码编写/脚本执行", "entry": "code_runner"},
+        {"key": "design_pipeline", "desc": "平面设计/海报/Banner/Logo 输出", "entry": "design_pipeline"},
+        {"key": "web_pipeline", "desc": "HTML+CSS 网页设计输出", "entry": "web_pipeline"}
+      ],
+      "system_prompt": "config/orca/codex_system_prompt.md",
+      "base_layer": false
+    },
+    "claude_code": {
+      "enabled": false,
+      "title": "Claude-Code（审核）",
+      "desc": "负责 PR 代码评审/规格硬校验/放行打回，按需启用。",
+      "bind_skills": [
+        {"key": "code_review", "desc": "PR 代码评审：安全漏洞/Bug/代码质量", "entry": "review_agent"},
+        {"key": "hard_verify", "desc": "按交付物清单硬校验/验收放行", "entry": "verifier"}
+      ],
+      "system_prompt": "config/orca/claude_system_prompt.md",
+      "base_layer": false
+    }
+  },
+  "enable_disable_controls": {
+    "note": "可通过下列任一方式启用/禁用角色插件，无需改基座代码",
+    "methods": [
+      {"way": "本清单 enabled 字段", "example": "codex.enabled = true"},
+      {"way": "环境变量", "example": "HARNESS_PLUGIN_ENABLED_codex=true"},
+      {"way": "MCP 注册中心 spawn/kill", "example": "harness_mcp_registry.json 的 services.mcp_role_codex.enabled"}
+    ],
+    "default": {
+      "hermes": true,
+      "codex": false,
+      "claude_code": false
+    }
+  }
+}
