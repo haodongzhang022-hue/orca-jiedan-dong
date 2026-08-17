@@ -155,3 +155,27 @@ main:
         - name: push npc full image
           script: |
             docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:1.6.0
+    # ---- dsh-desktop 可复用镜像（Docker 标准模式：先构建镜像→再由镜像实例化容器）----
+    # 对齐 Hermes / OpenClaw 工程打法：镜像固化完整原版 deepseek-harness-desktop
+    # 源码/依赖/环境配置，永久存放制品库；容器只是可反复生成的运行实例。
+    # 版本标签 dsh-<上游版本>（当前上游 package.json version = 2.0.1）
+    - name: build-dsh-desktop-image
+      services:
+        - docker
+      ifModify:
+        - deploy/dsh-desktop/Dockerfile
+        - deploy/dsh-desktop/entrypoint.sh
+        - deepseek-harness/harness_proxy.py
+        - deepseek-harness/harness_agent.py
+        - deepseek-harness/harness_skills.json
+        - deepseek-harness/run_harness.sh
+      stages:
+        - name: build dsh-desktop reusable image
+          script: |
+            docker build \
+              -f deploy/dsh-desktop/Dockerfile \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1 \
+              .
+        - name: push dsh-desktop reusable image
+          script: |
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1

@@ -131,3 +131,61 @@ scripts\launch_claude_serve.cmd  # Claude Code Serve (:57330)
 - `doing/` → Codex 正在执行物料生成
 - `done/` → Claude 审核通过的结果
 - `results/` → 最终交付物回传
+
+---
+
+## 九、DeepSeek Harness Desktop 可复用镜像（Docker 标准模式）✨新增
+
+> **模式**：先构建镜像 → 再由镜像实例化容器（与 Hermes / OpenClaw 工程打法一致）。
+> **详细规范**：见 [`deploy/dsh-desktop/README.md`](deploy/dsh-desktop/README.md)。
+
+### 核心逻辑
+1. **镜像 = 安装包本体**：固化 `anywhere-labs/deepseek-harness-desktop` 完整源码、依赖、环境配置，永久存放制品库。
+2. **容器 = 运行实例**：容器销毁 / 进程退出 / 资源回收，只要镜像还在，一键重新生成全新容器，状态隔离。
+3. **融合脚手架**：镜像构建并入 `.cnb.yml` 流水线，随项目版本迭代、快照备份、同步 CNB 私有仓库。
+
+### 端口分配（保持不变）
+
+| 端口 | 用途 | 对外暴露 |
+|------|------|---------|
+| **8080** | 原版 deepseek-harness-desktop 完整 WebUI（与本地 3080 界面 1:1） | ✅ `docker run -p 8080:8080` |
+| **8081** | 旧自研 harness 整套服务（`/v1/orders` 企微接单、`/harness` 编排） | ❌ 容器内网 `127.0.0.1:8081` |
+| **6060** | Hermes Studio | ✅ 保持不变 |
+
+> ⚠️ 官方 Harness 禁止 `--host 0.0.0.0`（防止暴露远程代码执行），容器内以 `127.0.0.1` 运行，对外访问靠 Docker 端口映射完成。
+
+### 镜像构建命令
+
+```bash
+docker build -f deploy/dsh-desktop/Dockerfile \
+  -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1 .
+docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.1
+```
+
+### 从镜像启动容器
+
+```bash
+docker run -d --name dsh-desktop -p 8080:8080 \
+  -e CNB_TOKEN="${CNB_TOKEN}" \
+  -e CNB_AI_GATEWAY="https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions" \
+  -e CNB_MODEL="deepseek-v4-flash" \
+  -e DSH_WEB_PORT=8080 -e HARNESS_PORT=8081 \
+  --restart unless-stopped \
+  docker.cnb.cool/TJF19770107/orca-jiedan:dsh-2.0.1
+```
+
+### 验证命令（2 条 curl）
+
+```bash
+# ① 校验 8080 原版 WebUI 服务可达
+curl -s -o /dev/null -w "HTTP %{http_code}\n" http://127.0.0.1:8080/
+
+# ② 校验原版 Harness 内部调用 CNB 的 DeepSeek-V4-Flash 模型正常返回
+curl -s -X POST http://127.0.0.1:8080/api/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"请回复'OK'两个字符"}],"stream":false}'
+```
+
+### 新增文件
+
+`deploy/dsh-desktop/Dockerfile` · `deploy/dsh-desktop/entrypoint.sh` · `deploy/dsh-desktop/README.md` · `.cnb.yml`（新增 `build-dsh-desktop-image` 流水线任务）
