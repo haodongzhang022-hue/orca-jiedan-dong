@@ -72,6 +72,16 @@ RUN chmod +x /usr/local/bin/claude-npc-entrypoint.sh
 COPY hermes/entrypoint.sh /usr/local/bin/hermes-npc-entrypoint.sh
 RUN chmod +x /usr/local/bin/hermes-npc-entrypoint.sh
 
+# ---- 7.1 DeepSeek Harness 云端超 Agent 运行时（路径B @deepseek-harness 专用）----
+# 内容：harness_proxy.py（OpenAI 兼容网关 + 企微接单 + 非流式聚合）
+#      + harness_agent.py（规划→委派→记忆→汇总）
+#      + web_console.html（云端控制台）+ harness_skills.json（技能索引）
+# 模型端点自动指向 CNB 内置免费 DeepSeek-V4-Flash 网关（运行时环境变量注入）
+COPY deepseek-harness/ /opt/deepseek-harness/
+COPY deepseek-harness/entrypoint.sh /usr/local/bin/harness-npc-entrypoint.sh
+RUN chmod +x /usr/local/bin/harness-npc-entrypoint.sh \
+    && python3 -c "import ast; ast.parse(open('/opt/deepseek-harness/harness_proxy.py').read()); ast.parse(open('/opt/deepseek-harness/harness_agent.py').read()); print('[Dockerfile] harness 运行时语法 OK')"
+
 WORKDIR /workspace
 
 # ---- 8. 默认环境（鉴权全部来自运行环境变量注入，镜像零硬编码密钥）----
@@ -81,6 +91,8 @@ ENV ADAPTER_PORT=8787
 ENV CNB_MODEL=deepseek-v4-flash
 ENV REASONING_EFFORT=high
 ENV QUOTA_LIMIT=1600
+ENV HARNESS_DIR=/opt/deepseek-harness
+ENV HARNESS_PORT=8080
 EXPOSE 8787
 
 # ---- 9. 容器入口（ENTRYPOINT + CMD 组合）----

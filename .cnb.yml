@@ -12,16 +12,18 @@
 #   路径B（增强，claude-code 角色）：自定义 Docker 镜像 + 独立容器，完整原版
 #         Claude-Code CLI + adapters/anthropic_to_cnb.py 适配层(127.0.0.1:8787)
 #         + scripts/quota_monitor.py 额度监控；不蒸馏、不裁剪原生 MCP/插件/Skill。
-# 切换方式：@claude-code → 走路径B（角色名顶层 key 覆盖 $ 兜底）；
-#           @codex / @lobster 等其它角色 → 走路径A（$ 兜底 npc:go）。
+#         hermes / codex / deepseek-harness 角色同样走路径B（独立入口脚本）。
+# 切换方式：@claude-code / @hermes / @codex / @deepseek-harness → 走路径B（角色名顶层 key 覆盖 $ 兜底）；
+#           @lobster 等其它角色 → 走路径A（$ 兜底 npc:go）。
 # 详见 docs/claude_code_cloud_vs_local.md。
 # =============================================================================
 
-# ---- 路径B 角色配置（claude-code / hermes / codex 角色名顶层 key，随 include 合并）----
+# ---- 路径B 角色配置（claude-code / hermes / codex / deepseek-harness 角色名顶层 key，随 include 合并）----
 include:
   - .ci/npc-full.yml
   - .ci/hermes.yml
   - .ci/codex.yml
+  - .ci/deepseek-harness.yml
 
 # ---- 路径A 公共 NPC 任务模板（$ 兜底：所有未单独配置的角色）----
 # options.model 显式绑定 CNB 内置免费 deepseek-v4-flash，确保不落到外部付费模型
@@ -69,6 +71,7 @@ $:
             - deepseek-harness/web_console.html
             - deepseek-harness/harness_skills.json
             - deepseek-harness/run_harness.sh
+            - deepseek-harness/entrypoint.sh
             - .ide/start.sh
         # 构建失败时的回退镜像（自带 code-server，可进 WebIDE）
         image: cnbcool/default-dev-env:latest
@@ -137,6 +140,11 @@ main:
         - scripts/quota_monitor.py
         - claude/entrypoint.sh
         - hermes/entrypoint.sh
+        - deepseek-harness/harness_proxy.py
+        - deepseek-harness/harness_agent.py
+        - deepseek-harness/harness_skills.json
+        - deepseek-harness/web_console.html
+        - deepseek-harness/entrypoint.sh
       stages:
         - name: build npc full image
           script: |
