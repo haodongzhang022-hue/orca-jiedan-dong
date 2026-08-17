@@ -48,11 +48,14 @@ include:
 # 角色在 .cnb/settings.yml 中定义：claude-code、codex、lobster
 # claude-code 已被 .ci/npc-full.yml 顶层角色 key 覆盖为路径B
 $:
-  # ① 云原生开发：DeepSeek Harness 云端控制台（需求：免费V4Flash+企微接单，非HermesStudio）
+  # ① 云原生开发：双方案并行（Hermes Web UI 6060 + DeepSeek Harness 8080）
   #    点击分支页「云原生开发」按钮 → 用 .ide/Dockerfile 构建镜像 →
-  #    DeepSeek Harness 网关(8080, 监听 0.0.0.0) + 免费 V4Flash 编排 Agent + 企微接单控制台
-  #    WebIDE PORTS 面板映射 → 浏览器打开 https://{id}-8080.cnb.run 即控制台
-  #    ⚠️ 回收机制：10分钟无操作/最长18h/凌晨4-6点强制回收 → 定位为出差/兜底可视化
+  #    A. Hermes Web UI (6060): 官方 ekkoye8888/hermes-web-ui:v0.6.39
+  #       WebIDE PORTS → https://{id}-6060.cnb.run
+  #    B. DeepSeek Harness (8080): 轻量 Python 网关 + 企微接单 + 编排 Agent
+  #       WebIDE PORTS → https://{id}-8080.cnb.run
+  #    两者并行存在，共用 CNB 免费 DeepSeek-V4-Flash 网关。
+  #    ⚠️ 回收机制：10分钟无操作/最长18h/凌晨4-6点强制回收
   vscode:
     - docker:
         # build 必须用对象形式并列出 by（Dockerfile 中 COPY 的文件），
@@ -60,9 +63,12 @@ $:
         build:
           dockerfile: .ide/Dockerfile
           by:
+            - adapters/anthropic_to_cnb.py
             - deepseek-harness/harness_proxy.py
             - deepseek-harness/harness_agent.py
             - deepseek-harness/web_console.html
+            - deepseek-harness/harness_skills.json
+            - deepseek-harness/run_harness.sh
             - .ide/start.sh
         # 构建失败时的回退镜像（自带 code-server，可进 WebIDE）
         image: cnbcool/default-dev-env:latest
@@ -72,33 +78,41 @@ $:
         - vscode
         - docker
       stages:
-        - name: verify-harness-runtime
+        - name: verify-both-runtime
           script: |
+            echo "==== 双方案运行时自检 ===="
             if [ -f /opt/deepseek-harness/harness_proxy.py ]; then
-              echo "[ok] DeepSeek Harness 运行时已就绪 (/opt/deepseek-harness/harness_proxy.py)"
+              echo "[ok] A. DeepSeek Harness 运行时已就绪 (/opt/deepseek-harness/harness_proxy.py)"
             else
-              echo "[warn] /opt/deepseek-harness/harness_proxy.py 不存在（可能回退到默认开发环境镜像）"
-              echo "[warn] 若需云端 DeepSeek Harness 控制台，请确认 .ide/Dockerfile 构建成功"
+              echo "[warn] A. /opt/deepseek-harness/harness_proxy.py 不存在"
+            fi
+            if [ -f /usr/local/bin/anthropic_to_cnb.py ]; then
+              echo "[ok] B. CNB 免费网关适配层已就绪 (/usr/local/bin/anthropic_to_cnb.py)"
+            else
+              echo "[warn] B. /usr/local/bin/anthropic_to_cnb.py 不存在"
             fi
             exit 0
-        - name: start-harness-console
+        - name: check-harness-port
           script: |
-            if [ -f /usr/local/bin/cnb-harness-start.sh ]; then
-              # 入口脚本在容器 ENTRYPOINT 已拉起；这里做健康检查兜底
-              if (echo >/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
-                echo "[ok] DeepSeek Harness 网关已监听 0.0.0.0:8080"
-              else
-                echo "[info] 8080 未在监听，尝试兜底启动..."
-                cd /opt/deepseek-harness && nohup python3 harness_proxy.py >/tmp/harness.log 2>&1 &
-                sleep 3
-                if (echo >/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
-                  echo "[ok] DeepSeek Harness 网关已监听 0.0.0.0:8080（兜底）"
-                else
-                  echo "[warn] 网关未能在 8080 监听，请查看 /tmp/harness.log"
-                fi
-              fi
+            if (echo >/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
+              echo "[ok] DeepSeek Harness 网关已监听 0.0.0.0:8080"
             else
-              echo "[warn] 启动脚本未找到（回退镜像无 Harness）"
+              echo "[info] 8080 未在监听，尝试兜底启动..."
+              cd /opt/deepseek-harness && nohup python3 harness_proxy.py >/tmp/harness.log 2>&1 &
+              sleep 3
+              if (echo >/dev/tcp/127.0.0.1/8080) 2>/dev/null; then
+                echo "[ok] DeepSeek Harness 网关已监听 0.0.0.0:8080（兜底）"
+              else
+                echo "[warn] 网关未能在 8080 监听，请查看 /tmp/harness.log"
+              fi
+            fi
+            exit 0
+        - name: check-hermes-port
+          script: |
+            if (echo >/dev/tcp/127.0.0.1/6060) 2>/dev/null; then
+              echo "[ok] Hermes Web UI 已监听 0.0.0.0:6060"
+            else
+              echo "[info] 6060 未在监听（Hermes Web UI 可能仍在启动中）"
             fi
             exit 0
   # ② NPC 事件（路径A 兜底：所有未单独配置角色共用此流水线）

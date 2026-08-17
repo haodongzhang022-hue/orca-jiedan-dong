@@ -95,7 +95,65 @@ Harness 网关内统一处理：
   ▼ 交付结论回写控制台 → 对接交付/上传流水线
 ```
 
-## 八、安全
+## 八、模型配置指南（免费 DeepSeek-V4-Flash）
+
+DeepSeek Harness **无需手动配置模型**——启动时自动从环境变量解析 CNB 免费网关和鉴权 Token。
+
+### 自动解析的环境变量
+
+| 环境变量 | 作用 | 默认值 |
+|---------|------|--------|
+| `CNB_TOKEN` | 鉴权 Token | 容器自动注入 |
+| `ACC_PRODUCT_CONFIG_V2` | 网关地址自动解析 | 容器自动注入 |
+| `CNB_MODEL` | 模型名 | `deepseek-v4-flash` |
+| `CNB_AI_GATEWAY` | 显式网关地址（可选） | 自动从配置解析 |
+| `HARNESS_PORT` | 监听端口 | `8080` |
+
+### 免费网关地址（手动配置时使用）
+
+```
+https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions
+```
+
+- **Provider ID**：`cnb-deepseek-v4-flash`
+- **协议**：`openai-completions`
+- **API Key**：从环境变量 `CNB_TOKEN` 获取
+- **Model**：`deepseek-v4-flash`（必须精确，不是 pro）
+- **Stream**：必须开启（平台仅支持流式，Harness 网关内置非流式自动聚合）
+
+> 详细配置见 `docs/DeepSeekHarness_CNB免费V4Flash_配置指南.md`
+
+### 验证命令
+
+```bash
+# 健康检查
+curl -s http://127.0.0.1:8080/health
+
+# 模型列表
+curl -s http://127.0.0.1:8080/v1/models
+
+# 对话（流式）
+curl -sN -X POST http://127.0.0.1:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"你好"}],"stream":true}'
+```
+
+---
+
+## 九、与 Hermes Web UI 并行共存
+
+本方案与 Hermes Studio Web GUI（`hermes-web-ui` 镜像）**并行存在，互不干扰**：
+
+| 方案 | 端口 | 访问地址 | 镜像体积 |
+|------|------|---------|---------|
+| Hermes Web UI | 6060 | `https://{id}-6060.cnb.run` | ~1.49GB |
+| **DeepSeek Harness** | **8080** | `https://{id}-8080.cnb.run` | **<100MB** |
+
+两个服务由同一个 `.ide/Dockerfile` 构建，`start.sh` 同时拉起，共用 CNB 免费网关。
+
+---
+
+## 十、安全
 
 - 密钥零落盘：`CNB_TOKEN` / `ACC_PRODUCT_CONFIG_V2` 全部来自流水线环境变量注入
 - 镜像不含任何明文 Token
