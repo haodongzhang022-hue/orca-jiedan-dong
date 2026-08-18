@@ -144,22 +144,38 @@ fi
 
 # ---- 4. 输出「创建提供方」正确操作顺序 ----
 echo ""
-echo "[4/4] DeepSeek-Harness 新增提供方·正确操作顺序"
+echo "[4/4] DeepSeek-Harness 新增提供方·正确操作顺序 + Failed to fetch 排查"
 cat <<'GUIDE'
+  ┌────────────────────────────────────────────────────────────┐
+  │ 场景A·API 地址用「本机 3081 网关」http://127.0.0.1:3081/v1   │
+  │  若创建时底部报 `Failed to fetch`（网络层连不上，不是404）  │
+  │  → 根因：本机 3081 网关(gateway_3080.py)没有启动！           │
+  │  → 解决：先双击运行 scripts/start_gateway_3080.bat 启动网关  │
+  │    再验证 curl http://127.0.0.1:3081/health 返回 {"ok":true}│
+  │    最后回 Harness 点【创建提供方】保存                       │
+  └────────────────────────────────────────────────────────────┘
+
   【关键】在 Harness WebUI（http://127.0.0.1:3080）新增自定义提供方：
   1. 填写 Provider ID / 显示名称 / API 地址 / API 协议 / API 密钥 / 模型
   2. ⚠️ 弹窗里【不要点"获取可用模型"】——CNB 网关无 /models 接口，点必 404
   3. 直接右下角【创建提供方】保存
   4. 保存完回到列表页，再点"获取可用模型"即可看到模型
 
-  字段对照：
+  字段对照（直连 CNB 云端，最稳，不依赖本机网关）：
     Provider ID : cnb-deepseek-v4-flash
     显示名称     : CNB 免费 DeepSeek-V4-Flash
-    API 地址     : <上面第 3 步验证通过的 ACTUAL_GW>
-                   （或本机网关 http://127.0.0.1:3081/v1）
+    API 地址     : https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai
     API 协议     : openai-completions
     API 密钥     : 你的 CNB 访问令牌（CNB_TOKEN）
     模型         : deepseek-v4-flash（必须精确，不是 pro）
+
+  字段对照（本机 3081 网关，需先启动网关）：
+    Provider ID : cnb-gateway-local
+    显示名称     : CNB本地网关(DeepSeekV4+GLM5.2)
+    API 地址     : http://127.0.0.1:3081/v1  （⚠️ 需先启动 3081 网关）
+    API 协议     : openai-completions
+    API 密钥     : local（占位即可，网关内部自动读 CNB_TOKEN）
+    模型         : deepseek-v4-flash / z-ai/glm-5.2
   ⚠️ Provider ID 红色提示是实时校验提示，忽略即可，ID 合法可直接创建保存。
 GUIDE
 
