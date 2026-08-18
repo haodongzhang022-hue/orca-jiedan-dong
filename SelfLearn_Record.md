@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-08-18 · DeepSeek Harness Provider 配置界面字段一一对应映射表（hermes 大脑执行 · 用户"全权授权映射到本地+调用1234+四化迭代"）
+
+### 核心结论（实测）
+- 用户痛点：Harness WebUI「创建提供方」表单字段不会填/散在各处找不到。已把**界面每个字段 ↔ 实际填写值**一一对应映射收敛成一份集中表，落到项目方便查找
+- 界面字段共 6 个：ProviderID / 显示名称(预设) / API协议 / API地址(BaseURL) / API密钥 / 模型。核心铁律：**Base URL 填 `https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai`（不带 /chat/completions）**，因 Harness 会自动在末尾追加；模型必须 `deepseek-v4-flash`（不是 pro）；API密钥填 `CNB_TOKEN`（环境变量/CNB个人设置·访问令牌）
+- 三路径：①直连CNB（最稳）→ `.../-/ai`；②本机3081网关 → `http://127.0.0.1:3081/v1`（需先起 gateway_3080.py）；③云端8080网关 → `http://<云端>:8080/v1`
+- 操作铁律：弹窗**不点"获取可用模型"**（CNB 网关无 /models 接口必 404）→ 直接【创建提供方】保存 → 保存后完全退出客户端重启+新建会话
+
+### 踩坑（勿再犯）
+- **Base URL 填完整端点 `.../chat/completions` 会 404**（Harness 自动追加变 `.../completions/completions`）——必须填 `.../-/ai`
+- `Failed to fetch` = 本机 3081 网关没启动（网络层连不上），不是网关配置错；先 `curl http://127.0.0.1:3081/health` 返回 JSON 再创建提供方
+- `400 code 11101` = 非流式请求，平台仅支持流式，`harness_proxy.py` 已内置自动聚合
+
+### 防复发
+- 触发词「DeepSeek Harness 配置/怎么填/Provider字段/配置映射/创建提供方/添加模型」→ 打开 `docs/DeepSeekHarness_Provider配置界面字段一一对应映射表_20260818.md` 照抄，不再让用户凭记忆找字段
+- 已写入脚手架四文件（AGENTS/HERMES/CODEX/CLAUDE）快速指令表 + 数字快捷手册 Harness配置触发词
+
+---
+
 ## 2026-08-18 · 方案B本机3081网关启动路径详解（hermes 大脑执行 · 用户"调用1234执行·四化迭代知识库"）
 
 ### 核心结论（实测）
