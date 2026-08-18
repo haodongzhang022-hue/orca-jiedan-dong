@@ -1,9 +1,10 @@
 # 版本信息
-version: 1.8.5
-release_date: 2026-08-12
+version: 1.8.6
+release_date: 2026-08-18
 base_model: CNB内置免费DeepSeek-V4-Flash (MoE 284B/激活13B)
 base_model_valid_until: 2026-12-31
 changes:
+  - 【双击乱码修复】Issue#43 修复 start_gateway_3080.bat 双击中文乱码：两个路径(scripts/ 与 scripts/gateway_service/)的 bat 从 UTF-8 全部转 GBK(ANSI/936) 编码，移除 chcp 65001，把 ⚠️✅❌✓✗→ 等 GBK 无码位符号替换为 [v]/[x]/[OK]/[X]/-＞；中文 Windows 双击直接正常显示（v1.8.5→1.8.6）；docs/方案B 增 §4.1 乱码排错 + SelfLearn 沉淀
   - 【一键操作手册】Issue#27 交付 docs/一键操作手册_先B再A接CNB免费网关_云端WebGUI验证.md：把「先方式B手动建Provider + 方式A脚本固化 + 云端WebGUI验证」固化为可重复执行手册；用户已实测确认 方式A config.yaml 已注册✅ + 云端6060 Hermes Web UI可打开✅，附验收清单/MARVIS闭环记录/回滚（v1.8.4→1.8.5）
   - 【云上复刻构建修复】Issue#27 修复云原生开发环境构建失败：.cnb.yml build 改为对象形式并加 by 列表（adapters/anthropic_to_cnb.py + .ide/start.sh），否则 CNB build 上下文只有 Dockerfile 本身导致 COPY 失败→回退默认镜像；verify/start 阶段健壮化（v1.8.3→1.8.4）
   - 【云上复刻操作手册】Issue#27 交付 docs/操作手册_云上复刻HermesWebGUI可视化说明书.md：可视化逐步图解云原生开发→WebIDE PORTS→真实地址(https://{id}-6060.cnb.run)打开 Hermes Web GUI，明确「{id} 是占位符须由平台生成」避坑（v1.8.2→1.8.3）
