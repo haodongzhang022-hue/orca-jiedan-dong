@@ -1,0 +1,43 @@
+# =============================================================================
+# 路径B【增强模式：自定义 Docker 镜像容器 NPC】— deepseek-harness 角色专属流水线
+# =============================================================================
+# 说明：
+#   - 本文件通过 .cnb.yml 的 include 合并进主配置；
+#   - 顶层 key「deepseek-harness」与 .cnb/settings.yml 中 npc.roles[].name 精确匹配，
+#     当 @deepseek-harness 被提及时，走本路径B 自定义镜像容器（覆盖 $ 兜底路径A）；
+#   - 镜像内嵌【DeepSeek Harness 云端超 Agent 运行时】：
+#     deepseek-harness/harness_proxy.py（OpenAI 兼容网关 + 企微接单 + 非流式聚合）
+#     + harness_agent.py（规划→委派→记忆→汇总）+ web_console.html 控制台；
+#   - 模型端点自动指向 CNB 内置免费 DeepSeek-V4-Flash 网关；
+#   - 不蒸馏、不裁剪原生编排/接单/技能能力，保留 DeepSeek Harness 全部能力；
+#   - 鉴权密钥、模型参数全部从容器环境变量注入，镜像零硬编码密钥。
+# =============================================================================
+
+# ---- 路径B NPC 任务模板 ----
+.npc_task_full_harness: &npc_task_full_harness
+  - docker:
+      # 自定义镜像（DeepSeek Harness 超 Agent 运行时 + 额度监控）
+      # 由 .cnb.yml main.push 镜像构建流水线构建并推送至制品库
+      # ⭐ 强制基座锁定：CNB 内置免费 deepseek-v4-flash（有效期至 2026-12-31，1600核时/月免费配额）
+      image: ${CNB_DOCKER_REGISTRY}/${CNB_NPC_SLUG_LOWERCASE}:1.6.0
+    env:
+      # 鉴权与模型参数全部环境变量注入（镜像零硬编码）
+      NPC_MODEL: deepseek-v4-flash        # ⭐强制锁定CNB内置免费基座，禁止默认切换付费模型
+      REASONING_EFFORT: high
+      QUOTA_LIMIT: "1600"
+      # DeepSeek Harness 网关监听端口（与云原生开发 8080 控制台一致）
+      HARNESS_PORT: "8080"
+    stages:
+      - name: npc-go-full-harness-container
+        type: npc:go
+        options:
+          # ⭐ 双保险：options.model 同样显式绑定免费基座，防止落到其它模型
+          model: deepseek-v4-flash
+          # 超 Agent 编排（规划→子Agent委派→记忆→汇总）单次会消耗多轮次，放宽防截断
+          maxTurns: 100
+          contextWindow: "128k"
+
+# ---- deepseek-harness 角色：路径B（覆盖 $ 兜底的路径A）----
+deepseek-harness:
+  issue.comment@npc: *npc_task_full_harness
+  pull_request.comment@npc: *npc_task_full_harness

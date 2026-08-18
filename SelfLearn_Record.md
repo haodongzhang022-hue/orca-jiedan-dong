@@ -5,6 +5,63 @@
 
 ---
 
+## 2026-08-18 · start_gateway_3080.bat 双击乱码修复（hermes 大脑执行 · 用户"怎么又乱码+调用1234执行"）
+
+### 核心结论（实测）
+- 用户痛点：双击 `start_gateway_3080.bat` 启动本机 3081 网关时，窗口中文 `echo` 全部乱码
+- 真根因：bat 原保存为 **UTF-8 编码**，含大量中文 + 特殊符号（⚠️✅❌✓✗→ 等）；中文 Windows cmd.exe 默认代码页 **GBK(936)**，双击时按 GBK 逐行解析 UTF-8 多字节中文 → 乱码。`chcp 65001` 对老式 conhost 字体渲染不稳定，治标不治本
+- 修复（v1.3.0）：两个路径的 `start_gateway_3080.bat`（`scripts/` 与 `scripts/gateway_service/`）**全部另存为 GBK(ANSI/936) 编码**，移除 `chcp 65001`，并把 GBK 无码位的符号替换为 `[!]/[OK]/[X]/[v]/[x]/-＞` 等安全字符
+
+### 踩坑（勿再犯）
+- **Windows .bat 双击运行要防乱码，最稳是存 GBK(ANSI) 编码**，不是靠 `chcp 65001`——cmd 先按系统代码页解析文件，UTF-8 中文必乱
+- 替换时注意 `[✓]`→`[v]` 会误变 `[[v]]`（双重括号），需二次清理
+- 转 GBK 时 ⚠️✅❌✓✗→· 等符号 GBK 无码位会 iconv 报错，须先替换再转码
+
+### 防复发
+- 两个 .bat 已转 GBK，中文 Windows 双击直接正常显示，无需手动切代码页
+- **维护铁律**：这两个 bat 是 GBK 编码，编辑/查看需用能识别 GBK 的编辑器（VS Code 选 GBK/GB2312）；改完另存 GBK 再提交；CNB 网页/Linux 直接看会乱码（仅显示层，双击功能不受影响）
+- 已在 `docs/方案B_本机3081网关启动路径详解_20260818.md` 增加 §4.1「双击乱码修复」排错条目
+
+---
+
+## 2026-08-18 · DeepSeek Harness Provider 配置界面字段一一对应映射表（hermes 大脑执行 · 用户"全权授权映射到本地+调用1234+四化迭代"）
+
+### 核心结论（实测）
+- 用户痛点：Harness WebUI「创建提供方」表单字段不会填/散在各处找不到。已把**界面每个字段 ↔ 实际填写值**一一对应映射收敛成一份集中表，落到项目方便查找
+- 界面字段共 6 个：ProviderID / 显示名称(预设) / API协议 / API地址(BaseURL) / API密钥 / 模型。核心铁律：**Base URL 填 `https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai`（不带 /chat/completions）**，因 Harness 会自动在末尾追加；模型必须 `deepseek-v4-flash`（不是 pro）；API密钥填 `CNB_TOKEN`（环境变量/CNB个人设置·访问令牌）
+- 三路径：①直连CNB（最稳）→ `.../-/ai`；②本机3081网关 → `http://127.0.0.1:3081/v1`（需先起 gateway_3080.py）；③云端8080网关 → `http://<云端>:8080/v1`
+- 操作铁律：弹窗**不点"获取可用模型"**（CNB 网关无 /models 接口必 404）→ 直接【创建提供方】保存 → 保存后完全退出客户端重启+新建会话
+
+### 踩坑（勿再犯）
+- **Base URL 填完整端点 `.../chat/completions` 会 404**（Harness 自动追加变 `.../completions/completions`）——必须填 `.../-/ai`
+- `Failed to fetch` = 本机 3081 网关没启动（网络层连不上），不是网关配置错；先 `curl http://127.0.0.1:3081/health` 返回 JSON 再创建提供方
+- `400 code 11101` = 非流式请求，平台仅支持流式，`harness_proxy.py` 已内置自动聚合
+
+### 防复发
+- 触发词「DeepSeek Harness 配置/怎么填/Provider字段/配置映射/创建提供方/添加模型」→ 打开 `docs/DeepSeekHarness_Provider配置界面字段一一对应映射表_20260818.md` 照抄，不再让用户凭记忆找字段
+- 已写入脚手架四文件（AGENTS/HERMES/CODEX/CLAUDE）快速指令表 + 数字快捷手册 Harness配置触发词
+
+---
+
+## 2026-08-18 · 方案B本机3081网关启动路径详解（hermes 大脑执行 · 用户"调用1234执行·四化迭代知识库"）
+
+### 核心结论（实测）
+- 方案B = 双击 `scripts/start_gateway_3080.bat` 启动 `deploy/dsh-desktop/gateway_3080.py`，让本机 `127.0.0.1:3081` 网关出站转发到 CNB 云端免费模型，解决 Harness 填 Provider 时的 `Failed to fetch`
+- 端口约定（两端口各归各）：**3080=DeepSeek-Harness WebUI(HTML)｜3081=gateway_3080.py中转网关(JSON)**；判断网关起没起看 3081 是否返回 JSON
+- 真实文件路径（用户痛点"找不到"）：启动脚本 `scripts/start_gateway_3080.bat`；网关本体 `deploy/dsh-desktop/gateway_3080.py`（源）+ `deepseek-harness/plugins/gateway_3080/gateway_3080.py`（Harness已装实体）
+- 固化：新增 `docs/方案B_本机3081网关启动路径详解_20260818.md`（详细路径+启动5步+排错对照+防复发）
+
+### 踩坑（勿再犯）
+- **"找不到"根因**：启动脚本 `start_gateway_3080.bat` 会自动在 10+ 候选路径找 gateway_3080.py（仓库deploy/、plugins/、同目录、D/E盘、桌面、下载），但用户不知道它自动找、也不知道两个真实路径在哪——必须把路径写死进文档
+- Harness 填 Provider 时 `Failed to fetch` **主因 = 本机 3081 网关没启动**，不是网关配置错；先起网关（curl 3081/health 返回 JSON）再回 Harness 创建提供方
+- 操作顺序铁律：弹窗里**不点"获取可用模型"** → 直接右下角【创建提供方】保存 → 回列表页再点获取
+
+### 防复发
+- 触发词「方案B/3081网关/Failed to fetch/获取可用模型」→ 打开 `docs/方案B_本机3081网关启动路径详解_20260818.md` 照抄，不再让用户凭记忆找路径
+- 端口只认 3081（网关）vs 3080（Harness WebUI），谁再抢 3081 就杀谁；建议把 bat 复制到桌面快捷方式双击即起
+
+---
+
 ## 2026-08-14 · GLM-5.2（NVIDIA 免费）接入三引擎 + 429 限流判定（hermes 大脑执行 · 用户"调用1234执行"）
 
 ### 核心结论（实测）

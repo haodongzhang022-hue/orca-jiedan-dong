@@ -1,38 +1,29 @@
 # =============================================================================
-# CNB 云原生开发环境 · Hermes Studio Web GUI 云上复刻
+# CNB 云原生开发环境 · 双方案并行（Hermes Web UI + DeepSeek Harness）
 # =============================================================================
 # 用途：
-#   在 CNB「云原生开发」工作区中复刻 Hermes Studio 的 Web 控制台（hermes-web-ui），
-#   浏览器直接打开 → 本地桌面版的效果，纯云端算力 + CNB 免费 DeepSeek-V4-Flash 网关。
+#   在 CNB「云原生开发」工作区中同时部署两个方案，**并行存在，都能正常工作**：
 #
-# 原料（官方已验证，2026-08-09 核验）：
-#   - 官方镜像 ekkoye8888/hermes-web-ui:v0.6.39（约 1.49GB，基于 nousresearch/hermes-agent）
-#   - 官方 Dockerfile：ENTRYPOINT node dist/server/index.js，EXPOSE 6060
-#   - docker-compose 端口：6060(Web UI) / 8651(预览前端) / 56121(OAuth 回调)
+#   A. Hermes Studio Web GUI（hermes-web-ui）   → 端口 6060
+#      官方镜像 ekkoye8888/hermes-web-ui:v0.6.39（约 1.49GB）
+#      node dist/server/index.js → 打开 https://{id}-6060.cnb.run
 #
-# 与 NPC 一次性容器的区别：
-#   - NPC 路径B 容器：事件触发即用即毁，无 GUI
-#   - 云原生开发工作区：可常驻（有回收机制，见下），WebIDE 端口映射直达 6060
+#   B. DeepSeek Harness 云端超 Agent 运行时       → 端口 8080
+#      纯 Python 轻量实现（python:3.11-slim），零外部依赖
+#      harness_proxy.py → 打开 https://{id}-8080.cnb.run
 #
-# 回收机制（CNB 平台文档确认）：
-#   - 10 分钟无操作自动回收 / 最长保持 18 小时 / 凌晨 4-6 点强制回收
-#   → 本工作区定位为「出差/兜底可视化」，日常编排仍以本地桌面版为主
-#
-# ⚠️ 修复说明（Issue #27「怎么修改」）：
-#   提交 075191d 曾把本文件改成空壳（cnbcool/default-dev-env + python3），
-#   导致云原生开发环境 6060 端口无 Hermes Web UI 监听 → 访问
-#   https://{id}-6060.cnb.run 返回 connection refused。本文件已恢复为基于
-#   ekkoye8888/hermes-web-ui:v0.6.39 的完整镜像。
+# 两者共享同一环境变量（CNB_TOKEN / ACC_PRODUCT_CONFIG_V2）解析免费网关，
+# 基座同为 CNB 内置免费 DeepSeek-V4-Flash，互不冲突、互不干扰。
 #
 # 安全红线：
-#   - 镜像【严禁写入任何密钥】；模型网关鉴权全部来自环境变量/个人环境变量注入
+#   - 镜像【严禁写入任何密钥】；模型网关鉴权全部来自环境变量注入（CNB_TOKEN）
 # =============================================================================
 
-# 官方 Hermes Web UI 镜像（含 Hermes Agent 运行时 + 完整 Web 控制台）
+# ---- 基础镜像：官方 Hermes Web UI（含 node 运行时 + Web 控制台）----
 # ⚠️ tag 必须带 v 前缀：Docker Hub 上仓库 tag 为 v0.6.39（0.6.39 不存在，404）
 FROM ekkoye8888/hermes-web-ui:v0.6.39
 
-# ---- 1. 基础工具链（云原生开发环境常规需求）----
+# ---- 1. 基础工具链 + Python3（deepseek-harness 需要）----
 USER root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -42,16 +33,24 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && git lfs install || true
 
-# ---- 2. CNB CLI / Skills 运行时（便于在工作区直接操作仓库/NPC）----
+# ---- 2. CNB CLI / Skills 运行时 ----
 RUN npm install -g @cnbcool/cnb-cli skills \
     && npx skills add https://cnb.cool/cnb/skills/cnb-skill.git -g -y || true
 
-# ---- 3. CNB 内置免费网关适配层（Hermes Studio 的 provider 可指向本层，复用仓库已验收协议）----
+# ---- 3. CNB 内置免费网关适配层（Hermes Studio provider 可指向本层）----
 COPY adapters/anthropic_to_cnb.py /usr/local/bin/anthropic_to_cnb.py
 RUN chmod +x /usr/local/bin/anthropic_to_cnb.py
 
-# ---- 4. 端口与监听地址 ----
-# Hermes Web UI 需监听 0.0.0.0 才能被 CNB 端口映射 {id}-{{port}}.cnb.run 访问
+# ---- 4. 部署 DeepSeek Harness 运行时（路径A，独立于 Hermes Web UI）----
+WORKDIR /opt/deepseek-harness
+COPY deepseek-harness/harness_proxy.py .
+COPY deepseek-harness/harness_agent.py .
+COPY deepseek-harness/web_console.html .
+COPY deepseek-harness/harness_skills.json .
+COPY deepseek-harness/run_harness.sh .
+RUN chmod +x harness_proxy.py harness_agent.py run_harness.sh
+
+# ---- 5. Hermes Web UI 环境配置（6060 端口）----
 ENV PORT=6060
 ENV BIND_HOST=0.0.0.0
 ENV HERMES_HOME=/home/agent/.hermes
@@ -60,12 +59,12 @@ ENV HERMES_WEB_UI_XAI_CALLBACK_BIND_HOST=0.0.0.0
 ENV HERMES_ALLOW_ROOT_GATEWAY=1
 ENV PATH=/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-EXPOSE 6060 8651 56121
+# ---- 6. 端口：6060(Hermes Web UI) + 8080(DeepSeek Harness) ----
+EXPOSE 6060 8651 56121 8080
 
-# ---- 5. 启动入口：后台拉起 CNB 免费网关适配层 + 前台跑 Hermes Web UI ----
-COPY .ide/start.sh /usr/local/bin/cnb-hermes-studio-start.sh
-RUN chmod +x /usr/local/bin/cnb-hermes-studio-start.sh
+# ---- 7. 启动入口：同时拉起两个服务 ----
+COPY .ide/start.sh /usr/local/bin/cnb-start.sh
+RUN chmod +x /usr/local/bin/cnb-start.sh
 
-# 官方镜像入口是 node dist/server/index.js；此处改为包裹脚本以同时拉起适配层
-ENTRYPOINT ["/usr/local/bin/cnb-hermes-studio-start.sh"]
+ENTRYPOINT ["/usr/local/bin/cnb-start.sh"]
 CMD []

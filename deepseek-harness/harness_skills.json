@@ -1,0 +1,7 @@
+{
+  "design": {"desc": "平面设计/海报/Banner/Logo 输出", "entry": "design_pipeline"},
+  "web": {"desc": "HTML+CSS 网页设计输出", "entry": "web_pipeline"},
+  "code": {"desc": "代码编写/脚本执行", "entry": "code_runner"},
+  "research": {"desc": "深度研究/资料检索", "entry": "research_agent"},
+  "wechat_order": {"desc": "企业微信群接单解析/任务卡建档", "entry": "order_intake"}
+}

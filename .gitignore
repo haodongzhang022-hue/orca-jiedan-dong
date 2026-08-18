@@ -16,6 +16,11 @@ worktrees/              # ORCA 物理隔离工作树（由 git worktree 管理�
 *.onnx
 *.pkl
 __pycache__/
+
+# DeepSeek Harness 运行时产物（不入库）
+deepseek-harness/harness_orders/
+deepseek-harness/harness_memory/
+deepseek-harness/*.log
 *.pyc
 .pytest_cache/
 .mypy_cache/
