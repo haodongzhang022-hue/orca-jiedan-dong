@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-08-18 · 方案B本机3081网关启动路径详解（hermes 大脑执行 · 用户"调用1234执行·四化迭代知识库"）
+
+### 核心结论（实测）
+- 方案B = 双击 `scripts/start_gateway_3080.bat` 启动 `deploy/dsh-desktop/gateway_3080.py`，让本机 `127.0.0.1:3081` 网关出站转发到 CNB 云端免费模型，解决 Harness 填 Provider 时的 `Failed to fetch`
+- 端口约定（两端口各归各）：**3080=DeepSeek-Harness WebUI(HTML)｜3081=gateway_3080.py中转网关(JSON)**；判断网关起没起看 3081 是否返回 JSON
+- 真实文件路径（用户痛点"找不到"）：启动脚本 `scripts/start_gateway_3080.bat`；网关本体 `deploy/dsh-desktop/gateway_3080.py`（源）+ `deepseek-harness/plugins/gateway_3080/gateway_3080.py`（Harness已装实体）
+- 固化：新增 `docs/方案B_本机3081网关启动路径详解_20260818.md`（详细路径+启动5步+排错对照+防复发）
+
+### 踩坑（勿再犯）
+- **"找不到"根因**：启动脚本 `start_gateway_3080.bat` 会自动在 10+ 候选路径找 gateway_3080.py（仓库deploy/、plugins/、同目录、D/E盘、桌面、下载），但用户不知道它自动找、也不知道两个真实路径在哪——必须把路径写死进文档
+- Harness 填 Provider 时 `Failed to fetch` **主因 = 本机 3081 网关没启动**，不是网关配置错；先起网关（curl 3081/health 返回 JSON）再回 Harness 创建提供方
+- 操作顺序铁律：弹窗里**不点"获取可用模型"** → 直接右下角【创建提供方】保存 → 回列表页再点获取
+
+### 防复发
+- 触发词「方案B/3081网关/Failed to fetch/获取可用模型」→ 打开 `docs/方案B_本机3081网关启动路径详解_20260818.md` 照抄，不再让用户凭记忆找路径
+- 端口只认 3081（网关）vs 3080（Harness WebUI），谁再抢 3081 就杀谁；建议把 bat 复制到桌面快捷方式双击即起
+
+---
+
 ## 2026-08-14 · GLM-5.2（NVIDIA 免费）接入三引擎 + 429 限流判定（hermes 大脑执行 · 用户"调用1234执行"）
 
 ### 核心结论（实测）
