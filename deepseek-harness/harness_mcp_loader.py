@@ -10,8 +10,8 @@ harness_agent.py 固定不动，能力全部靠本加载器按注册中心热插
 双模式 MCP 插件（gateway_3080）支持：
   - 模式一 标准 MCP（stdin/stdout）：loader 拉起子进程，通过 MCP 协议调用
     chat_completions / get_models / health，内部出站转发到 CNB 免费模型。
-  - 模式二 HTTP 兼容（--http --port 3080）：loader 拉起 HTTP 网关子进程，
-    供表单 base_url=http://127.0.0.1:3080 的老工具调用。
+  - 模式二 HTTP 兼容（--http --port 3081）：loader 拉起 HTTP 网关子进程，
+    供表单 base_url=http://127.0.0.1:3081 的老工具调用。（⚠️ 3080 留给 dsh web WebUI）
 
 密钥零落盘：仅读环境变量 CNB_TOKEN，注册中心不存明文。
 =================================================================
@@ -71,7 +71,7 @@ class Gateway3080Client:
         self.cfg = service_cfg
         self.globals = registry.get("globals", {})
         self.mode = os.environ.get("GW_MODE", "mcp")  # mcp | http
-        self.port = int(os.environ.get("GW_PORT", self.globals.get("gw_http_port", 3080)))
+        self.port = int(os.environ.get("GW_PORT", self.globals.get("gw_http_port", 3081)))
         self.proc = None
         self.env = _resolve_env(self.cfg.get("env", {}))
 

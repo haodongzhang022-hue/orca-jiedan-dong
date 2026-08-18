@@ -186,7 +186,7 @@ curl -s -X POST http://127.0.0.1:8080/api/chat/completions \
 | 模式 | 启动参数 | 协议 | 适用 |
 |---|---|---|---|
 | **模式一 标准 MCP** | 无参数（默认） | MCP stdin/stdout | Codex / Hermes / DeepSeek-Harness 作为插件加载 |
-| **模式二 HTTP 兼容** | `--http --port 3080` | OpenAI `/v1` | 老工具表单填 `base_url=http://127.0.0.1:3080` |
+| **模式二 HTTP 兼容** | `--http --port 3081` | OpenAI `/v1` | 老工具表单填 `base_url=http://127.0.0.1:3081`（⚠️ 3080 留给 dsh web WebUI，避免端口冲突） |
 
 ### 一键安装与集成（镜像内已内置，也可手动跑）
 
@@ -220,7 +220,7 @@ python3 deepseek-harness/harness_plugin_loader.py --list
 
 ### Windows 本机一键双击启动（start_gateway_3080.bat）
 
-> 本机 Windows 上双击启动 3080 网关，免敲命令。脚本自动完成：查找 `gateway_3080.py`（仓库 `deploy/dsh-desktop/`、harness 插件目录、D盘、E盘、桌面等多处）→ 检测 Python → 读取 `CNB_TOKEN` → 启动 `--http --port 3080` → 健康检查 + 看门狗自愈。
+> 本机 Windows 上双击启动 3081 网关，免敲命令。脚本自动完成：查找 `gateway_3080.py`（仓库 `deploy/dsh-desktop/`、harness 插件目录、D盘、E盘、桌面等多处）→ 检测 Python → 读取 `CNB_TOKEN` → 启动 `--http --port 3081` → 健康检查 + 看门狗自愈。
 
 ```
 仓库脚本：scripts/start_gateway_3080.bat
@@ -231,7 +231,10 @@ python3 deepseek-harness/harness_plugin_loader.py --list
 - 源文件：`deploy/dsh-desktop/gateway_3080.py`
 - Harness 已安装：`deepseek-harness/plugins/gateway_3080/gateway_3080.py`
 
-启动成功后，各工具配置 `base_url = http://127.0.0.1:3080` 即可调用 CNB 免费 DeepSeek-V4-Flash / GLM-5.2。
+启动成功后，各工具配置 `base_url = http://127.0.0.1:3081` 即可调用 CNB 免费 DeepSeek-V4-Flash / GLM-5.2。
+
+> ⚠️ **端口约定（修复端口冲突）**：本机 **3080 = DeepSeek-Harness(dsh web) WebUI**；本网关统一用 **3081**。
+> dsh web 默认监听 3080，网关若也用 3080 会端口打架导致启动失败，curl 访问 3080 拿到的是 Harness 的 HTML 网页而非 JSON。
 
 ---
 
@@ -241,7 +244,7 @@ python3 deepseek-harness/harness_plugin_loader.py --list
 |------|------|
 | `deploy/dsh-desktop/Dockerfile` | 专门构建 deepseek-harness-desktop 可复用镜像 |
 | `deploy/dsh-desktop/entrypoint.sh` | 容器启动：生成 provider 配置 + 拉起 8080 原版 WebUI + 8081 内网自研 harness |
-| `scripts/start_gateway_3080.bat` | Windows 双击启动脚本：一键启动本机 3080 网关（含健康检查+看门狗自愈） |
+| `scripts/start_gateway_3080.bat` | Windows 双击启动脚本：一键启动本机 3081 网关（含健康检查+看门狗自愈） |
 | `.cnb.yml` | 脚手架：把镜像构建纳入项目流水线（`main.push` 触发） |
 
 ---

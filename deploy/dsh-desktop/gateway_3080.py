@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-本机 3080 本地网关客户端 · 双模式可安装 MCP 插件（出站模式）
+本机 3081 本地网关客户端 · 双模式可安装 MCP 插件（出站模式）
 =========================================================================
 核心结论（来自调研报告）：
   ✗ 不做本地端口反向隧道推送到云端（本机服务无法 "推上云端"，且违反安全红线）
-  ✓ 本机 3080 作为「本地网关客户端」，主动出站 HTTPS 调用 CNB 官方 OpenAPI，
+  ✓ 本机 3081 作为「本地网关客户端」，主动出站 HTTPS 调用 CNB 官方 OpenAPI，
     间接使用云端免费 DeepSeek-V4-Flash / GLM-5.2。
   ✓ WebUI 可视化调试仅放在 Workspace 的代理 URL，不作为正式生产服务。
 
 ⚠️ 关键边界（务必阅读）：
-  **本 3080 网关是本机「出站客户端网关」，不是反向隧道，不支持外部公网接入，
+  **本 3081 网关是本机「出站客户端网关」，不是反向隧道，不支持外部公网接入，
   仅本机 127.0.0.1 访问。** 它负责把本机/内网工具的请求「主动出站」转发到
   CNB 云原生 API；任何来自外部公网的入站连接一律拒绝（默认仅监听 127.0.0.1）。
 
@@ -21,9 +21,9 @@
       调用免费 deepseek-v4-flash、z-ai/glm-5.2。
       密钥只读取系统环境变量 CNB_TOKEN，配置文件禁止明文密钥。
 
-  [模式二] HTTP 网关兼容模式（保留参数 --http --port 3080）
-      启动后开启 127.0.0.1:3080/v1 OpenAI 兼容接口（/health /v1/models
-      /v1/chat/completions），兼容老工具表单填写 base_url=http://127.0.0.1:3080
+  [模式二] HTTP 网关兼容模式（保留参数 --http --port 3081）
+      启动后开启 127.0.0.1:3081/v1 OpenAI 兼容接口（/health /v1/models
+      /v1/chat/completions），兼容老工具表单填写 base_url=http://127.0.0.1:3081
       的使用场景。
 
 进程健康/自愈：
@@ -37,8 +37,9 @@
   # MCP 模式（默认）—— 供 Codex/Hermes-Still/DeepSeek-Harness 作为插件加载
   CNB_TOKEN=xxx python3 gateway_3080.py
 
-  # HTTP 兼容模式（老工具表单 base_url=http://127.0.0.1:3080）
-  CNB_TOKEN=xxx python3 gateway_3080.py --http --port 3080
+  # HTTP 兼容模式（老工具表单 base_url=http://127.0.0.1:3081）
+  # ⚠️ 端口约定：3080 留给 DeepSeek-Harness(dsh web) WebUI，网关统一用 3081（修复端口冲突）
+  CNB_TOKEN=xxx python3 gateway_3080.py --http --port 3081
 """
 from __future__ import annotations
 
@@ -80,7 +81,7 @@ def _resolve_token() -> str:
 
 CFG = {
     "listen_host": os.environ.get("GW_HOST", "127.0.0.1"),   # 仅本机/内网，不对外暴露
-    "listen_port": int(os.environ.get("GW_PORT", "3080")),
+    "listen_port": int(os.environ.get("GW_PORT", "3081")),
     "cnb_gateway": _resolve_gateway(),
     "model": os.environ.get("CNB_MODEL", "deepseek-v4-flash"),
     "cnb_token": _resolve_token(),
@@ -429,9 +430,9 @@ def run_mcp():
 
 
 def main():
-    ap = argparse.ArgumentParser(description="本机 3080 本地网关客户端 · 双模式 MCP 插件（出站）")
+    ap = argparse.ArgumentParser(description="本机 3081 本地网关客户端 · 双模式 MCP 插件（出站）")
     ap.add_argument("--http", action="store_true", help="HTTP 网关兼容模式（模式二）；不加则走标准 MCP 模式（模式一）")
-    ap.add_argument("--port", type=int, default=CFG["listen_port"], help="HTTP 模式监听端口（默认 3080）")
+    ap.add_argument("--port", type=int, default=CFG["listen_port"], help="HTTP 模式监听端口（默认 3081）")
     ap.add_argument("--host", default=CFG["listen_host"], help="HTTP 模式监听地址（默认 127.0.0.1，仅本机）")
     args = ap.parse_args()
 

@@ -2,22 +2,24 @@
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 :: =============================================================================
-:: start_gateway_3080.bat — 本机 3080 网关一键启动脚本（Windows 双击运行）
+:: start_gateway_3080.bat — 本机 3081 网关一键启动脚本（Windows 双击运行）
 :: =============================================================================
-:: 作用：启动 gateway_3080.py 的 HTTP 兼容模式，监听 127.0.0.1:3080，
+:: 作用：启动 gateway_3080.py 的 HTTP 兼容模式，监听 127.0.0.1:3081，
 ::       出站 HTTPS 调用 CNB 云端免费 DeepSeek-V4-Flash / GLM-5.2。
-:: 架构：本机工具/DeepSeek-Harness → http://127.0.0.1:3080 → gateway_3080.py
+:: 架构：本机工具/DeepSeek-Harness → http://127.0.0.1:3081 → gateway_3080.py
 ::       → HTTPS 出站 → api.cnb.cool(CNB OpenAPI) → 免费模型
-:: 版本：1.0.0 | 基座：CNB免费DeepSeek-V4-Flash（至2026-12-31）
+:: ⚠️ 端口约定：3080 留给 DeepSeek-Harness(dsh web) WebUI；本网关用 3081，避免端口冲突。
+:: 版本：1.1.0 | 基座：CNB免费DeepSeek-V4-Flash（至2026-12-31）
 :: =============================================================================
 
-title 龙虾AI·本机3080网关·CNB云端免费模型
+title 龙虾AI·本机3081网关·CNB云端免费模型
 
 echo.
 echo  ╔══════════════════════════════════════════════════════╗
-echo  ║   龙虾AI · 本机 3080 网关（HTTP 兼容模式）          ║
+echo  ║   龙虾AI · 本机 3081 网关（HTTP 兼容模式）          ║
 echo  ║   出站调用 CNB 云端免费 DeepSeek-V4-Flash / GLM-5.2 ║
-echo  ║   监听 127.0.0.1:3080（仅本机，不对外暴露）          ║
+echo  ║   监听 127.0.0.1:3081（仅本机，不对外暴露）          ║
+echo  ║   ⚠️ 3080 留给 DeepSeek-Harness WebUI，勿改          ║
 echo  ╚══════════════════════════════════════════════════════╝
 echo.
 
@@ -119,13 +121,13 @@ if not defined CNB_TOKEN (
 )
 
 :: ===========================================================================
-:: 步骤4：启动网关（HTTP 模式，127.0.0.1:3080）
+:: 步骤4：启动网关（HTTP 模式，127.0.0.1:3081）
 :: ===========================================================================
 echo.
-echo [4/5] 启动 3080 网关...
+echo [4/5] 启动 3081 网关...
 
-set GW_PORT=3080
-echo [→] 监听 http://127.0.0.1:%GW_PORT%
+set GW_PORT=3081
+echo [→] 监听 http://127.0.0.1:%GW_PORT%  （3080 留给 DeepSeek-Harness WebUI）
 
 start "GW3080-http" %PYEXE% "%GATEWAY_FILE%" --http --host 127.0.0.1 --port %GW_PORT%
 
@@ -166,16 +168,16 @@ echo [✓] 网关就绪！http://127.0.0.1:%GW_PORT%
 echo.
 echo  ╔══════════════════════════════════════════════════════╗
 echo  ║   可用端点：                                          ║
-echo  ║     GET  http://127.0.0.1:3080/health               ║
-echo  ║     GET  http://127.0.0.1:3080/v1/models            ║
-echo  ║     POST http://127.0.0.1:3080/v1/chat/completions  ║
+echo  ║     GET  http://127.0.0.1:3081/health               ║
+echo  ║     GET  http://127.0.0.1:3081/v1/models            ║
+echo  ║     POST http://127.0.0.1:3081/v1/chat/completions  ║
 echo  ║  模型：deepseek-v4-flash / z-ai/glm-5.2（免费）      ║
-echo  ║  工具对接 base_url：http://127.0.0.1:3080            ║
+echo  ║  工具对接 base_url：http://127.0.0.1:3081            ║
 echo  ║  关闭：关掉弹出的 "GW3080-http" 窗口即可             ║
 echo  ╚══════════════════════════════════════════════════════╝
 echo.
 echo  验证示例：
-echo    curl http://127.0.0.1:3080/health
+echo    curl http://127.0.0.1:3081/health
 echo.
 echo  用完后请关闭弹窗停止网关。
 echo.
@@ -185,8 +187,9 @@ exit /b 0
 :HEALTH_FAIL
 echo [✗] 网关健康检查未通过。请检查：
 echo     - CNB_TOKEN 是否正确有效
-echo     - 是否已有进程占用 3080 端口（taskkill /f /im python.exe 后重试）
+echo     - 是否已有进程占用 3081 端口（taskkill /f /im python.exe 后重试）
 echo     - 网络是否可访问 api.cnb.cool
+echo     - 3080 是 DeepSeek-Harness WebUI，与网关无关，勿占用 3081
 pause
 exit /b 1
 
