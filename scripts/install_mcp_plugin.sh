@@ -50,6 +50,13 @@ timeout 30 python3 "$HARNESS_DIR/harness_mcp_loader.py" --tool health --mode mcp
 echo "[install-mcp] ---- 角色插件清单 ----"
 python3 "$HARNESS_DIR/harness_plugin_loader.py" --list 2>&1
 
+# ---- 5.5 Windows 双击启动脚本校验 ----
+if [ -f "scripts/start_gateway_3080.bat" ]; then
+  echo "[install-mcp] ✅ Windows 双击启动脚本存在：scripts/start_gateway_3080.bat"
+else
+  echo "[install-mcp] ⚠️ 未找到 scripts/start_gateway_3080.bat（可选，仅 Windows 本机使用）"
+fi
+
 echo ""
 echo "[install-mcp] ✅ 安装与集成完成"
 echo "  · 安装路径 : $DEST"

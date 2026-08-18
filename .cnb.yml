@@ -178,6 +178,7 @@ main:
         - deepseek-harness/config/model_layer.json
         - deepseek-harness/plugins/gateway_3080/gateway_3080.py
         - scripts/install_mcp_plugin.sh
+        - scripts/start_gateway_3080.bat
       stages:
         - name: build dsh-desktop reusable image
           script: |
