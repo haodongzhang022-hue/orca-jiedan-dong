@@ -218,6 +218,21 @@ python3 deepseek-harness/harness_plugin_loader.py --list
 - ✅ 模式二 HTTP：`/health`、`/v1/models`、`/v1/chat/completions` 均正常
 - ✅ 全部走 CNB 免费 `deepseek-v4-flash`，密钥零明文（仅读 `CNB_TOKEN` 环境变量）
 
+### Windows 本机一键双击启动（start_gateway_3080.bat）
+
+> 本机 Windows 上双击启动 3080 网关，免敲命令。脚本自动完成：查找 `gateway_3080.py`（仓库 `deploy/dsh-desktop/`、harness 插件目录、D盘、E盘、桌面等多处）→ 检测 Python → 读取 `CNB_TOKEN` → 启动 `--http --port 3080` → 健康检查 + 看门狗自愈。
+
+```
+仓库脚本：scripts/start_gateway_3080.bat
+本地使用：把脚本 + gateway_3080.py 放到同一目录，双击运行即可
+```
+
+**gateway_3080.py 真实路径（二选一）**：
+- 源文件：`deploy/dsh-desktop/gateway_3080.py`
+- Harness 已安装：`deepseek-harness/plugins/gateway_3080/gateway_3080.py`
+
+启动成功后，各工具配置 `base_url = http://127.0.0.1:3080` 即可调用 CNB 免费 DeepSeek-V4-Flash / GLM-5.2。
+
 ---
 
 ## 八、文件清单
@@ -226,6 +241,7 @@ python3 deepseek-harness/harness_plugin_loader.py --list
 |------|------|
 | `deploy/dsh-desktop/Dockerfile` | 专门构建 deepseek-harness-desktop 可复用镜像 |
 | `deploy/dsh-desktop/entrypoint.sh` | 容器启动：生成 provider 配置 + 拉起 8080 原版 WebUI + 8081 内网自研 harness |
+| `scripts/start_gateway_3080.bat` | Windows 双击启动脚本：一键启动本机 3080 网关（含健康检查+看门狗自愈） |
 | `.cnb.yml` | 脚手架：把镜像构建纳入项目流水线（`main.push` 触发） |
 
 ---
