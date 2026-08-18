@@ -24,10 +24,10 @@ title 龙虾AI.本机3081网关.CNB云端免费模型
 
 echo.
 echo  +-------------------------------------------------------+
-echo  |   龙虾AI . 本机 3081 网关（HTTP 兼容模式）          |
-echo  |   出站调用 CNB 云端免费 DeepSeek-V4-Flash / GLM-5.2 |
-echo  |   监听 127.0.0.1:3081（仅本机，不对外暴露）          |
-echo  |   [!] 3080 留给 DeepSeek-Harness WebUI，勿改          |
+echo  ^|   龙虾AI . 本机 3081 网关（HTTP 兼容模式）          ^|
+echo  ^|   出站调用 CNB 云端免费 DeepSeek-V4-Flash / GLM-5.2 ^|
+echo  ^|   监听 127.0.0.1:3081（仅本机，不对外暴露）          ^|
+echo  ^|   [!] 3080 留给 DeepSeek-Harness WebUI，勿改          ^|
 echo  +-------------------------------------------------------+
 echo.
 
@@ -162,13 +162,13 @@ if not "%OK%"=="1" goto HEALTH_FAIL
 echo [v] 网关就绪！http://127.0.0.1:%GW_PORT%
 echo.
 echo  +-------------------------------------------------------+
-echo  |   可用端点：                                          |
-echo  |     GET  http://127.0.0.1:3081/health               |
-echo  |     GET  http://127.0.0.1:3081/v1/models            |
-echo  |     POST http://127.0.0.1:3081/v1/chat/completions  |
-echo  |  模型：deepseek-v4-flash / z-ai/glm-5.2（免费）      |
-echo  |  工具对接 base_url：http://127.0.0.1:3081            |
-echo  |  关闭：关掉弹出的 "GW3080-http" 窗口即可             |
+echo  ^|   可用端点：                                          ^|
+echo  ^|     GET  http://127.0.0.1:3081/health               ^|
+echo  ^|     GET  http://127.0.0.1:3081/v1/models            ^|
+echo  ^|     POST http://127.0.0.1:3081/v1/chat/completions  ^|
+echo  ^|  模型：deepseek-v4-flash / z-ai/glm-5.2（免费）      ^|
+echo  ^|  工具对接 base_url：http://127.0.0.1:3081            ^|
+echo  ^|  关闭：关掉弹出的 "GW3080-http" 窗口即可             ^|
 echo  +-------------------------------------------------------+
 echo.
 echo  验证示例：
