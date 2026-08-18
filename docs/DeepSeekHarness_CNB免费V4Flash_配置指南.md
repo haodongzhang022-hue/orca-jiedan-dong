@@ -144,6 +144,35 @@ curl -s -X POST http://127.0.0.1:8080/v1/chat/completions \
 | `404 model not found` | 模型名拼错 | 必须精确填 `deepseek-v4-flash`（不是 pro） |
 | 网关连接失败 | 仓库 slug 不对 | 确认仓库路径 `TJF19770107/orca-jiedan` 正确 |
 | Provider 配置后不生效 | 未重启/未新建会话 | 保存配置后**完全退出客户端**再重启，**新建会话** |
+| **没有创建成提供方** | 网关地址缺仓库 slug，校验 404 `Resource not found` | 一键修复：`bash scripts/fix_dsh_provider.sh`；确认 API 地址为 `https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions` |
+| 点「获取可用模型」一直 404 | CNB 免费网关**没有 /models 接口**（仅 /chat/completions） | **不要点「获取可用模型」**，直接右下角【创建提供方】保存，回到列表页再点 |
+| Provider ID 显示红色提示 | 实时校验提示（ID 合法） | 忽略弹窗提示，直接【创建提供方】保存 |
+
+> 🛠️ **一键修复「没有创建成提供方」**：`bash scripts/fix_dsh_provider.sh`
+> 自动校验网关地址、修正缺 slug 的 settings.yaml、流式冒烟测试、并给出正确操作顺序。
+
+### 创建提供方·正确操作顺序（重要）
+
+在 DeepSeek-Harness WebUI（`http://127.0.0.1:3080`）新增自定义提供方：
+
+```
+1. 填写 Provider ID / 显示名称 / API 地址 / API 协议 / API 密钥 / 模型
+2. ⚠️ 弹窗里【不要点"获取可用模型"】——CNB 网关无 /models 接口，点必 404
+3. 直接右下角【创建提供方】保存
+4. 保存完回到列表页，再点"获取可用模型"即可看到模型
+```
+
+字段对照（API 地址必须是带仓库 slug 的完整网关）：
+
+```
+Provider ID : cnb-deepseek-v4-flash
+显示名称     : CNB 免费 DeepSeek-V4-Flash
+API 地址     : https://api.cnb.cool/TJF19770107/orca-jiedan/-/ai/chat/completions
+               （或本机 3081 网关 http://127.0.0.1:3081/v1）
+API 协议     : openai-completions
+API 密钥     : 你的 CNB 访问令牌（CNB_TOKEN）
+模型         : deepseek-v4-flash（必须精确，不是 pro）
+```
 
 ---
 

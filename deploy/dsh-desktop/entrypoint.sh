@@ -38,10 +38,36 @@ DSH_DESKTOP_DIR="${DSH_DESKTOP_DIR:-/opt/dsh-desktop}"
 DSH_CORE_DIR="${DSH_CORE_DIR:-/opt/dsh-desktop/deepseek-harness}"
 SELF_HARNESS_DIR="${SELF_HARNESS_DIR:-/opt/deepseek-harness}"
 
-# ---- 1. 网关地址解析（CNB_AI_GATEWAY 显式优先，否则尝试 ACC_PRODUCT_CONFIG_V2 自动解析）----
+# ---- 1. 网关地址解析（CNB_AI_GATEWAY 显式优先 → ACC_PRODUCT_CONFIG_V2 自动解析 → CNB_REPO_SLUG 兜底）----
+# ⚠️ 修复（2026-08-18 1234）：原默认网关 https://api.cnb.cool/chat/completions 缺仓库 slug，
+#   导致 provider 创建时校验 404「没有创建成提供方」。现与 harness_proxy.py / gateway_3080.py 对齐：
+#   - CNB_AI_GATEWAY 显式时：若以 /chat/completions 结尾则直接用，否则末尾补全
+#   - 否则读 ACC_PRODUCT_CONFIG_V2.endpoint（如 .../-/ai-ide → .../-/ai/chat/completions）
+#   - 最后兜底：https://api.cnb.cool/${CNB_REPO_SLUG:-TJF19770107/orca-jiedan}/-/ai/chat/completions
+DSH_REPO_SLUG="${CNB_REPO_SLUG:-TJF19770107/orca-jiedan}"
 GATEWAY="${CNB_AI_GATEWAY:-}"
-if [ -z "$GATEWAY" ]; then
-  GATEWAY="https://api.cnb.cool/chat/completions"
+if [ -n "$GATEWAY" ]; then
+  case "$GATEWAY" in
+    */chat/completions) : ;;            # 已是完整端点，保持不变
+    *) GATEWAY="${GATEWAY%/}/chat/completions" ;;  # 补齐 /chat/completions
+  esac
+else
+  # 尝试从 ACC_PRODUCT_CONFIG_V2 解析 endpoint（与 harness_proxy.py 相同规则）
+  _acc="${ACC_PRODUCT_CONFIG_V2:-}"
+  if [ -n "$_acc" ]; then
+    _ep=$(printf '%s' "$_acc" | python3 -c "import sys,json;print(json.load(sys.stdin).get('endpoint','').strip().rstrip('/'))" 2>/dev/null || true)
+    if [ -n "$_ep" ]; then
+      case "$_ep" in
+        */ai-ide) GATEWAY="${_ep%/ai-ide}/ai/chat/completions" ;;
+        */chat/completions) GATEWAY="$_ep" ;;
+        *) GATEWAY="${_ep}/chat/completions" ;;
+      esac
+    fi
+  fi
+  # 最终兜底：用 CNB_REPO_SLUG 拼出正确仓库网关（修复缺 slug 的 404）
+  if [ -z "$GATEWAY" ]; then
+    GATEWAY="https://api.cnb.cool/${DSH_REPO_SLUG}/-/ai/chat/completions"
+  fi
 fi
 echo "[dsh-entrypoint] 模型基座 = ${CNB_MODEL}（CNB 内置免费 DeepSeek-V4-Flash）"
 echo "[dsh-entrypoint] 网关地址 = ${GATEWAY}"
