@@ -31,6 +31,13 @@
   - 看门狗 watchdog：HTTP 模式下检测转发异常/超时自动重试（指数退避）
   - MCP 模式下 tools/list / tools/call 自带异常捕获与自动重试
 
+落地路径规范（硬性约束）：
+  本网关脚本正式落地实体在 `scripts/gateway_service/`（仓库相对路径）↔ 本地
+  `E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目\scripts\gateway_service\`。
+  启动脚本（Windows 双击）：scripts/gateway_service/start_gateway_3080.bat。
+  ❌ 严禁落到 D:\dsh-gateway / D:\dsh 等 D 盘隔离目录（文件会散落找不到）。
+  详细规则见 docs/CNB云端→本地目录原路镜像同步规范.md
+
 密钥零落盘：CNB_TOKEN 由环境变量注入，本文件/镜像不含明文。
 
 启动:

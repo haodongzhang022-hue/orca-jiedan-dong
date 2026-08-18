@@ -9,7 +9,16 @@ setlocal enabledelayedexpansion
 :: 架构：本机工具/DeepSeek-Harness → http://127.0.0.1:3081 → gateway_3080.py
 ::       → HTTPS 出站 → api.cnb.cool(CNB OpenAPI) → 免费模型
 :: ⚠️ 端口约定：3080 留给 DeepSeek-Harness(dsh web) WebUI；本网关用 3081，避免端口冲突。
-:: 版本：1.1.0 | 基座：CNB免费DeepSeek-V4-Flash（至2026-12-31）
+:: 版本：1.2.0 | 基座：CNB免费DeepSeek-V4-Flash（至2026-12-31）
+:: -------------------------------------------------------------------------
+:: 【落地路径规范 · 硬性约束】
+::   本网关脚本一律归入本地 E 盘项目树：
+::     E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目\scripts\gateway_service\
+::   ❌ 严禁落到 D:\dsh-gateway / D:\dsh\ 等 D 盘隔离目录（文件会散落找不到）。
+::   ✅ 仓库相对路径 scripts/gateway_service/ 与本地镜像路径一一对应，原路回写。
+:: =============================================================================
+::   正式落地实体请用 scripts/gateway_service/start_gateway_3080.bat（双击即可），
+::   本文件为仓库级入口，保持同样的 E 盘落地查找逻辑。
 :: =============================================================================
 
 title 龙虾AI·本机3081网关·CNB云端免费模型
@@ -31,39 +40,26 @@ set SCRIPT_DIR=%SCRIPT_DIR:~0,-1%
 set REPO_ROOT=%SCRIPT_DIR%\..
 
 :: ===========================================================================
-:: 步骤1：在多个候选路径查找 gateway_3080.py
-::   仓库内真实路径：deploy/dsh-desktop/gateway_3080.py
-::   Harness 已安装路径：deepseek-harness/plugins/gateway_3080/gateway_3080.py
-::   本地常用下载位置：D盘 / E:\龙虾AI主控中心 / 桌面 等
+:: 步骤1：在候选路径查找 gateway_3080.py
+::   ① 首选 scripts\gateway_service\gateway_3080.py（正式落地实体，规范强制）
+::   ② 仓库源文件备份：deploy\dsh-desktop\gateway_3080.py
+::   ③ Harness 已装插件实体：deepseek-harness\plugins\gateway_3080\gateway_3080.py
+::   ❌ 不再扫描 D:\dsh-gateway / D:\dsh 等 D 盘隔离目录（本规范禁止统一输出 D 盘）
 :: ===========================================================================
 echo [1/5] 查找 gateway_3080.py ...
 
 set GATEWAY_FILE=
+set GW_SERVICE_DIR=%SCRIPT_DIR%\gateway_service
 
-:: ① 仓库源文件（当前仓库）
-if exist "%REPO_ROOT%\deploy\dsh-desktop\gateway_3080.py"   set GATEWAY_FILE=%REPO_ROOT%\deploy\dsh-desktop\gateway_3080.py
-:: ② Harness 已安装的插件实体
+:: ① 本 gateway_service 同目录（✅ 规范强制首选，杜绝 D 盘散落）
+if exist "%GW_SERVICE_DIR%\gateway_3080.py"   set GATEWAY_FILE=%GW_SERVICE_DIR%\gateway_3080.py
+:: ② 仓库源文件（当前仓库）
+if not defined GATEWAY_FILE (
+  if exist "%REPO_ROOT%\deploy\dsh-desktop\gateway_3080.py"   set GATEWAY_FILE=%REPO_ROOT%\deploy\dsh-desktop\gateway_3080.py
+)
+:: ③ Harness 已安装的插件实体
 if not defined GATEWAY_FILE (
   if exist "%REPO_ROOT%\deepseek-harness\plugins\gateway_3080\gateway_3080.py" set GATEWAY_FILE=%REPO_ROOT%\deepseek-harness\plugins\gateway_3080\gateway_3080.py
-)
-:: ③ 脚本同目录
-if not defined GATEWAY_FILE (
-  if exist "%SCRIPT_DIR%\gateway_3080.py" set GATEWAY_FILE=%SCRIPT_DIR%\gateway_3080.py
-)
-:: ④ 当前目录
-if not defined GATEWAY_FILE (
-  if exist "%CD%\gateway_3080.py" set GATEWAY_FILE=%CD%\gateway_3080.py
-)
-:: ⑤ D盘 / E盘 / 桌面 常用位置
-if not defined GATEWAY_FILE (
-  for %%P in (
-    "D:\gateway_3080.py" "D:\dsh\gateway_3080.py" "D:\dsh-desktop\gateway_3080.py"
-    "E:\gateway_3080.py" "E:\dsh\gateway_3080.py" "E:\dsh-desktop\gateway_3080.py"
-    "E:\龙虾AI主控中心\gateway_3080.py" "E:\龙虾AI主控中心\MCP服务\gateway_3080.py"
-    "%USERPROFILE%\Desktop\gateway_3080.py" "%USERPROFILE%\Downloads\gateway_3080.py"
-  ) do (
-    if not defined GATEWAY_FILE if exist %%P set GATEWAY_FILE=%%~fP
-  )
 )
 
 if not defined GATEWAY_FILE goto NOT_FOUND
@@ -196,16 +192,13 @@ exit /b 1
 :NOT_FOUND
 echo [✗] 未在候选路径找到 gateway_3080.py。
 echo.
-echo  仓库内真实路径如下（二选一）：
-echo    ① 源文件：  deploy\dsh-desktop\gateway_3080.py
-echo    ② Harness已装：deepseek-harness\plugins\gateway_3080\gateway_3080.py
-echo.
-echo  请把该文件下载/复制到本脚本同目录（%SCRIPT_DIR%\）后重试，
-echo  或直接放到桌面/D盘并再次运行本脚本。
-echo.
-echo  【快速获取】在本机执行仓库同步：
+echo  本网关脚本已固定落地到 E 盘项目树：
+echo     E:\龙虾AI主控中心\我的AI分身\企业微信群定制接单项目\scripts\gateway_service\
+echo  请确认该目录下有 gateway_3080.py，或到仓库同步：
 echo     git clone https://cnb.cool/TJF19770107/orca-jiedan.git
-echo     然后取 deploy\dsh-desktop\gateway_3080.py
+echo     取 scripts\gateway_service\gateway_3080.py 放回同目录。
+echo.
+echo  ❌ 切勿把网关脚本扔到 D:\dsh-gateway / D:\dsh 等 D 盘目录（会散落找不到）。
 pause
 exit /b 1
 

@@ -51,7 +51,7 @@ API 密钥     : <你的 CNB 访问令牌>
 ```
 Provider ID : cnb-gateway-local
 显示名称     : CNB本地网关(DeepSeekV4+GLM5.2)
-API 地址     : http://127.0.0.1:3081/v1    ⚠️ 需先双击 scripts/start_gateway_3080.bat 启动
+API 地址     : http://127.0.0.1:3081/v1    ⚠️ 需先双击 scripts/gateway_service/start_gateway_3080.bat 启动
 API 协议     : openai-completions
 API 密钥     : local（占位即可，网关内部自动读 CNB_TOKEN）
 模型         : deepseek-v4-flash
@@ -114,7 +114,7 @@ CNB → 右上角头像 → **个人设置 → 访问令牌** → 新建一个�
 | 报错 | 原因 | 解决 |
 |------|------|------|
 | `404 Resource not found` / `没有创建成提供方` | API 地址缺仓库 slug | 一键修复 `bash scripts/fix_dsh_provider.sh`；确认地址为 `.../-/ai` |
-| `Failed to fetch` | **本机 3081 网关没启动**（网络层连不上，不是404） | 先双击 `scripts/start_gateway_3080.bat` 起网关 → `curl 3081/health` 返回 JSON → 再创建提供方 |
+| `Failed to fetch` | **本机 3081 网关没启动**（网络层连不上，不是404） | 先双击 `scripts/gateway_service/start_gateway_3080.bat` 起网关 → `curl 3081/health` 返回 JSON → 再创建提供方 |
 | `/models answered 404` | CNB 网关**没有 /models 接口**（预期现象） | **不要点"获取可用模型"**，直接手动在模型栏填 `deepseek-v4-flash` |
 | `400 code 11101` | 非流式请求（平台仅支持流式） | 用 `stream:true`，或让 Harness 网关自动聚合（`harness_proxy.py` 已内置） |
 | `401 Unauthorized` | Token 错误/未注入 | 检查 `CNB_TOKEN`，重新从环境变量获取 |

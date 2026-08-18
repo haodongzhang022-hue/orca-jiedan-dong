@@ -119,6 +119,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | codex掉线/max报错/unknown variant/catalog修复/调用1234修复 | 按五步法§15+全域模板#305根治：catalog max→xhigh+模板数组剔除+自愈脚本 | 命令：.workbuddy python watch_codex_catalog.py --once；WatchCodexCatalog定时任务兜底 |
 | GLM/GLM-5.2/NVIDIA/NVIDIA接口/glm52 | 按五步法§15.6+全域模板#306执行：429限流判定表+按需调用通道 | 命令：bash scripts/glm52_call.sh "问题"；GLM=重思考（研判/报价/复盘），deepseek=高频群聊，双链路互不影响 |
 | DeepSeek Harness 配置/怎么填/Provider字段/配置映射/创建提供方/添加模型 | 打开 `docs/DeepSeekHarness_Provider配置界面字段一一对应映射表_20260818.md` | Harness WebUI「创建提供方」界面字段↔实际值一一对应映射，照抄即可；含直连CNB/本机3081双路径+API密钥获取+报错对照 |
+| 云端本地原路同步/原路同步/镜像同步 | 打开 `docs/CNB云端→本地目录原路镜像同步规范.md` | **核心规范**：CNB云端仓库目录结构原样复刻镜像到本地`E:\龙虾AI主控中心\我的AI分身\`对应项目；云端建什么子文件夹本地同位置生成，所有脚本/bat/py原路回到对应项目目录，**禁止统一丢D盘新建文件夹**；网关脚本固定落地`scripts\gateway_service\`→本地`企业微信群定制接单项目\scripts\gateway_service\` |
 
 **重要**：执行完命令后，将输出结果直接返回给用户。如果代理已正常运行，命令会自动跳过恢复步骤，不影响任何对话和任务数据。
 
