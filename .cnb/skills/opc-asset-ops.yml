@@ -1,0 +1,7 @@
+name: opc-asset-ops
+version: 0.1.0
+description: 识别重复产出并封装为可复利资产。
+triggers:
+  - 资产沉淀
+outputs:
+  - asset-ops.md

@@ -1,0 +1,7 @@
+name: opc-value-proposition
+version: 0.1.0
+description: 把 Jobs/Pains/Gains 拆解为清晰价值主张。
+triggers:
+  - 价值主张
+outputs:
+  - value-proposition.md

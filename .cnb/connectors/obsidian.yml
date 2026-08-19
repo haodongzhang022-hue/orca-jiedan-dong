@@ -1,0 +1,7 @@
+name: obsidian
+version: 0.1.0
+description: Obsidian 双知识库连接器，沉淀一人公司规划产出。
+type: knowledge-base
+config:
+  note_format: markdown
+  link_style: wikilink

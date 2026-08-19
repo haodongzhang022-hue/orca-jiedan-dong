@@ -1,0 +1,7 @@
+name: wecom
+version: 0.1.0
+description: 企业微信群连接器，接单、派单、回写群聊痕迹。
+type: im
+config:
+  platform: 企业微信
+  order_hook: /v1/orders

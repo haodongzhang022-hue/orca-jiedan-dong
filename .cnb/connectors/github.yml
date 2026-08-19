@@ -1,0 +1,8 @@
+name: github
+version: 0.1.0
+description: GitHub 版本控制连接器。
+type: vcs
+config:
+  provider: github
+  proxy: gh-proxy.com
+  repo: TJF19770107/orca-jiedan

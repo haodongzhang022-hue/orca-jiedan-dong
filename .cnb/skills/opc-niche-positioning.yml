@@ -1,0 +1,7 @@
+name: opc-niche-positioning
+version: 0.1.0
+description: 用三环合一与六维评分为一人公司找到利基方向。
+triggers:
+  - 利基定位
+outputs:
+  - niche-positioning.md

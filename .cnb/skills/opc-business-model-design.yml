@@ -1,0 +1,7 @@
+name: opc-business-model-design
+version: 0.1.0
+description: 用 Lean Canvas 设计一人公司商业模式并指出高风险假设。
+triggers:
+  - 商业模式
+outputs:
+  - business-model.md

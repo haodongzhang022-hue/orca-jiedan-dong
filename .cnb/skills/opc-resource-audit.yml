@@ -1,0 +1,8 @@
+name: opc-resource-audit
+version: 0.1.0
+description: 启动一人公司时执行八类资源盘点。
+triggers:
+  - 资源盘点
+  - 启动盘点
+outputs:
+  - resource-inventory.md

@@ -1,0 +1,12 @@
+name: opc-orchestrator
+version: 0.1.0
+description: OPC 九阶段总调度技能，自动识别阶段并调用对应子专家。
+triggers:
+  - 一人公司
+  - 启动规划
+  - 庄家团
+  - 阶段推进
+inputs:
+  - user_intent
+outputs:
+  - next_stage_plan

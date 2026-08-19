@@ -1,0 +1,9 @@
+name: opc-conversion-loop
+version: 0.1.0
+description: 从触达到复购设计一人公司转化路径。
+triggers:
+  - 转化闭环
+  - 获客
+  - 私域
+outputs:
+  - conversion-loop.md

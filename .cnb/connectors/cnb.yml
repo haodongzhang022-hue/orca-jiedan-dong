@@ -1,0 +1,9 @@
+name: cnb
+version: 0.1.0
+description: CNB 云原生平台连接器，用于 NPC 角色与流水线同步。
+type: platform
+config:
+  platform: cnb.cool
+  repo: TJF19770107/orca-jiedan
+  base_model: deepseek-v4-flash
+  ai_credits_warning: 80%

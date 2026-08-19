@@ -1,0 +1,7 @@
+name: opc-mvp-designer
+version: 0.1.0
+description: 定义最小可验证假设与验证形式。
+triggers:
+  - MVP
+outputs:
+  - mvp-design.md

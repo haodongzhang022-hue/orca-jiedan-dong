@@ -1,0 +1,7 @@
+name: opc-dashboard-review
+version: 0.1.0
+description: 轻量指标复盘一人公司经营状态，决定下一周期唯一优先级。
+triggers:
+  - 经营复盘
+outputs:
+  - dashboard-review.md
