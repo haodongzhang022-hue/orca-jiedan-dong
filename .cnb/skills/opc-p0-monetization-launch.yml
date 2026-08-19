@@ -1,0 +1,28 @@
+name: opc-p0-monetization-launch
+displayName: OPC P0 变现启动包生成器
+version: 1.0.0
+description: 把一人公司九阶段规划产出蒸馏为可直接售卖的 P0 服务包（文案/落地页/报价单/接单剧本），跑通首笔真实变现。
+triggers:
+  - 一人公司变现
+  - P0服务包
+  - 落地页
+  - 报价单
+  - 接单剧本
+  - 跑通首笔
+  - opc p0
+cost: 0 积分（本地产出，不联网不派子Agent）
+depends:
+  - opc-resource-auditor
+  - opc-niche-strategist
+  - opc-conversion-designer
+  - opc-asset-strategist
+outputs:
+  - .cnb/opc-launch/service-package-copy.md
+  - .cnb/opc-launch/landing-page.html
+  - .cnb/opc-launch/quote-sheet.html
+  - .cnb/opc-launch/seed-customer-playbook.md
+priceAnchors:
+  light: 1980
+  standard: 4980
+  full: 9800
+method: 龙虾五步法 V3.6 + 全域模板 + 仓颉 RIA-TV++ 四化蒸馏
