@@ -1,0 +1,19 @@
+# 依赖
+node_modules/
+dist/
+unpackage/
+
+# 日志
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# 编辑器和系统文件
+.DS_Store
+.idea/
+.vscode/
+*.local
+
+# 缓存
+.cache/
+.temp/

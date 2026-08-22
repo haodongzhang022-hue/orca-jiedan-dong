@@ -1,0 +1,35 @@
+/* uni.scss - 智能测评 App 主题变量（粉红顶部横条 + 暖色界面） */
+
+/* 粉红主色系（暖色） */
+$c-pink-700: #d84a78;
+$c-pink-600: #ec5f8f;
+$c-pink-500: #f56e9c;
+$c-pink-400: #f78cab;
+$c-pink-300: #fbacc4;
+$c-pink-100: #fde4ec;
+$c-pink-50: #fff4f7;
+
+/* 辅助暖色 */
+$c-warm-amber: #ffb86c;
+$c-warm-peach: #ffd9c0;
+
+/* 中性色 */
+$c-white: #ffffff;
+$c-ink: #4a2733;
+$c-ink-soft: #9a6b78;
+$c-line: #f8e3ea;
+
+/* 渐变 */
+$grad-top: linear-gradient(135deg, #f56e9c 0%, #f78cab 45%, #ffb86c 100%);
+$grad-btn: linear-gradient(135deg, #ec5f8f 0%, #f56e9c 60%, #ff8fb0 100%);
+$grad-bg: linear-gradient(180deg, #fff6f8 0%, #ffeef2 45%, #ffd9c0 100%);
+
+/* 阴影 */
+$shadow-card: 0 12rpx 30rpx rgba(236, 95, 143, 0.14);
+$shadow-btn: 0 10rpx 24rpx rgba(236, 95, 143, 0.32);
+
+/* uni-app 内置主题变量（覆盖） */
+$uni-color-primary: $c-pink-500;
+$uni-color-success: $c-pink-600;
+$uni-color-warning: $c-warm-amber;
+$uni-color-error: #e05252;
