@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 · 智能测评</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 2️⃣ 登录页面（粉红顶部横条 + 暖色界面 v2） -->
+  <div class="app-screen login-screen">
+    <!-- 粉红顶部横条 -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="slogan"><i data-icon="spark"></i>欢迎回来</div>
+      </div>
+    </header>
+
+    <!-- 暖色光晕背景 -->
+    <div class="warm-bg" aria-hidden="true">
+      <div class="glow glow-1"></div>
+      <div class="glow glow-2"></div>
+    </div>
+
+    <!-- 返回按钮 -->
+    <button class="back-btn" id="backHome" aria-label="返回首页">
+      <i data-icon="back"></i>
+    </button>
+
+    <div class="login-wrap">
+      <!-- 品牌头 -->
+      <div class="login-head">
+        <div class="app-logo small"><i data-icon="spark"></i></div>
+        <h1 class="login-title">欢迎回来</h1>
+        <p class="login-sub">登录后继续你的学习旅程</p>
+      </div>
+
+      <!-- Tab 切换：登录 / 注册 -->
+      <div class="tab-switch">
+        <button class="tab active" data-tab="login">登录</button>
+        <button class="tab" data-tab="register">注册</button>
+      </div>
+
+      <!-- 登录表单 -->
+      <form class="auth-form" id="loginForm" novalidate>
+        <div class="field-group">
+          <div class="input-box">
+            <i data-icon="phone" class="field-ico"></i>
+            <input
+              type="tel"
+              id="loginPhone"
+              class="field-input"
+              placeholder="请输入手机号"
+              maxlength="11"
+              autocomplete="tel"
+            />
+          </div>
+          <p class="field-msg" id="loginPhoneMsg"></p>
+        </div>
+
+        <div class="field-group">
+          <div class="input-box">
+            <i data-icon="lock" class="field-ico"></i>
+            <input
+              type="password"
+              id="loginPwd"
+              class="field-input"
+              placeholder="请输入密码"
+              autocomplete="current-password"
+            />
+            <button type="button" class="eye-btn" data-eye="loginPwd" aria-label="切换密码可见">
+              <i data-icon="eye"></i>
+            </button>
+          </div>
+          <p class="field-msg" id="loginPwdMsg"></p>
+        </div>
+
+        <div class="form-extra">
+          <label class="remember">
+            <input type="checkbox" id="rememberMe" />
+            <span>记住账号</span>
+          </label>
+          <a href="#" class="forgot">忘记密码？</a>
+        </div>
+
+        <button type="submit" class="primary-btn full">登录</button>
+      </form>
+
+      <!-- 注册表单（仅前端） -->
+      <form class="auth-form hidden" id="registerForm" novalidate>
+        <div class="field-group">
+          <div class="input-box">
+            <i data-icon="phone" class="field-ico"></i>
+            <input
+              type="tel"
+              id="regPhone"
+              class="field-input"
+              placeholder="请输入手机号"
+              maxlength="11"
+              autocomplete="tel"
+            />
+          </div>
+          <p class="field-msg" id="regPhoneMsg"></p>
+        </div>
+
+        <div class="field-group">
+          <div class="input-box">
+            <i data-icon="lock" class="field-ico"></i>
+            <input
+              type="password"
+              id="regPwd"
+              class="field-input"
+              placeholder="设置密码（6-16位）"
+              autocomplete="new-password"
+            />
+            <button type="button" class="eye-btn" data-eye="regPwd" aria-label="切换密码可见">
+              <i data-icon="eye"></i>
+            </button>
+          </div>
+          <p class="field-msg" id="regPwdMsg"></p>
+        </div>
+
+        <div class="field-group">
+          <div class="input-box">
+            <i data-icon="lock" class="field-ico"></i>
+            <input
+              type="password"
+              id="regPwd2"
+              class="field-input"
+              placeholder="确认密码"
+              autocomplete="new-password"
+            />
+            <button type="button" class="eye-btn" data-eye="regPwd2" aria-label="切换密码可见">
+              <i data-icon="eye"></i>
+            </button>
+          </div>
+          <p class="field-msg" id="regPwd2Msg"></p>
+        </div>
+
+        <button type="submit" class="primary-btn full">注册</button>
+      </form>
+
+      <!-- 跳转入口 -->
+      <p class="switch-entry" id="switchEntry">
+        <span>还没有账号？</span>
+        <a href="#" id="toRegister">立即注册</a>
+      </p>
+    </div>
+  </div>
+
+  <svg style="display:none">
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4 4l16 16M10.5 5.2A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.6 3.4M6.6 6.6A16 16 0 0 0 2 12s3.5 7 10 7a9.5 9.5 0 0 0 4.2-.9M9.9 9.9a2.5 2.5 0 0 0 3.4 3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M11 18h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
