@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>首页 · 智能测评</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 1️⃣ 首页模块 -->
+  <div class="app-screen home-screen">
+    <!-- 顶部 slogan -->
+    <header class="topbar">
+      <div class="slogan">✨ AI 让学习更高效</div>
+      <div class="top-actions">
+        <button class="icon-btn" aria-label="更多"><i data-icon="dots"></i></button>
+      </div>
+    </header>
+
+    <!-- 浅青绿渐变科技背景（CSS 实现） -->
+    <div class="tech-bg" aria-hidden="true">
+      <div class="glow glow-1"></div>
+      <div class="glow glow-2"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <!-- 品牌区 -->
+    <section class="brand">
+      <div class="app-logo"><i data-icon="spark"></i></div>
+      <h1 class="app-name">智测</h1>
+      <p class="app-tagline">AI 自动生成测评题 · 让每一步学习都可见</p>
+    </section>
+
+    <!-- 卡片布局 · App 简介 -->
+    <section class="feature-cards">
+      <article class="feature-card">
+        <div class="card-icon"><i data-icon="quiz"></i></div>
+        <div class="card-text">
+          <h3>AI 测评题</h3>
+          <p>智能生成专属测评题目</p>
+        </div>
+      </article>
+      <article class="feature-card">
+        <div class="card-icon"><i data-icon="brain"></i></div>
+        <div class="card-text">
+          <h3>知识巩固</h3>
+          <p>针对性复习薄弱知识点</p>
+        </div>
+      </article>
+      <article class="feature-card">
+        <div class="card-icon"><i data-icon="chart"></i></div>
+        <div class="card-text">
+          <h3>成绩分析</h3>
+          <p>可视化学习数据报告</p>
+        </div>
+      </article>
+      <article class="feature-card">
+        <div class="card-icon"><i data-icon="book"></i></div>
+        <div class="card-text">
+          <h3>错题本</h3>
+          <p>错题自动归纳随时回顾</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- 核心按钮 -->
+    <div class="cta-area">
+      <button class="primary-btn" id="startQuiz">
+        <span>开始测评</span><i data-icon="arrow"></i>
+      </button>
+    </div>
+
+    <!-- 底部：轻量登录注册向导 -->
+    <footer class="login-guide">
+      <p class="guide-text">登录后即可同步测评记录</p>
+      <div class="guide-links">
+        <a href="login.html" class="guide-link">登录</a>
+        <span class="dot">·</span>
+        <a href="login.html?tab=register" class="guide-link">注册</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <a class="nav-item active"><i data-icon="home"></i><span>首页</span></a>
+    <a class="nav-item"><i data-icon="quiz"></i><span>测评</span></a>
+    <a class="nav-item"><i data-icon="stats"></i><span>成绩</span></a>
+    <a class="nav-item"><i data-icon="user"></i><span>我的</span></a>
+  </nav>
+
+  <!-- 简单线性图标（SVG 内联） -->
+  <svg style="display:none">
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><path d="M4 4h16v16H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 9h8M8 13h5M8 17h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 0-3.5 6A3.5 3.5 0 0 0 7 16a3.5 3.5 0 0 0 5 2 3.5 3.5 0 0 0 5-2 3.5 3.5 0 0 0-1.5-7A4 4 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M19 15H6a2 2 0 0 0-2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-6v-6h-4v6H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-stats" viewBox="0 0 24 24"><path d="M4 20h16M7 20v-6M12 20V9M17 20V4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1.5-3.5 4-5 8-5s6.5 1.5 8 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4 4l16 16M10.5 5.2A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.6 3.4M6.6 6.6A16 16 0 0 0 2 12s3.5 7 10 7a9.5 9.5 0 0 0 4.2-.9M9.9 9.9a2.5 2.5 0 0 0 3.4 3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M11 18h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
