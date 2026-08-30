@@ -1,4 +1,4 @@
-# 企业微信群定制接单项目 · Codex 配置
+﻿# 企业微信群定制接单项目 · Codex 配置
 
 ## 自动恢复协议（每次会话启动时执行）
 
@@ -56,6 +56,8 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 ## 项目约定
 
 - **模型**：mimo-v2.5-pro（通过 xiaomimimo20260612 provider）
+- **TeamoRouter 供应商**：	eamorouter_codex_0829（直连 https://teamorouter.cn/v1，Responses API，密钥存环境变量 TEAMOROUTER_API_KEY）
+- **TeamoRouter 免费模型**：deepseek-v4-flash-free（Codex 可用，Responses 协议）；glm-5.3-flash-free 仅 Chat Completions 协议，不能直连 Codex
 - **Codex 代理端口**：15730（codex_tool_proxy.py v8，Responses API 直接透传）
 - **Anthropic 代理端口**：15721（anthropic_proxy_15721.py）
 - **代理脚本位置**：E:\\龙虾AI主控中心\\MCP服务\\
@@ -129,6 +131,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | 马斯克×巴菲特蒸馏（快捷2） | 调用马斯克×巴菲特蒸馏 | 加载 `技能库\马斯克巴菲特思维蒸馏_SKILL.md`：第一性原理(创造)+能力圈(取舍) |
 | 三载体联动迭代（快捷3） | 三载体联动迭代 | 五步法v4.0(§14)+全域模板#301+本脚手架，五部分执行指令默认加载 |
 | 四化迭代 Obsidian 知识库（快捷4） | 四化迭代 Obsidian 知识库 | 记忆修改→归档Obsidian对应库→知识库反向赋能，三载体同频 |
+| 报价/自动报价/接单报价/算价/多少钱/定价/quote | lobster-auto-bid v1.0 | 加载 `G:\WorkBuddy_Data\skills\lobster-auto-bid\SKILL.md`：读取任务卡/企微需求→`scripts\bid_calc.py` 本地零积分算价→输出结构化报价单（成本拆解/毛利/套餐/风险条款）；成交/流失案例回灌校准基准（全域模板 #311） |
 | 名字/数字执行细则 | 名字快捷调用执行手册 | 详见 `docs\数字快捷调用执行手册.md`（名字触发+数字快捷双通道，每项含加载资源+执行步骤+产出路径） |
 | DeepSeek Harness 配置/怎么填/Provider字段/配置映射/创建提供方/添加模型 | 打开 `docs/DeepSeekHarness_Provider配置界面字段一一对应映射表_20260818.md` | Harness WebUI「创建提供方」界面字段↔实际值一一对应映射，照抄即可；含直连CNB/本机3081双路径+API密钥获取+报错对照 |
 | 云端本地原路同步/原路同步/镜像同步 | 打开 `docs/CNB云端→本地目录原路镜像同步规范.md` | **核心规范**：CNB云端仓库目录结构原样复刻镜像到本地`E:\龙虾AI主控中心\我的AI分身\`对应项目；云端建什么子文件夹本地同位置生成，所有脚本/bat/py原路回到对应项目目录，**禁止统一丢D盘新建文件夹**；网关脚本固定落地`scripts\gateway_service\`→本地`企业微信群定制接单项目\scripts\gateway_service\` |

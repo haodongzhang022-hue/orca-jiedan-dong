@@ -117,6 +117,36 @@ if not defined CNB_TOKEN (
 )
 
 :: ===========================================================================
+:: 步骤3.5：解析出站隧道地址（CNB_AI_GATEWAY 动态注入）
+::   隧道 URL 由 CloudDev 工作区 PORTS 转发生成（形如 https://{id}-8080.cnb.run），
+::   固化到本目录 .cnb_gateway 文件（内容为完整 /v1/chat/completions 地址）。
+::   优先级：环境变量 > .cnb_gateway 文件 > 手动输入。
+:: ===========================================================================
+echo.
+echo [3.5/5] 解析出站隧道地址（CNB_AI_GATEWAY）...
+
+if defined CNB_AI_GATEWAY goto GATEWAY_OK
+
+set GATEWAY_FILE=%SCRIPT_DIR%\.cnb_gateway
+if exist "%GATEWAY_FILE%" (
+  set /p CNB_AI_GATEWAY=<"%GATEWAY_FILE%"
+  if defined CNB_AI_GATEWAY (
+    echo [v] 已从 %GATEWAY_FILE% 读取隧道地址
+    goto GATEWAY_OK
+  )
+)
+
+echo [->] 未检测到 CNB_AI_GATEWAY 环境变量。
+echo      请粘贴 CloudDev 8080 隧道地址（形如 https://xxx-8080.cnb.run/v1/chat/completions）：
+set /p CNB_AI_GATEWAY=Gateway: 
+
+:GATEWAY_OK
+if not defined CNB_AI_GATEWAY (
+  echo [x] 未获取到隧道地址，无法出站调用。请先配置 CloudDev 隧道。
+  goto END
+)
+
+:: ===========================================================================
 :: 步骤4：启动网关（HTTP 模式，127.0.0.1:3081）
 :: ===========================================================================
 echo.

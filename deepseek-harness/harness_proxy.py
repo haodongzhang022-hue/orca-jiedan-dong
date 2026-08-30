@@ -289,6 +289,13 @@ class HarnessHandler(BaseHTTPRequestHandler):
             self._send({"error": f"模型 '{model}' 不可用，可选: {list(AVAILABLE_MODELS.keys())}"}, 400)
             return
         messages = payload.get("messages", [])
+        session = payload.get("session") or payload.get("project")
+        meta = payload.get("plugins") or payload.get("meta") or {}
+        routed = self._route_dsh(messages, session, meta)
+        if routed.get("handled"):
+            self._send(routed.get("result", "").encode("utf-8"), ctype="text/plain; charset=utf-8")
+            return
+        messages = routed.get("messages", messages)
         if payload.get("stream", False):
             self._send_stream(self._iter_chat(messages, model, payload))
         else:
@@ -296,6 +303,17 @@ class HarnessHandler(BaseHTTPRequestHandler):
                                      payload.get("temperature", 0.7),
                                      payload.get("max_tokens", 4096))
             self._send(result)
+
+    def _route_dsh(self, messages, session, meta):
+        """DSH 插件层自动路由：图片/记忆/看板/电脑操作。防御式，插件缺失不阻断基座链路。"""
+        try:
+            base = os.path.dirname(os.path.abspath(__file__))
+            if base not in sys.path:
+                sys.path.insert(0, base)
+            import dsh_router
+            return dsh_router.DshRouter().route(messages, session, meta)
+        except Exception as e:
+            return {"handled": False, "messages": messages, "trace": [f"router_error:{e}"]}
 
     def _iter_chat(self, messages, model, payload):
         temp = payload.get("temperature", 0.7)

@@ -1,9 +1,19 @@
-# 正常节点快照 · 基线索引（2026-08-13）
+﻿# 正常节点快照 · 基线索引（2026-08-25）
 
-> 回滚基线：**`normal_node_20260813_180341.tar.gz`（当前最新）**
-> 更新：2026-08-13 18:04 · hermes 大脑执行 · 1234 调用触发·轻量快照（10MB）+max防线四层终验（L1 catalog 34行xhigh 0残留 / L2 index.js 模板8处xhigh拦截 max=0 备份5份 / L3 双守护脚本 watch_codex_catalog v1.2 + codex_catalog_guard v1.0 / L4 定时任务 WatchCodexCatalog+Lobster_CodexCatalogGuard 双Ready 日志每10分钟落盘）+修复归属链路澄清（hermes执行+AtomCode代理13460底座）
+> 回滚基线：**`normal_node_20260825_193433.tar.gz`（当前最新）**
+> 更新：2026-08-25 · Codex 执行 · 重新快照（15.67MB < 20M）· 一键回滚脚本补齐并实测（scripts/one-click-rollback.ps1 + scripts/create_snapshot.ps1）
 
 ## 快照清单
+
+| 文件 | 大小 | 状态 | 说明 |
+|------|------|------|------|
+| `normal_node_20260825_193433.tar.gz` | 15.67MB | ✅ **当前回滚基线** | Codex 2026-08-25 重新快照，排除 .git/对话记录/msgbus/fleet_exchange/worktrees/logs/snapshots/tools/.workbuddy/__pycache__/node_modules/tests/backups/archive，tar 打包 16,430,853B <20M，859 条目完整性校验通过，三引擎节点备份 |
+
+| 文件 | 大小 | 状态 | 说明 |
+|------|------|------|------|
+| 
+ormal_node_20260825_193433.tar.gz | 15.67MB | ✅ **当前回滚基线** | Codex 2026-08-25 重新快照，排除 .git/对话记录/msgbus/fleet_exchange/worktrees/logs/snapshots/tools/.workbuddy/__pycache__/node_modules/tests/backups/archive，tar 打包 16,430,853B <20M，859 条目完整性校验通过，三引擎节点备份 |
+
 
 | 文件 | 大小 | 状态 | 说明 |
 |------|------|------|------|

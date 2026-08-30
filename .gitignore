@@ -20,6 +20,8 @@ __pycache__/
 # DeepSeek Harness 运行时产物（不入库）
 deepseek-harness/harness_orders/
 deepseek-harness/harness_memory/
+deepseek-harness/harness_kanban/
+deepseek-harness/backups/
 deepseek-harness/*.log
 *.pyc
 .pytest_cache/
