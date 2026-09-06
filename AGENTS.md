@@ -1,4 +1,4 @@
-﻿# 企业微信群定制接单项目 · Codex 配置
+# 企业微信群定制接单项目 · Codex 配置
 
 ## 自动恢复协议（每次会话启动时执行）
 
@@ -57,7 +57,10 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 
 - **模型**：mimo-v2.5-pro（通过 xiaomimimo20260612 provider）
 - **TeamoRouter 供应商**：	eamorouter_codex_0829（直连 https://teamorouter.cn/v1，Responses API，密钥存环境变量 TEAMOROUTER_API_KEY）
-- **TeamoRouter 免费模型**：deepseek-v4-flash-free（Codex 可用，Responses 协议）；glm-5.3-flash-free 仅 Chat Completions 协议，不能直连 Codex
+- **TeamoRouter 免费/0.01折模型**（2026-08-30 实测更正）：`deepseek-v4-flash-free`(免费) / `glm-5.3-flash-free`(0.01折) / `deepseek-v4-pro-free`(免费) **三者均支持 Responses API，均可直连 Codex**（旧记录"glm-5.3-flash-free 仅 Chat Completions"已作废）
+- **TeamoRouter 故障转移代理**：`MCP服务\teamorouter_failover_proxy.py`，端口 15740(config 通道) + 18091(CODEX_BASE_URL 通道)；转移链 deepseek-v4-flash-free → glm-5.3-flash-free → deepseek-v4-pro-free；`/v1/models` 暴露 9 个 0.01折/免费模型
+- **一键脚本**：`MCP服务\启动TeamoRouter转移代理.bat`（拉起代理）、`MCP服务\切换Codex默认模型.bat`（三模型互切）
+- **链路真相**：Codex 真实网关是 `teamorouter-desktop.exe`(端口 51427)；`CODEX_BASE_URL` 环境变量优先级高于 `~/.codex/config.toml`，排查配置问题先查 env
 - **Codex 代理端口**：15730（codex_tool_proxy.py v8，Responses API 直接透传）
 - **Anthropic 代理端口**：15721（anthropic_proxy_15721.py）
 - **代理脚本位置**：E:\\龙虾AI主控中心\\MCP服务\\
@@ -112,6 +115,9 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 
 | 用户输入 | 执行命令 | 说明 |
 |----------|----------|------|
+| 启用汤小龙/启用我的AI分身/康小龙 | 运行 `扫描宿主能力.py`（workbuddy Python） | 分身扫描 + 三层守卫自愈：①config默认模型→gpt-5.6-luna(0.01折) ②下拉框目录注入3个免费模型 ③网关别名改写表。被覆盖自动备份后修复，每15分钟由任务 Lobster_AvatarCapabilitySync 巡检 |
+| 企微接单群/分身之眼接单/接单大厅/订单筛选 | 加载 `技能库\lobster_task_standard_workflow_v3.0\分身之眼企微接单全自动化\SKILL.md` | 自动进群截图、OCR、归档、生成可接/不可接订单表；申请接单前需人工审核 |
+| 免费模型丢失/下拉框模型/一键拉取模型 | 运行 `扫描宿主能力.py`（workbuddy Python） | 一键恢复 `deepseek-v4-flash-free` / `glm-5.3-flash-free` / `deepseek-v4-pro-free`；详见技能库 `免费模型一键拉取守卫\SKILL.md` |
 | 一键恢复 | `lobster-cmd 一键恢复` | 检查三引擎+自动恢复+自动快照 |
 | 龙虾五步法 | `lobster-cmd 一键恢复` | 同上 |
 | 全域模板 | `lobster-cmd 全域模板` | 显示模板路径+指令说明 |
@@ -145,7 +151,7 @@ curl -s http://127.0.0.1:15721/health && echo " Anthropic Proxy OK"
 | **智能化** | AI员工自主工作（不是辅助） | 不问用户，自主决策执行 |
 | **定制化** | 蒸馏思维方式 | 从订单逆向工程→知识沉淀 |
 | **全自动化** | 一公司一人 | 所有流程一键触发，零人工干预 |
-| **自我净化** | 自我进化（不是缓存清理） | 每次迭代优化脚手架+知识库 |
+| **自我净化** | 自我进化 + 自我纠偏 + 守卫稳定性（不是缓存清理） | 每次迭代优化脚手架+知识库；破坏性覆盖必须"回滚+守卫"成对：回滚恢复旧状态、守卫守住正确状态（三层守卫已内置 `扫描宿主能力.py`，每15分钟自动纠偏）；每轮对话的问题→修复→验证→沉淀进灵魂层+全域模板+知识库 |
 
 ### 迭代触发流程
 
@@ -213,3 +219,6 @@ schtasks /create /tn "FleetGuardian_AutoStart" /tr "python fleet_guardian.py --d
 - 群聊链路：验收 Codex 执行产物 + 结果回流 Obsidian 情况
 - 补强事项：验收 Obsidian 同步脚本、日志中文规范、复盘文档生成
 - 复盘闭环：每轮群聊任务后独立核验复盘文档是否反向更新记忆卡片
+
+
+
