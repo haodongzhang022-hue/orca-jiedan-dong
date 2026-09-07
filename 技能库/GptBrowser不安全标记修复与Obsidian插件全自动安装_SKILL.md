@@ -53,7 +53,7 @@ p['default_search_provider_data'] = {"template_url_data": {
 4. **重启 Obsidian**（走计划任务 `Lobster_ObsidianLaunch`，先 taskkill 再 Start-ScheduledTask，绕单实例锁 fail-fast）
 5. **回读验证**：data.json 生成/配置存活
 
-## 五、Obsidian-Copilot 模型配置 schema（v4.0.6 实测反编译）
+## 五、Obsidian-Copilot 模型配置 schema（v4.x 实测反编译）
 
 **不凭记忆，grep main.js 反查**（本地零成本）：
 - 模型对象：`{name, provider:"openai", enabled, isBuiltIn, core, baseUrl, apiKey, capabilities:[]}`
@@ -61,10 +61,18 @@ p['default_search_provider_data'] = {"template_url_data": {
 - defaultModelKey 格式 = `"glm-5.3-flash-free|openai"`（`名|provider` 竖线分隔）
 - Copilot 首次加载不写 data.json，直到设置变更 → 直接预写即可，插件会 merge
 
+**v4.x 升级后 Credential 迁移**：
+- 弹窗 "Copilot upgrade summary: API keys — Action required. Credential storage moved to the Obsidian Keychain. Previous keys were copied to ... backup file." 属正常升级流程，不是报错。
+- 插件升级后旧 key 被备份到 `obsidian-copilot/data-v3-credentials-backup-*.json`，新配置需要在 Settings 重新 Save。
+
 **对接 TeamoRouter 18091 本地网关**：
 - `/v1/models` 列表会漂移（slug 伪装系），写配置前先探一次拿真实模型 id
 - **18091 实测不校验 apiKey**（占位 key 也 HTTP 200）→ 插件里填任意占位值即可，零泄漏（同步产物中禁出现真实 key）
-- 免费档：`glm-5.3-flash-free`（实测 chat HTTP 200）/ `deepseek-v4-flash-free` / `deepseek-v4-pro-free`
+- **Base URL 必须填 18091，不能填 15730**：15730 是 `codex_tool_proxy.py`（Codex 工具代理），`/v1/models` 与 `/v1/chat/completions` 均返回 401 Invalid API Key，不配给 Copilot 用。
+- **真正能让 Copilot 出字的免费模型是 `deepseek-v4-pro-free`**（2026-09-07 实测）：
+  - `deepseek-v4-flash-free` / `glm-5.3-flash-free` / `gpt-5.6-luna-fast` 等实际后端是 `glm-5.3-flash`，只返回 `reasoning_content`、`content` 为空 → Copilot 聊天窗口空白。
+  - `deepseek-v4-pro-free` 后端为 `deepseek-v4-flash-ga-260731`，正常返回 `content`，实测回复 "Hello! How can I help you today?"。
+- 省钱建议：默认模型固定 `deepseek-v4-pro-free|openai`，其他 18091 模型仅保留/禁用作为备用。
 
 ## 六、坑清单（本案全部踩过）
 
@@ -77,3 +85,6 @@ p['default_search_provider_data'] = {"template_url_data": {
 | Python subprocess tasklist 解码崩 | 'utf-8' codec 0xb3 | `decode('gbk', errors='ignore')` |
 | 计划任务拉起 10 秒不够 | 进程数 0 误判失败 | 等 15 秒再验，或重试一次 |
 | data.json 不生成误判插件失败 | 插件正常只是不落盘 | 以 community-plugins.json + 回读存活为准 |
+| **Base URL 错填 15730** | `/v1/models` 401、`chat` 401 Invalid API Key | 必须填 `http://127.0.0.1:18091/v1`（teamorouter_failover_proxy） |
+| **选错模型导致 Copilot 空白回复** | `deepseek-v4-flash-free` 实际后端 `glm-5.3-flash` 只出 `reasoning_content`、`content` 为空 | 默认模型改为 `deepseek-v4-pro-free`，可正常出 `content` |
+| **v4 升级后 key 失效** | 弹窗 "Copilot upgrade summary: API keys — Action required" | 按提示重新 Save 配置，旧 key 在 backup 文件里 |
