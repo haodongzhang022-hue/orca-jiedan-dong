@@ -307,21 +307,63 @@ def tcp_window(host, port, tries=3, timeout=8):
     return ok == tries, (sum(lat) / len(lat) if lat else 0), ok
 
 
+def http_window(host, port=443, tries=2, timeout=12):
+    """★ 应用层探针（假成功第 8 形态的对症药）。
+
+    2026-09-19 实证：`socket.create_connection(('github.com',443))` **3/3 全通、0.13s**
+    —— 快得不正常；同一时刻 curl 得 http_code=000、git 连 21s 超时。
+    结论：socket 层 connect 成功 ≠ 端到端可达（链路中被透明拦截/代答），
+    **只用 socket 探连通会得到系统性假阳性**。必须走完 TLS + HTTP 才算数。
+    """
+    import http.client
+    ok, lat = 0, []
+    for _ in range(tries):
+        t = time.time()
+        try:
+            c = http.client.HTTPSConnection(host, port, timeout=timeout)
+            c.request("HEAD", "/")
+            c.getresponse().read()
+            c.close()
+            ok += 1
+            lat.append(time.time() - t)
+        except Exception:
+            pass
+    return ok == tries, (sum(lat) / len(lat) if lat else 0), ok
+
+
+def ssh_reachable(host="github.com"):
+    """SSH 通道存活 + 密钥是否被接受。返回 (可达 bool, 说明)。"""
+    rc, out = run(["ssh", "-T", "-o", "StrictHostKeyChecking=no", "-o",
+                   "BatchMode=yes", "git@" + host], timeout=40)
+    o = (out or "").strip()
+    if "successfully authenticated" in o.lower():
+        return True, "SSH 密钥已授权"
+    if "Permission denied (publickey)" in o:
+        return True, "SSH 可达但密钥未授权（需在 GitHub 注册公钥）"
+    return False, o[:90] or ("rc=%d" % rc)
+
+
 def github_channel():
     """三级选路：socks5 代理 → 直连 → gh-proxy 镜像。返回 (名称, git参数前缀, remote)。"""
     if port_listening(1081):
-        ok, lat, n = tcp_window("github.com", 443, tries=2)
-        log("NET", "1081 socks5 已监听，github.com:443 %d/2 通 (%.2fs)" % (n, lat))
+        log("NET", "1081 socks5 已监听 -> 优先走代理")
         return ("socks5:1081", ["-c", "http.proxy=socks5://127.0.0.1:1081",
                                 "-c", "https.proxy=socks5://127.0.0.1:1081"], "direct")
-    ok, lat, n = tcp_window("github.com", 443, tries=3)
+    # 应用层探针（不用 socket——socket 会假阳性，见 http_window 注释）
+    ok, lat, n = http_window("github.com")
     if ok:
         # 关键：全局 http.proxy=127.0.0.1:7897 在 7897 DOWN 时会让「直连」也失败，必须清空
-        log("NET", "1081 未监听；github.com:443 直连 3/3 通 (%.2fs) -> 走直连并清代理" % lat)
+        log("NET", "github.com HTTPS 应用层 %d/2 通 (%.2fs) -> 直连并清代理" % (n, lat))
         return ("直连+清代理", ["-c", "http.proxy=", "-c", "https.proxy="], "direct")
-    ok2, lat2, n2 = tcp_window("gh-proxy.com", 443, tries=3)
+    log("NET", "github.com HTTPS 不通（应用层 %d/2）" % n)
+    # SSH 旁路：HTTPS 被拦时 SSH 常仍可达（2026-09-19 实证 SSH 能完成握手，只是密钥未注册）
+    sok, why = ssh_reachable("github.com")
+    log("NET", "SSH 探测: %s" % why)
+    if sok and "已授权" in why:
+        return ("SSH 旁路", [], "ssh")
+    ok2, lat2, n2 = http_window("gh-proxy.com")
     if ok2:
-        log("NET", "直连不通；gh-proxy.com:443 %d/3 通 (%.2fs) -> 走镜像" % (n2, lat2))
+        log("NET", "gh-proxy.com 应用层 %d/2 通 (%.2fs) -> 走镜像（注意：镜像通常只读，push 可能失败）" % (n2, lat2))
         return ("gh-proxy镜像", ["-c", "http.proxy=", "-c", "https.proxy="], "github")
     return ("全断", ["-c", "http.proxy=", "-c", "https.proxy="], "direct")
 
