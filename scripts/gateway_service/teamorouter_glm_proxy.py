@@ -1,161 +1,79 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""TeamoRouter GLM 福利版本地代理桥（127.0.0.1:51428）
+
+作用：
+1. /v1/models 返回 glm-5.3-flash-free，让 Codex 桌面端下拉框能显示福利版；
+2. /v1/chat/completions 透传到 https://teamorouter.cn/v1，密钥走环境变量 TEAMOROUTER_API_KEY；
+3. 零明文密钥，仅手动按需启动（禁止开机自启，防静默消耗配额）。
+"""
 import json
 import os
-import time
-import uuid
-import urllib.error
 import urllib.request
-
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-TEAMO_BASE = os.environ.get("TEAMOROUTER_BASE", "https://teamorouter.cn/v1")
-TEAMO_KEY = os.environ.get("TEAMOROUTER_API_KEY", "")
-PORT = int(os.environ.get("GLM_PROXY_PORT", "51428"))
-LOG_PATH = os.environ.get("GLM_PROXY_LOG", os.path.join(os.path.dirname(os.path.abspath(__file__)), "teamorouter_glm_proxy.log"))
-
-# GLM models only speak Chat Completions. Everything else is passed through as Responses.
-CHAT_MODELS = {"glm-5.2", "glm-5.3", "glm-5.3-flash", "glm-5.3-flash-free"}
-
-
-def log(entry):
-    with open(LOG_PATH, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-
-
-def input_to_messages(inp):
-    if isinstance(inp, str):
-        return [{"role": "user", "content": inp}]
-    messages = []
-    for item in inp if isinstance(inp, list) else []:
-        if not isinstance(item, dict):
-            continue
-        if item.get("type") in ("function_call", "function_call_output", "reasoning"):
-            continue
-        role = item.get("role", "user")
-        content = item.get("content")
-        if isinstance(content, str):
-            text = content
-        elif isinstance(content, list):
-            parts = []
-            for part in content:
-                if isinstance(part, dict):
-                    text = part.get("text") or part.get("input_text") or part.get("output_text")
-                    if text:
-                        parts.append(text)
-            text = "".join(parts)
-        else:
-            text = ""
-        if text:
-            messages.append({"role": role, "content": text})
-    return messages
-
-
-def call_chat(model, payload):
-    body = {
-        "model": model,
-        "messages": input_to_messages(payload.get("input")),
-        "stream": False,
-    }
-    data = json.dumps(body).encode("utf-8")
-    req = urllib.request.Request(
-        TEAMO_BASE + "/chat/completions",
-        data=data,
-        method="POST",
-        headers={
-            "Authorization": "Bearer " + TEAMO_KEY,
-            "Content-Type": "application/json",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=300) as resp:
-        return json.loads(resp.read().decode("utf-8"))
-
-
-def call_responses(model, payload):
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        TEAMO_BASE + "/responses",
-        data=data,
-        method="POST",
-        headers={
-            "Authorization": "Bearer " + TEAMO_KEY,
-            "Content-Type": "application/json",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=300) as resp:
-        return json.loads(resp.read().decode("utf-8"))
-
-
-def chat_to_response(model, chat):
-    text = ""
-    usage = chat.get("usage", {})
-    choices = chat.get("choices") or []
-    if choices:
-        message = choices[0].get("message") or {}
-        text = message.get("content") or ""
-    return {
-        "id": "resp_" + uuid.uuid4().hex,
-        "object": "response",
-        "created_at": int(time.time()),
-        "status": "completed",
-        "model": model,
-        "output": [
-            {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": text}]}
-        ],
-        "usage": {
-            "input_tokens": usage.get("prompt_tokens", 0),
-            "output_tokens": usage.get("completion_tokens", 0),
-            "total_tokens": usage.get("total_tokens", 0),
-        },
-    }
+UPSTREAM = "https://teamorouter.cn"
+MODELS_PAYLOAD = {
+    "object": "list",
+    "data": [
+        {"id": "glm-5.3-flash-free", "object": "model", "owned_by": "teamorouter",
+         "display_name": "GLM-5.3-Flash 福利版 0.01折"},
+        {"id": "glm-5.3-flash", "object": "model", "owned_by": "zhipu"},
+    ],
+}
 
 
 class Handler(BaseHTTPRequestHandler):
-    def log_message(self, fmt, *args):
-        pass
-
-    def send_json(self, obj, status=200):
-        body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+    def _key(self):
+        return os.environ.get("TEAMOROUTER_API_KEY", "")
 
     def do_GET(self):
-        if self.path.rstrip("/").endswith("/models"):
-            self.send_json({"object": "list", "data": [{"id": m, "object": "model"} for m in sorted(CHAT_MODELS)]})
-            return
-        self.send_json({"error": {"message": "not found"}}, 404)
+        if self.path.split("?")[0] in ("/v1/models", "/models"):
+            body = json.dumps(MODELS_PAYLOAD).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        elif self.path == "/health":
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+        else:
+            self.send_error(404)
 
     def do_POST(self):
-        length = int(self.headers.get("Content-Length", 0))
-        raw = self.rfile.read(length) if length else b"{}"
-        try:
-            payload = json.loads(raw.decode("utf-8"))
-        except Exception as exc:
-            self.send_json({"error": {"message": "bad json: %s" % exc}}, 400)
+        path = self.path.split("?")[0]
+        if path not in ("/v1/chat/completions", "/chat/completions"):
+            self.send_error(404)
             return
-
-        model = payload.get("model", "")
+        length = int(self.headers.get("Content-Length", 0))
+        payload = self.rfile.read(length)
+        key = self._key()
+        if not key:
+            self.send_error(500, "TEAMOROUTER_API_KEY 未设置")
+            return
+        req = urllib.request.Request(
+            UPSTREAM + path, data=payload,
+            headers={"Authorization": "Bearer " + key, "Content-Type": "application/json",
+                     "X-Teamo-Route-Tag": "play0.019"})
         try:
-            if model in CHAT_MODELS:
-                chat = call_chat(model, payload)
-                result = chat_to_response(model, chat)
-            else:
-                result = call_responses(model, payload)
-            log({"model": model, "path": self.path, "status": 200, "ts": int(time.time() * 1000)})
-            self.send_json(result)
-        except urllib.error.HTTPError as exc:
-            err = exc.read().decode("utf-8", "replace")
-            log({"model": model, "path": self.path, "status": exc.code, "error": err, "ts": int(time.time() * 1000)})
-            self.send_json({"error": {"message": err, "type": "upstream_error", "code": exc.code}}, exc.code)
-        except Exception as exc:
-            log({"model": model, "path": self.path, "status": 500, "error": str(exc), "ts": int(time.time() * 1000)})
-            self.send_json({"error": {"message": str(exc), "type": "proxy_error", "code": 500}}, 500)
+            with urllib.request.urlopen(req, timeout=300) as r:
+                body = r.read()
+                self.send_response(r.status)
+                self.send_header("Content-Type", r.headers.get("Content-Type", "application/json"))
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+        except urllib.error.HTTPError as e:
+            body = e.read()
+            self.send_response(e.code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
 
 
 if __name__ == "__main__":
-    if not TEAMO_KEY:
-        raise SystemExit("TEAMOROUTER_API_KEY is not set")
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print("teamo-glm-proxy listening on http://127.0.0.1:%d" % PORT, flush=True)
-    server.serve_forever()
+    print("TeamoRouter GLM 代理桥就绪: http://127.0.0.1:51428/v1")
+    ThreadingHTTPServer(("127.0.0.1", 51428), Handler).serve_forever()
