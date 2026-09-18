@@ -363,8 +363,10 @@ def github_channel():
         return ("SSH 旁路", [], "ssh")
     ok2, lat2, n2 = http_window("gh-proxy.com")
     if ok2:
-        log("NET", "gh-proxy.com 应用层 %d/2 通 (%.2fs) -> 走镜像（注意：镜像通常只读，push 可能失败）" % (n2, lat2))
-        return ("gh-proxy镜像", ["-c", "http.proxy=", "-c", "https.proxy="], "github")
+        # gh-proxy 只代理 raw/archive/只读 clone，**不能收 push**。
+        # 2026-09-19 实证：把它当推送通道 → git 挂到 600s 超时被 kill（rc=-9）。
+        log("NET", "gh-proxy.com 应用层 %d/2 通，但该镜像只读、不收 push -> 不作为推送通道" % n2)
+        return ("gh-proxy仅可读", ["-c", "http.proxy=", "-c", "https.proxy="], "github")
     return ("全断", ["-c", "http.proxy=", "-c", "https.proxy="], "direct")
 
 
@@ -500,9 +502,11 @@ def dispatch_git(target, repo, branch, report, do_push=True, title="五库分发
 
     if target == "github":
         ch_name, ch_args, remote = github_channel()
-        if ch_name == "全断":
-            report(target, "BLOCKED", "github.com 与 gh-proxy.com 443 均不通 -> 已入队，未挂起")
-            enqueue(target, title, repo, "网络全断")
+        if ch_name in ("全断", "gh-proxy仅可读"):
+            # 只读镜像不重试、不挂起：直接判 BLOCKED 入队，等直连窗口恢复
+            report(target, "BLOCKED", "GitHub 无可用推送通道（%s）-> 已入队，未挂起。"
+                                      "可用 `--retry-pending` 在直连窗口内补发" % ch_name)
+            enqueue(target, title, repo, "GitHub 无推送通道: " + ch_name)
             return
     else:
         ch_args = ["-c", "http.proxy=", "-c", "https.proxy=", "-c", "credential.helper="]
