@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ComfyUI × 漫剧 · 零成本落地交付页（2026-09-16）</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --line:#e3e8ef; --text:#1f2937; --sub:#5b6675;
+    --ok:#0f9d58; --warn:#d97706; --bad:#dc2626; --brand:#1a6dff; --brand-soft:#eef4ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+       line-height:1.65;padding:28px 20px 60px}
+  .wrap{max-width:1120px;margin:0 auto}
+  header{background:linear-gradient(135deg,#1a6dff,#3f8cff);color:#fff;border-radius:14px;
+         padding:22px 26px;margin-bottom:20px;box-shadow:0 6px 20px rgba(26,109,255,.18)}
+  header h1{margin:0 0 6px;font-size:22px;letter-spacing:.3px}
+  header .meta{font-size:13px;opacity:.92}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:22px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .kpi .t{font-size:12px;color:var(--sub);letter-spacing:.5px}
+  .kpi .v{font-size:19px;font-weight:700;margin-top:4px}
+  .kpi .n{font-size:12.5px;color:var(--sub);margin-top:4px}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;
+          padding:18px 20px;margin-bottom:18px}
+  h2{font-size:16px;margin:0 0 12px;padding-left:10px;border-left:4px solid var(--brand)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:#f0f4fa;font-weight:600}
+  code{background:#f2f5f9;padding:2px 6px;border-radius:5px;font-size:12.5px;
+       font-family:Consolas,"Courier New",monospace}
+  pre{background:#0f172a;color:#e6edf7;padding:14px 16px;border-radius:10px;
+      overflow-x:auto;font-size:12.8px;line-height:1.55}
+  .steps{display:grid;grid-template-columns:1fr;gap:10px}
+  .step{display:grid;grid-template-columns:46px 1fr 250px;gap:12px;align-items:center;
+        border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:#fcfdff}
+  .step .no{width:30px;height:30px;border-radius:50%;background:var(--brand-soft);color:var(--brand);
+            font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .step .d{font-size:13.5px}
+  .step .d b{font-size:14px}
+  .step .d span{display:block;color:var(--sub);font-size:12.5px;margin-top:2px}
+  .step .l a{display:block;font-size:12.8px;color:var(--brand);text-decoration:none;
+             word-break:break-all;padding:3px 0}
+  .step .l a:hover{text-decoration:underline}
+  .badge{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:20px;
+         background:var(--brand-soft);color:var(--brand);margin-left:6px}
+  .badge.free{background:#e8f7ee;color:var(--ok)}
+  .badge.paid{background:#fdecec;color:var(--bad)}
+  ul{margin:8px 0 0;padding-left:20px;font-size:13.5px}
+  li{margin:4px 0}
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:24px}
+  @media(max-width:820px){.step{grid-template-columns:40px 1fr}.step .l{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>ComfyUI × 漫剧 · 零成本落地交付页</h1>
+  <div class="meta">任务卡 v1.0 · 2026-09-16 00:35 CST · 执行人：汤小龙（AI 分身）· 龙虾五步法 V3.6 + 1234 四化迭代</div>
+</header>
+
+<div class="grid">
+  <div class="kpi"><div class="t">本机独显</div><div class="v bad">无 N 卡</div>
+    <div class="n">Intel UHD 730 核显 · 无 CUDA，ComfyUI 只能纯 CPU</div></div>
+  <div class="kpi"><div class="t">本机 ComfyUI</div><div class="v ok">环境健康</div>
+    <div class="n">整合包已存在，20 节点全加载；缺模型 + 被代理卡启动</div></div>
+  <div class="kpi"><div class="t">云端 CNB GPU</div><div class="v bad">已收费</div>
+    <div class="n">2026-08-01 起取消 GPU 免费额度（0.5 元/核时）</div></div>
+  <div class="kpi"><div class="t">香港 2C4G</div><div class="v bad">不可用</div>
+    <div class="n">无 GPU + 4GB 内存跑不动 SD1.5，只能做调度/存储</div></div>
+</div>
+
+<section>
+  <h2>一句话方案</h2>
+  <p style="margin:0;font-size:14px">
+    <b>本机 CPU 出图（零额度、零成本）+ 腾讯 Cloud Studio 免费 T4 出视频（每月 10000 分钟）+ 通义万相/千问 App 每日免费额度兜底。</b>
+    三段全免费，只有电费和等待时间。CNB 与香港服务器都不进推理链路。
+  </p>
+</section>
+
+<section>
+  <h2>三方案判定表</h2>
+  <table>
+    <tr><th style="width:22%">方案</th><th style="width:14%">GPU</th><th style="width:12%">成本</th><th style="width:16%">出图</th><th style="width:20%">出视频（漫剧核心）</th><th>判定</th></tr>
+    <tr>
+      <td><b>本机 CPU ComfyUI</b></td><td>无（核显无用）</td><td class="ok">0 元</td>
+      <td class="ok">✅ 1~3 分钟/张</td><td class="bad">❌ 单条 5s 视频需数小时</td>
+      <td><b>只做图片线</b></td>
+    </tr>
+    <tr>
+      <td><b>云端 CNB（cnb.cool）</b></td><td>共享 L40/H20</td><td class="bad">GPU 已收费</td>
+      <td>—</td><td>—</td><td><b>排除出推理链路</b>（CPU 1600 核时/月仍可用作编排与归档）</td>
+    </tr>
+    <tr>
+      <td><b>香港 2核4G</b></td><td>无</td><td class="ok">已付费</td>
+      <td class="bad">❌ 内存不足</td><td class="bad">❌</td>
+      <td><b>只做调度 / 存储 / 隧道</b></td>
+    </tr>
+  </table>
+</section>
+
+<section>
+  <h2>零成本链路 · 7 步（左：动作，右：入口）</h2>
+  <div class="steps">
+
+    <div class="step">
+      <div class="no">1</div>
+      <div class="d"><b>剧本 / 分镜文本</b><span>本机 · TeamoRouter 免费池 deepseek-v4-flash-free（已有链路）</span></div>
+      <div class="l"><span class="badge free">0 元</span></div>
+    </div>
+
+    <div class="step">
+      <div class="no">2</div>
+      <div class="d"><b>分镜提示词生成</b><span>复用已有技能：MiniMaxH3分镜提示词生成器</span></div>
+      <div class="l"><span class="badge free">0 元</span></div>
+    </div>
+
+    <div class="step">
+      <div class="no">3</div>
+      <div class="d"><b>角色立绘 + 分镜图</b><span>本机 CPU ComfyUI · SDXL-Turbo 4 步 / SD1.5+LCM，512~768，一晚可出 30~50 张</span></div>
+      <div class="l">
+        <span class="badge free">0 元</span>
+        <a href="https://www.liblib.art/" target="_blank" rel="noopener">liblib.art 模型站（整合包已内置联动）</a>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="no">4</div>
+      <div class="d"><b>角色一致性</b><span>InstantID / IPAdapter（节点已就位，仅缺权重文件）</span></div>
+      <div class="l"><span class="badge free">0 元</span></div>
+    </div>
+
+    <div class="step">
+      <div class="no">5</div>
+      <div class="d"><b>图生视频（漫剧的"动起来"）</b><span>腾讯 Cloud Studio 免费 T4 · 16GB 显存 · 每月 10000 分钟 · 国内直连</span></div>
+      <div class="l">
+        <span class="badge free">0 元</span>
+        <a href="https://ide.cloud.tencent.com/" target="_blank" rel="noopener">ide.cloud.tencent.com</a>
+        <a href="https://modelscope.cn/" target="_blank" rel="noopener">魔搭模型下载（国内 CDN 100MB/s）</a>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="no">6</div>
+      <div class="d"><b>配音</b><span>edge-tts（微软免费 TTS）· 已有 zero-cost-video-render 技能</span></div>
+      <div class="l"><span class="badge free">0 元</span></div>
+    </div>
+
+    <div class="step">
+      <div class="no">7</div>
+      <div class="d"><b>剪辑合成</b><span>ffmpeg 拼接 + 字幕 · 本机</span></div>
+      <div class="l"><span class="badge free">0 元</span></div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>备选与兜底入口</h2>
+  <table>
+    <tr><th style="width:26%">平台</th><th style="width:30%">免费额度</th><th>入口</th></tr>
+    <tr><td>腾讯 Cloud Studio <span class="badge free">主力</span></td>
+        <td>T4 16GB / 8核32G · 每月 10000 分钟 · 单次最长 4h</td>
+        <td><a href="https://ide.cloud.tencent.com/" target="_blank" rel="noopener">ide.cloud.tencent.com</a></td></tr>
+    <tr><td>魔搭 ModelScope <span class="badge free">备选</span></td>
+        <td>A10 24GB · 36 小时；CPU 8核32G 无限；API 每日 2000 次</td>
+        <td><a href="https://modelscope.cn/" target="_blank" rel="noopener">modelscope.cn</a></td></tr>
+    <tr><td>通义万相（每日兜底）</td>
+        <td>每天 50 灵感值（约 200 张图，无水印可商用）</td>
+        <td><a href="https://tongyi.aliyun.com/wanxiang/" target="_blank" rel="noopener">tongyi.aliyun.com/wanxiang</a></td></tr>
+    <tr><td>阿里云百炼</td>
+        <td>新用户 50 秒视频额度（90 天有效）</td>
+        <td><a href="https://developer.aliyun.com/article/1696063" target="_blank" rel="noopener">通义万相视频能力文档</a></td></tr>
+    <tr><td>CNB 计费核对 <span class="badge paid">GPU 已收费</span></td>
+        <td>开发 CPU 1600 核时/月；GPU 0.5 元/核时</td>
+        <td><a href="https://cloud.tencent.com.cn/document/product/1785/116265" target="_blank" rel="noopener">CNB 社区版计费说明</a></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>本机 ComfyUI 修复 · 按序执行</h2>
+  <pre>:: ① 清代理再启动（关键：代理会拖死 LibAI 客户端）
+set HTTP_PROXY=
+set HTTPS_PROXY=
+set ALL_PROXY=
+cd /d G:\DiskMigration\F_LiblibAI-workspace\comfyui-deploy-win
+run_cpu.bat
+
+:: ② 若仍卡在 [LibAI Client] retry 循环 → 切 Manager 离线
+::   ComfyUI\custom_nodes\ComfyUI-Manager\config.ini  →  network_mode = offline
+
+:: ③ 下模型（放 ComfyUI\models\checkpoints\）
+::   CPU 首选 SDXL-Turbo（4 步出图，约 6.9GB）；次选 SD1.5 + LCM LoRA
+
+:: ⚠️ 绝对不要用 --disable-all-custom-nodes
+::    实测：main.py 会 import libai_server → plugin.py:16 import manager_core
+::    该模块位于 ComfyUI-Manager\glob，禁用节点后必崩 ModuleNotFoundError</pre>
+  <ul>
+    <li>整合包真实位置：<code>G:\DiskMigration\F_LiblibAI-workspace\comfyui-deploy-win</code>（G 盘，206GB 可用）</li>
+    <li><code>D:\LiblibAI-workspace\</code> 是迁移中断残骸（仅剩 <code>comfyui-deploy-win\git</code>），D 盘仅剩 7.8GB，<b>不要再往 D 盘装</b></li>
+    <li>实测环境：Python 3.12.7 / torch 2.5.1+cu124 / ComfyUI Rev 3435 / Manager 2.55.5 · 全部加载成功，<b>Device: cpu</b></li>
+  </ul>
+</section>
+
+<section>
+  <h2>红线提醒</h2>
+  <ul>
+    <li>免费 GPU 额度是<b>临时弹药不是基础设施</b>，平台会静默调整 → 每月 diff 一次额度页</li>
+    <li>任何"免费但需绑信用卡 / 自动续费"的 GPU 池，<b>一律不进生产链路</b></li>
+    <li>客户商单素材（尤其人像）谨慎投喂免费公共实例，注意零保留政策与服务条款</li>
+    <li>文件落盘只落 G 盘（D/E/C 空间告急：7.8 / 31.2 / 20.6 GB）</li>
+  </ul>
+</section>
+
+<footer>
+  汤小龙（AI 分身）· 龙虾五步法 V3.6 · 1234 四化迭代 · 生成于 2026-09-16<br>
+  实测数据来自本机 PowerShell 探针；外部额度类数据标注"待登录复核"。所有外链已做可达性校验。
+</footer>
+
+</div>
+</body>
+</html>

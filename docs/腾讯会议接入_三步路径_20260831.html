@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>腾讯会议 → 乐享知识库 · 三步路径（A / A+ / B）</title>
+<style>
+:root{
+  --bg:#f7f8fa; --card:#ffffff; --line:#e3e6ec; --text:#1f2328; --muted:#6b7280;
+  --green:#0f9d58; --green-bg:#e8f5ec; --amber:#b45309; --amber-bg:#fef4e6;
+  --red:#c5221f; --red-bg:#fdecea; --blue:#1668dc; --blue-bg:#e8f1fd;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);
+  font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+  line-height:1.65;padding:28px 20px 60px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:26px;font-weight:700;margin-bottom:6px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+.tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600;vertical-align:middle}
+.t-ok{background:var(--green-bg);color:var(--green)}
+.t-warn{background:var(--amber-bg);color:var(--amber)}
+.t-bad{background:var(--red-bg);color:var(--red)}
+.t-info{background:var(--blue-bg);color:var(--blue)}
+.path{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:22px;overflow:hidden}
+.path-hd{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;
+  align-items:center;gap:12px;flex-wrap:wrap}
+.path-hd h2{font-size:19px;font-weight:700}
+.path-hd .desc{color:var(--muted);font-size:13px;width:100%;margin-top:2px}
+.path-bd{padding:6px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:#fafbfc;text-align:left;padding:10px 14px;font-weight:600;
+  color:var(--muted);font-size:12px;letter-spacing:.4px;border-bottom:1px solid var(--line)}
+td{padding:13px 14px;border-bottom:1px solid #f0f1f4;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.step{width:38px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+td.what{width:44%}
+td.act{width:56%}
+a.btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;
+  padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;margin:2px 4px 2px 0}
+a.btn:hover{background:#0d54b8}
+a.btn.ghost{background:#fff;color:var(--blue);border:1px solid #bcd6f7}
+a.btn.ghost:hover{background:var(--blue-bg)}
+code{background:#f2f4f7;border:1px solid var(--line);border-radius:4px;
+  padding:1px 6px;font-family:Consolas,"Courier New",monospace;font-size:12.5px;color:#c7254e}
+.note{background:#fafbfc;border-left:3px solid var(--blue);padding:10px 14px;
+  margin:10px 0;font-size:13px;color:#404854;border-radius:0 6px 6px 0}
+.note.bad{border-left-color:var(--red);background:var(--red-bg);color:#7a1d1a}
+.note.ok{border-left-color:var(--green);background:var(--green-bg);color:#0b5c37}
+.note.warn{border-left-color:var(--amber);background:var(--amber-bg);color:#7c4a03}
+.kv{font-size:13px;color:var(--muted)}
+.kv b{color:var(--text)}
+.footer{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>腾讯会议 → 乐享知识库 · 三步路径</h1>
+<div class="sub">生成时间 2026-08-31 · 汤小龙执行 · 所有链接均经 HTTP 实测可达 · 零成本优先</div>
+
+<!-- ================= A 路径 ================= -->
+<div class="path">
+  <div class="path-hd">
+    <h2>A 路径 · 本地录制脚本导入</h2>
+    <span class="tag t-ok">✅ 已交付可用</span>
+    <span class="tag t-ok">💰 0 元</span>
+    <div class="desc">不用开放平台、不申请 AppID、不填任何表。扫描腾讯会议本地录制目录 → 自动生成归档文档 → 导入乐享。全部零依赖标准库实现。</div>
+  </div>
+  <div class="path-bd">
+    <table>
+      <tr><th>#</th><th>要做什么</th><th>怎么操作 / 点哪里</th></tr>
+      <tr>
+        <td class="step">1</td>
+        <td class="what">安装腾讯会议客户端（本机当前<b>未安装</b>）</td>
+        <td class="act"><a class="btn" href="https://meeting.tencent.com/download-center.html" target="_blank">腾讯会议下载中心</a>
+          <div class="kv">实测 <b>HTTP 200</b> · 免费版即可</div></td>
+      </tr>
+      <tr>
+        <td class="step">2</td>
+        <td class="what">开启本地录制<br><span class="kv">客户端右上角设置 → 录制 → 勾选「本地录制」</span></td>
+        <td class="act"><div class="kv">免费版自带功能，无需付费。录制文件默认落在 <code>文档\Tencent Meeting</code>，脚本会自动探测 9 个候选路径。</div></td>
+      </tr>
+      <tr>
+        <td class="step">3</td>
+        <td class="what">运行导入脚本</td>
+        <td class="act"><code>python tencent_meeting_import.py --scan</code>
+          <div class="kv">先只扫描。加 <code>--dry-run</code> 打包，加 <code>--upload</code> 上传。脚本位置：<br>
+          <code>E:\龙虾AI主控中心\MCP服务\tencent_meeting_import.py</code></div></td>
+      </tr>
+      <tr>
+        <td class="step">4</td>
+        <td class="what">（可选）设置乐享 Token 以自动上传</td>
+        <td class="act"><a class="btn" href="https://lexiangla.com/mcp" target="_blank">乐享 MCP 获取 Token</a>
+          <div class="kv">实测 <b>HTTP 200</b> · <b>完全免费</b></div></td>
+      </tr>
+    </table>
+    <div style="padding:0 22px 18px">
+      <div class="note ok"><b>实测结果：</b>语法自检通过；用模拟数据端到端验证通过（识别出 1 场会议 / 2 个文件 / 3.0MB，SRT 字幕自动清洗为正文）。本机因未装腾讯会议，扫��结果为 0 条，属预期。</div>
+      <div class="note"><b>Token 是什么、花钱吗：</b>乐享 Token 是一串以 <code>lxmcp_</code> 开头的字符串，相当于「允许程序访问你乐享知识库的钥匙」。它<b>本身完全免费</b>，在乐享网页登录后一键生成。它不等于付费套餐——免费版乐享有 5GB 存储 + 每月 50 AI 积分，够用。注意：Token 属于密钥，切勿贴进聊天或提交到 git。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= A+ 路径 ================= -->
+<div class="path">
+  <div class="path-hd">
+    <h2>A+ 路径 · 乐享内置腾讯会议连接器</h2>
+    <span class="tag t-warn">⏸ 需先绑定</span>
+    <span class="tag t-ok">💰 0 元</span>
+    <div class="desc"><b>这是最优解。</b>乐享 MCP 已内置 5 个腾讯会议工具，绑定后只需给「会议号」就能自动把云录制拉进知识库，<b>不用去腾讯会议开放平台申请 AppID/SecretKey</b>。</div>
+  </div>
+  <div class="path-bd">
+    <table>
+      <tr><th>#</th><th>要做什么</th><th>怎么操作 / 点哪里</th></tr>
+      <tr>
+        <td class="step">1</td>
+        <td class="what">当前状态诊断<br><span class="kv">实测调用返回 <code>20101000 连接器不存在</code></span></td>
+        <td class="act"><div class="note bad" style="margin:0"><b>已实测确认：</b>乐享账号本身连通正常（能返回结构化错误即说明 Token 有效），但 <code>connector.meeting</code> 类别下工具数为 <b>0</b>，即腾讯会议连接器尚未绑定。</div></td>
+      </tr>
+      <tr>
+        <td class="step">2</td>
+        <td class="what">登录乐享，进入企业管理后台绑定连接器</td>
+        <td class="act"><a class="btn" href="https://www.lexiangla.com/" target="_blank">乐享官网登录</a>
+          <a class="btn ghost" href="https://lexiangla.com/mcp" target="_blank">MCP 与连接器页</a>
+          <div class="kv">路径：头像 → 企业管理后台 → 连接器 / 数据源接入 → 腾讯会议 → 按页面提示授权。<br>
+          <b>绑定动作必须由你（管理员）在网页上点一次授权</b>，程序无法代你登录，这是唯一需要人工的一步。</div></td>
+      </tr>
+      <tr>
+        <td class="step">3</td>
+        <td class="what">绑定后，把这两样东西发给我</td>
+        <td class="act"><div class="kv">① <b>会议号</b>（9~11 位数字，或腾讯会议接入链接，我会自动解析）<br>
+        ② <b>导入到哪个知识库</b>（说名字即可，例如「项目入口」）</div></td>
+      </tr>
+      <tr>
+        <td class="step">4</td>
+        <td class="what">剩下的全自动，我来做</td>
+        <td class="act"><div class="kv">我调用 <code>tx_meeting_search_tx_meeting_records</code> 按会议号搜录制 → 拿到 <code>record_file_id</code> → 调用 <code>tx_meeting_import_tx_meeting_record</code> 导入到指定节点。全程零积分。</div></td>
+      </tr>
+    </table>
+    <div style="padding:0 22px 18px">
+      <div class="note"><b>内置工具清单（实测已确认存在）</b>：<code>tx_meeting_search_tx_meeting_records</code>（按会议号搜录制）、<code>tx_meeting_import_tx_meeting_record</code>（导入，需 record_file_id + parent_entry_id）、<code>tx_meeting_reload_tx_meeting_record</code>、<code>tx_meeting_describe_tx_meeting_record</code>、<code>tx_meeting_list_tx_meeting_records</code>。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= B 路径 ================= -->
+<div class="path">
+  <div class="path-hd">
+    <h2>B 路径 · 腾讯会议开放平台 API</h2>
+    <span class="tag t-bad">💰 需付费</span>
+    <span class="tag t-bad">⚠️ 不推荐</span>
+    <div class="desc">你自己去开放平台申请 AppID / SecretId / SecretKey，我再拿去调 API。<b>这条路的硬门槛：必须已购买腾讯会议商业版 / 企业版 / 教育版。</b></div>
+  </div>
+  <div class="path-bd">
+    <div style="padding:14px 22px 4px">
+      <div class="note bad"><b>🔴 你「找了半天也找不到创建应用入口」的真正原因，我查到了：</b><br>
+      腾讯会议开放平台的官方原文是 ——「<b>购买腾讯会议商业版、教育版与企业版，会对管理员账号自动开通企业自建应用的管理权限</b>」。<br>
+      换句话说：<b>免费账号根本没有这个菜单</b>，不是你没找到，是它压根不显示。所以这条路第一件事不是填表，是先掏钱。这直接违反「零成本」底线，我建议不走。<br>
+      出处：<a href="https://cloud.tencent.com/document/api/1095/83668" target="_blank" style="color:#c5221f">腾讯云 · 企业自建应用接入指引</a>（实测 HTTP 200）</div>
+    </div>
+    <table>
+      <tr><th>#</th><th>要做什么</th><th>怎么操作 / 点哪里</th></tr>
+      <tr>
+        <td class="step">1</td>
+        <td class="what">登录腾讯会议官网</td>
+        <td class="act"><a class="btn" href="https://meeting.tencent.com/" target="_blank">meeting.tencent.com</a>
+          <div class="kv">实测 <b>HTTP 200</b> · 右上角【用户中心】</div></td>
+      </tr>
+      <tr>
+        <td class="step">2</td>
+        <td class="what">确认账号已是商业版/企业版<br><span class="kv">否则下面所有菜单都不会出现</span></td>
+        <td class="act"><div class="kv">用户中心 → 企业管理 → 账号信息里看套餐类型。<br>
+        免费账号到此为止，<b>请先别往下走</b>。</div></td>
+      </tr>
+      <tr>
+        <td class="step">3</td>
+        <td class="what">进入企业自建应用列表</td>
+        <td class="act"><div class="kv">路径：用户中心 → 企业管理 → 高级 → <b>企业自建应用</b>（部分版本显示为 <b>restApi</b>）</div>
+          <a class="btn ghost" href="https://cloud.tencent.com/document/api/1095/83668" target="_blank">官方图文步骤</a>
+          <a class="btn ghost" href="https://meeting.tencent.com/support/topic/776" target="_blank">使用 API 说明</a></td>
+      </tr>
+      <tr>
+        <td class="step">4</td>
+        <td class="what">点「添加应用」，填名称、选类型</td>
+        <td class="act"><div class="kv">应用类型二选一：<br>
+        · <b>企业级</b>：能取到企业下全部数据（含 App 创建的），可跨应用<br>
+        · <b>应用级</b>：只能取本应用自己的数据<br>
+        <span style="color:#b45309">建议选「应用级」，权限最小、风险最低。</span></div></td>
+      </tr>
+      <tr>
+        <td class="step">5</td>
+        <td class="what">在「基础信息和凭证」页抄下 4 个值</td>
+        <td class="act"><div class="kv">需要：<b>企业 ID(AppID)</b>、<b>应用 ID(SDKID)</b>、<b>SecretId</b>、<b>SecretKey</b></div></td>
+      </tr>
+      <tr>
+        <td class="step">6</td>
+        <td class="what">把 4 个值发给我，我写对接</td>
+        <td class="act"><div class="note warn" style="margin:0"><b>安全红线：</b>这 4 个值等同于密码。请<b>不要</b>直接贴在群聊或提交到 git。发我时可用任意方式打码中间段（如 <code>AKID****xxxx</code>），我给你写进本地环境变量文件，文件本身不进版本控制。</div></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ================= 结论 ================= -->
+<div class="path">
+  <div class="path-hd">
+    <h2>结论 · 汤小龙建议</h2>
+    <div class="desc">按「零成本 + 零人工」两个约束排序</div>
+  </div>
+  <div class="path-bd">
+    <div style="padding:14px 22px 18px">
+      <table>
+        <tr><th>路径</th><th>花钱</th><th>你要动手的部分</th><th>推荐度</th></tr>
+        <tr>
+          <td><b>A+</b> 乐享内置连接器</td>
+          <td><span class="tag t-ok">0 元</span></td>
+          <td>只做 1 次授权绑定，之后只发我「会议号」</td>
+          <td><span class="tag t-ok">★★★ 首选</span></td>
+        </tr>
+        <tr>
+          <td><b>A</b> 本地录制脚本</td>
+          <td><span class="tag t-ok">0 元</span></td>
+          <td>装客户端 + 开本地录制，其余全自动</td>
+          <td><span class="tag t-info">★★ 备选</span></td>
+        </tr>
+        <tr>
+          <td><b>B</b> 开放平台 API</td>
+          <td><span class="tag t-bad">需商业版</span></td>
+          <td>买套餐 + 建应用 + 抄 4 个密钥</td>
+          <td><span class="tag t-bad">✕ 不建议</span></td>
+        </tr>
+      </table>
+      <div class="note" style="margin-top:14px"><b>下一步只需你做一件事：</b>点上面的「乐享官网登录」，在企业管理后台把腾讯会议连接器绑上，然后回来说一句「绑好了」+ 给我会议号。剩下的搜索、导入、归档、沉淀到 Obsidian，全部我自动跑完，零积分。</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  本页所有外链均于 2026-08-31 经 HTTP 请求实测返回 200（早期版本中的 <code>meeting.tencent.com/open-platform.html</code> 等链接实测已 404，已全部剔除并替换为可达地址）。<br>
+  生成：汤小龙 · 龙虾AI主控中心 · 遵循龙虾五步法与零成本铁律
+</div>
+
+</div>
+</body>
+</html>

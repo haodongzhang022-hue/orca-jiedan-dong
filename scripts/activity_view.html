@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>📡 龙虾·活动流 · Activity Stream</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root {
+  --bg: #fafafa; --panel: #fff; --ink: #1a1a1a; --sub: #6b7280; --line: #e5e7eb;
+  --direct: #4b5563; --hermes: #7c3aed; --harness: #0891b2; --orca: #ea580c; --cnb: #db2777;
+  --ok: #10b981; --warn: #f59e0b; --err: #ef4444;
+}
+* { box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--ink); margin: 0; padding: 12px 16px; font-size: 13px; line-height: 1.5; }
+h1 { font-size: 14px; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
+h1 .meta { font-size: 11px; color: var(--sub); font-weight: normal; }
+.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 8px 0; }
+.stats div { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 4px; text-align: center; }
+.stats .n { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+.stats .l { font-size: 10px; color: var(--sub); }
+.chips { display: flex; gap: 6px; margin: 8px 0; flex-wrap: wrap; }
+.chip { font-size: 10px; padding: 3px 8px; border-radius: 99px; font-weight: 600; }
+.chip.direct  { background: #f3f4f6; color: var(--direct); }
+.chip.hermes  { background: #f5f3ff; color: var(--hermes); }
+.chip.harness { background: #ecfeff; color: var(--harness); }
+.chip.orca    { background: #fff7ed; color: var(--orca); }
+.chip.cnb     { background: #fdf2f8; color: var(--cnb); }
+.chip.miMo    { background: #fef3c7; color: #b45309; }
+.chip.ollama  { background: #f0fdf4; color: #15803d; }
+.stream { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 4px; max-height: 360px; overflow-y: auto; }
+.row { display: grid; grid-template-columns: 70px 28px 60px 1fr; gap: 6px; padding: 6px 8px; border-bottom: 1px solid var(--line); align-items: center; }
+.row:last-child { border-bottom: none; }
+.row:hover { background: #fef9f3; }
+.row .ts { font-family: monospace; font-size: 10px; color: var(--sub); }
+.row .ag { font-size: 11px; font-weight: 700; text-align: center; padding: 2px 4px; border-radius: 4px; }
+.row.hermes  .ag { background: #f5f3ff; color: var(--hermes); }
+.row.codex   .ag { background: #ecfeff; color: var(--harness); }
+.row.claude  .ag { background: #fff7ed; color: var(--orca); }
+.row.deepseek .ag { background: #fdf2f8; color: var(--cnb); }
+.row.operator .ag { background: #f3f4f6; color: var(--direct); }
+.row.system .ag { background: #1f2937; color: #fff; }
+.row .body .action { font-weight: 600; color: var(--ink); }
+.row .body .evidence { font-size: 11px; color: var(--sub); margin-top: 2px; font-family: monospace; }
+.row .body .status { font-size: 10px; padding: 1px 6px; border-radius: 99px; margin-left: 4px; }
+.row.ok    .status { background: #d1fae5; color: #065f46; }
+.row.warn  .status { background: #fef3c7; color: #92400e; }
+.row.err   .status { background: #fee2e2; color: #991b1b; }
+.empty { text-align: center; padding: 30px; color: var(--sub); }
+.empty .icon { font-size: 36px; opacity: 0.4; }
+.bar { height: 3px; background: var(--line); margin: 8px 0; border-radius: 99px; overflow: hidden; }
+.bar .fill { height: 100%; background: linear-gradient(90deg, #ea580c, #db2777); transition: width 0.5s; }
+.icon-btn { background: none; border: 1px solid var(--line); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; color: var(--sub); }
+.icon-btn:hover { background: #fef3c7; color: var(--orange, #ea580c); }
+.legend { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; font-size: 11px; }
+.legend h3 { margin: 0 0 6px; font-size: 12px; color: var(--ink); }
+.legend table { width: 100%; font-size: 11px; color: var(--sub); }
+.legend td { padding: 2px 4px; vertical-align: top; }
+.legend td.l { white-space: nowrap; }
+.legend td.l .chip { margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<h1>
+  📡 龙虾·活动流
+  <span class="meta">
+    <span id="count">0</span> 条活动
+    · <span id="lastTs">-</span>
+    · <button class="icon-btn" onclick="loadStream()">🔄 刷新</button>
+    <button class="icon-btn" onclick="exportStream()">💾 导出</button>
+  </span>
+</h1>
+
+<div class="stats">
+  <div><div class="n" id="nHermes">0</div><div class="l">🧠 Hermes</div></div>
+  <div><div class="n" id="nCodex">0</div><div class="l">⚙️ codex</div></div>
+  <div><div class="n" id="nClaude">0</div><div class="l">🔍 Claude</div></div>
+  <div><div class="n" id="nDeepseek">0</div><div class="l">📊 DeepSeek</div></div>
+  <div><div class="n" id="nTotal">0</div><div class="l">∑ 总计</div></div>
+</div>
+
+<div class="legend">
+  <h3>🎛 5 通道说明（执行通道透明化）</h3>
+  <table>
+    <tr><td class="l"><span class="chip direct">direct</span></td><td>直接调（本机 python/bash/CMD · 0 积分）</td></tr>
+    <tr><td class="l"><span class="chip hermes">hermes</span></td><td>Hermes Studio CLI（hermes/CLI_INTEGRATION.md）</td></tr>
+    <tr><td class="l"><span class="chip harness">harness</span></td><td>DeepSeek Harness (8080 网关 · 免费 v4-flash)</td></tr>
+    <tr><td class="l"><span class="chip orca">orca</span></td><td>ORCA多Agent舰队 (msgbus+worktree)</td></tr>
+    <tr><td class="l"><span class="chip cnb">cnb</span></td><td>CNB云端仓库 (git push · 公共仓免费)</td></tr>
+    <tr><td class="l"><span class="chip miMo">miMo</span></td><td>小米 MiMo V2.5 Pro（本地代理 4567）</td></tr>
+    <tr><td class="l"><span class="chip ollama">ollama</span></td><td>Ollama 本地推理（E 盘模型）</td></tr>
+  </table>
+</div>
+
+<div class="chips" id="filterChips">
+  <span class="chip direct" onclick="setFilter('all')" style="cursor:pointer">全部</span>
+  <span class="chip hermes" onclick="setFilter('hermes')" style="cursor:pointer">hermes</span>
+  <span class="chip harness" onclick="setFilter('harness')" style="cursor:pointer">harness</span>
+  <span class="chip orca" onclick="setFilter('orca')" style="cursor:pointer">orca</span>
+  <span class="chip cnb" onclick="setFilter('cnb')" style="cursor:pointer">cnb</span>
+  <span class="chip direct" onclick="setFilter('direct')" style="cursor:pointer">direct</span>
+</div>
+
+<div class="bar"><div class="fill" id="barFill" style="width:0%"></div></div>
+
+<div class="stream" id="stream">
+  <div class="empty"><div class="icon">📡</div><div>暂无活动 · 跑 `bash scripts/run_1234.sh` 即时填充</div></div>
+</div>
+
+<script>
+let FILTER = 'all';
+let POLL_MS = 5000;
+let TIMER = null;
+
+async function loadStream() {
+  try {
+    // 关键 v3：fetch 必须走 HTTP（同源）；file:// 浏览器沙箱禁止跨源 fetch
+    let baseUrl;
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+      // 已是 HTTP，直接相对路径即可
+      baseUrl = '../.workbuddy/activity_stream.jsonl';
+    } else {
+      // file:// 协议：浏览器会拦截相对路径，强制走 :18765
+      const HTTP_URL = 'http://127.0.0.1:18765/.workbuddy/activity_stream.jsonl';
+      console.log('[v3] file:// protocol detected → fetch via HTTP', HTTP_URL);
+      const res = await fetch(HTTP_URL + '?_=' + Date.now());
+      if (!res.ok) throw new Error('HTTP server 没起来: ' + res.status + ' · 请跑 bash scripts/run_1234.sh 并确保 serve_dashboard.py 已启动');
+      const text = await res.text();
+      return parseAndRender(text);
+    }
+    const url = baseUrl + '?_=' + Date.now();
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('fetch fail: ' + res.status);
+    const text = await res.text();
+    parseAndRender(text);
+  } catch(e) {
+    const isFile = window.location.protocol === 'file:';
+    const hint = isFile
+      ? '<div style="margin-top:8px"><b>真根因找到了：</b>你用 file:// 直接打开了本页，浏览器禁止跨源 file fetch。</div>' +
+        '<div style="margin-top:8px"><b>请改成：http://127.0.0.1:18765/scripts/activity_view.html</b> （HTTP server :18765 已为此而生）</div>' +
+        '<div style="margin-top:8px;color:#15803d">✅ 已实测：启动 server + 跑 bash scripts/run_1234.sh → 23 条真活动</div>'
+      : '<div>可能原因：1. 还远运行 2. 浏览器跨源 file:// 查不通（不能 fetch C 盘）</div>';
+    document.getElementById('stream').innerHTML =
+      '<div class="empty"><div class="icon">⚠️</div><div>'+e.message+'</div>' + hint + '</div>';
+  }
+}
+
+function parseAndRender(text) {
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    const arr = lines.map(l => { try { return JSON.parse(l); } catch(e){ return null; } }).filter(Boolean);
+    arr.reverse(); // 最新在前
+    const filt = FILTER === 'all' ? arr : arr.filter(r => r.channel === FILTER || r.agent === FILTER);
+    render(filt);
+    updateStats(arr);
+    document.getElementById('lastTs').textContent = arr.length ? arr[0].ts : '-';
+    document.getElementById('count').textContent = arr.length;
+    const fill = Math.min(100, (filt.length / Math.max(arr.length, 1)) * 100);
+    document.getElementById('barFill').style.width = fill + '%';
+}
+
+function render(records) {
+  const root = document.getElementById('stream');
+  if (!records.length) { root.innerHTML = '<div class="empty"><div class="icon">📡</div><div>暂无活动</div></div>'; return; }
+  let html = '';
+  for (const r of records.slice(0, 100)) {
+    html += `<div class="row ${r.status} ${r.agent}">
+      <div class="ts">${r.ts.slice(11)}</div>
+      <div class="ag" title="${r.agent}">${agentIcon(r.agent)}</div>
+      <div><span class="chip ${r.channel}">${r.channel}</span></div>
+      <div class="body">
+        <span class="action">${escapeHtml(r.action)}</span>
+        <span class="status">${r.status}</span>
+        <div class="evidence">${escapeHtml(r.evidence || '')}</div>
+      </div>
+    </div>`;
+  }
+  root.innerHTML = html;
+}
+
+function agentIcon(a) {
+  return ({hermes:'🧠', codex:'⚙️', claude:'🔍', deepseek:'📊', operator:'👤', system:'⚙'})[a] || a.slice(0,2).toUpperCase();
+}
+
+function escapeHtml(s) { return (s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function updateStats(arr) {
+  document.getElementById('nTotal').textContent = arr.length;
+  document.getElementById('nHermes').textContent = arr.filter(r=>r.agent==='hermes').length;
+  document.getElementById('nCodex').textContent = arr.filter(r=>r.agent==='codex').length;
+  document.getElementById('nClaude').textContent = arr.filter(r=>r.agent==='claude').length;
+  document.getElementById('nDeepseek').textContent = arr.filter(r=>r.agent==='deepseek').length;
+}
+
+function setFilter(f) { FILTER = f; loadStream(); }
+
+function exportStream() {
+  const url = window.location.protocol === 'file:'
+    ? 'http://127.0.0.1:18765/.workbuddy/activity_stream.jsonl?_=' + Date.now()
+    : '../.workbuddy/activity_stream.jsonl?_=' + Date.now();
+  fetch(url).then(r=>r.text()).then(t=>{
+    const blob = new Blob([t], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'activity_stream_' + Date.now() + '.jsonl';
+    a.click();
+  });
+}
+
+loadStream();
+TIMER = setInterval(loadStream, POLL_MS);
+</script>
+
+</body>
+</html>

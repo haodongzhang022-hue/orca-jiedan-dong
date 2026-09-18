@@ -1,0 +1,156 @@
+{
+  "_doc": "5子库映射总配置 — 给workbuddy工作台/同步脚本/企微过滤共用 ★严禁写入云端（黑名单）★改动请同步更新《知识库‑5项目联动说明.md》",
+  "version": "v2.8",
+  "created_at": "2026-08-20",
+  "cloud_synced_at": "2026-08-21 01:38 CST",
+  "cloud_sync_method": "mcp__lexiang__entry_create_entry + entry_import_content",
+  "cloud_space": {
+    "lexiang_team_id": "8b382a46956b11f1a40552cac8085d19",
+    "lexiang_team_name": "示例团队",
+    "lexiang_space_id": "1de96cbcd92a4c479c7adacfa4f4724a",
+    "lexiang_space_name": "示例知识库",
+    "lexiang_root_entry_id": "8f78c0a0371646d28afe8bda5bafdc88",
+    "ima_knowledge_base_id": "001aa1cd10007026",
+    "ima_knowledge_base_name": "汤嘉锋的知识库"
+  },
+  "owner": "汤哥",
+  "local_root": "E:\\龙虾AI主控中心\\我的AI分身",
+  "sync": {
+    "interval_seconds": 7200,
+    "first_run": "full",
+    "subsequent": "incremental",
+    "conflict_policy": "local-wins-when-newer",
+    "mime_overrides": {
+      ".jsonl": "application/x-ndjson",
+      ".md":    "text/markdown; charset=utf-8"
+    }
+  },
+  "blacklist": {
+    "path_patterns": [
+      "**/.git/**",
+      "**/.git",
+      "**/密钥库/**",
+      "**/密钥库",
+      "**/tmp/**",
+      "**/tmp",
+      "**/*.log",
+      "**/*.lock",
+      "**/config/.mcp.json",
+      "**/Obsidian知识库/**",
+      "**/Obsidian知识库",
+      "**/网盘课程资源知识萃取与沉淀体系重建备份/**"
+    ],
+    "filename_patterns": [
+      "*.tmp",
+      "*.bak",
+      "*~",
+      ".DS_Store",
+      "Thumbs.db",
+      "*.swp"
+    ]
+  },
+  "libraries": [
+    {
+      "id": "wecom_jd",
+      "name": "企业微信定制接单项目",
+      "icon": "📋",
+      "local_path": "E:\\龙虾AI主控中心\\我的AI分身\\企业微信定制接单项目\\01_正在执行实单",
+      "cloud_path": "lexiang://示例知识库/企业微信定制接单项目",
+      "cloud_entry_id": "55334a80e98b48c2910eca5c15e418e0",
+      "cloud_url": "https://lexiangla.com/pages/55334a80e98b48c2910eca5c15e418e0",
+      "first_archive_page_id": "2404842e07174fc8b6cec1284c2001f5",
+      "first_archive_url": "https://lexiangla.com/pages/2404842e07174fc8b6cec1284c2001f5",
+      "lib_role": "wecom_realtime",
+      "agent_priority": ["hermes", "codex", "claude"],
+      "channels": ["wecom", "direct"],
+      "sync": true,
+      "description": "企微接单群归档、客户需求、报价、订单案例、交付物、验收单据",
+      "filter_rules": {
+        "include_keywords": ["需求", "订单", "报价", "交付", "验收", "PSD", "PPT", "设计", "海报", "宣传单", "背景图"],
+        "exclude_keywords": ["哈哈", "[表情包]", "[System]", "撤回"],
+        "min_length": 8,
+        "must_have_attachment_or_keyword": true
+      }
+    },
+    {
+      "id": "gold_dh",
+      "name": "我的黄金策略",
+      "icon": "🥇",
+      "local_path": "E:\\龙虾AI主控中心\\我的AI分身\\CODEX量化策略20260615\\嘉盛",
+      "cloud_entry_id": "0fdc58a92917417fbaaffebb9458efe2",
+      "cloud_url": "https://lexiangla.com/pages/0fdc58a92917417fbaaffebb9458efe2",
+      "lib_role": "quant_strategy",
+      "agent_priority": ["codex", "claude"],
+      "channels": ["direct"],
+      "sync": true,
+      "description": "黄金黑马EA、回测、参数、复盘、版本日志"
+    },
+    {
+      "id": "btc_dh",
+      "name": "我的黑马策略",
+      "icon": "🐎",
+      "local_path": "E:\\龙虾AI主控中心\\我的AI分身\\CODEX量化策略20260615\\币安",
+      "cloud_entry_id": "393dc981dbcd4b2a97c2a94431753592",
+      "cloud_url": "https://lexiangla.com/pages/393dc981dbcd4b2a97c2a94431753592",
+      "lib_role": "quant_strategy",
+      "agent_priority": ["codex", "claude"],
+      "channels": ["direct"],
+      "sync": true,
+      "description": "黑马策略多版本、实盘调参、交易记录、监控脚本、复盘文档"
+    },
+    {
+      "id": "wangpan_jc",
+      "name": "网盘课程资源知识萃取与沉淀体系建设",
+      "icon": "📚",
+      "local_path": "E:\\龙虾AI主控中心\\我的AI分身\\网盘课程资源知识萃取与沉淀体系建设",
+      "cloud_entry_id": "d211109a5fa846548840e0ae51deee21",
+      "cloud_url": "https://lexiangla.com/pages/d211109a5fa846548840e0ae51deee21",
+      "lib_role": "knowledge_distillation",
+      "agent_priority": ["hermes", "claude"],
+      "channels": ["direct"],
+      "sync": true,
+      "description": "课程萃取笔记、学习素材、沉淀文档、复盘归档"
+    },
+    {
+      "id": "xianyu_yw",
+      "name": "闲鱼自动化系统",
+      "icon": "🐟",
+      "local_path": "E:\\龙虾AI主控中心\\我的AI分身\\闲鱼自动化系统",
+      "cloud_entry_id": "ffaa557e0cc24466b4f29dfae95ff5b6",
+      "cloud_url": "https://lexiangla.com/pages/ffaa557e0cc24466b4f29dfae95ff5b6",
+      "lib_role": "ecom_automate",
+      "agent_priority": ["codex", "operator"],
+      "channels": ["direct"],
+      "sync": true,
+      "description": "闲鱼文案、话术模板、问答库、自动化配置、运营记录"
+    }
+  ],
+  "agent_roles": {
+    "hermes":   {"中文": "大脑（需求理解·策略规划）", "color": "#7c3aed"},
+    "codex":    {"中文": "执行（落地·写代码·跑脚本）", "color": "#16a34a"},
+    "claude":   {"中文": "审核（质量·交付·闭环）", "color": "#db2777"},
+    "operator": {"中文": "运营（运营动作·巡查）", "color": "#f59e0b"},
+    "system":   {"中文": "系统（基础设施）", "color": "#0ea5e9"}
+  },
+  "channels": {
+    "direct":   {"name":"直接调用",       "color":"#10b981", "enabled":true},
+    "hermes":   {"name":"Hermes Studio",  "color":"#7c3aed", "enabled":true},
+    "harness":  {"name":"DeepSeek Harness","color":"#0891b2","enabled":true},
+    "orca":     {"name":"ORCA 舰队",      "color":"#ea580c", "enabled":false, "note":"待 Marvis 联动启动"},
+    "cnb":      {"name":"CNB 云端",       "color":"#db2777", "enabled":false, "note":"待 cnb-api connector 授权"}
+  },
+  "workflow_1234": {
+    "1_一人一公司": "本工作台+5子库，零积分全自动闭环",
+    "2_双雄蒸馏":   "Hermes 大脑 + Codex 执行 + Claude 审核 三Agent并联评审",
+    "3_三载体联动": "WorkBuddy(控制台) + 龙虾五步法(方法论) + 5子库(记忆)",
+    "4_四化迭代":   "智能化(AI落地) / 定制化(5子库各异) / 全自动化(0人工) / 自我净化(自愈+审计)"
+  },
+  "iron_rules": [
+    "所有 Token/密钥 走环境变量，禁止明文写入任何脚本/配置",
+    "全部同步产物原路回写 E 盘对应子库，禁止落地 D 盘/其它盘符",
+    "Obsidian 知识库仅只读，禁止云端改写、禁止双向同步",
+    "黑名单内容绝不上传云端",
+    "首次全量校验（云端==本地），后续 2h 增量",
+    "中文长路径+特殊字符文件名兼容，禁止乱码丢文件"
+  ]
+}

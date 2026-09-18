@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Studio T4 · ComfyUI + Wan2.2 漫剧部署 · 交付页</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --line:#e5e7ef; --txt:#1f2330; --sub:#5c6376;
+    --red:#c62828; --redbg:#fdecec; --green:#1b7f43; --greenbg:#e8f6ed;
+    --blue:#1a5fb4; --bluebg:#eaf1fc; --amber:#9a6400; --amberbg:#fff6e5;
+    --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+       line-height:1.65;font-size:15px}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+  h2{font-size:19px;margin:34px 0 12px;padding-left:11px;border-left:4px solid var(--blue)}
+  h3{font-size:16px;margin:22px 0 8px;color:#2b3143}
+  .meta{color:var(--sub);font-size:13px;margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;
+        padding:18px 20px;margin:14px 0;box-shadow:0 1px 3px rgba(20,24,40,.04)}
+  .hero{background:linear-gradient(135deg,#1a5fb4,#2f80ed);color:#fff;border:none}
+  .hero h1,.hero .meta{color:#fff}
+  .hero .meta{opacity:.85}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#f1f3f8;font-weight:600}
+  tr:nth-child(even) td{background:#fafbfd}
+  code{font-family:var(--mono);background:#eef0f6;padding:1.5px 5px;border-radius:4px;font-size:13px}
+  pre{font-family:var(--mono);background:#1e2230;color:#e6e9f2;padding:16px;border-radius:9px;
+      overflow:auto;font-size:12.5px;line-height:1.6;position:relative;margin:10px 0}
+  pre code{background:none;color:inherit;padding:0;font-size:inherit}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;
+        border:1px solid transparent;margin-right:6px}
+  .p-red{background:var(--redbg);color:var(--red);border-color:#f5c2c2}
+  .p-green{background:var(--greenbg);color:var(--green);border-color:#b8e0c6}
+  .p-blue{background:var(--bluebg);color:var(--blue);border-color:#c3d8f5}
+  .p-amber{background:var(--amberbg);color:var(--amber);border-color:#f0d9a8}
+  .bad{background:var(--redbg);border-left:4px solid var(--red);padding:12px 16px;border-radius:7px;margin:10px 0}
+  .good{background:var(--greenbg);border-left:4px solid var(--green);padding:12px 16px;border-radius:7px;margin:10px 0}
+  .warn{background:var(--amberbg);border-left:4px solid #e0a600;padding:12px 16px;border-radius:7px;margin:10px 0}
+  a{color:var(--blue);text-decoration:none;border-bottom:1px solid #bcd2ee}
+  a:hover{border-bottom-color:var(--blue)}
+  .nobar{color:var(--sub);font-size:13px}
+  .kv{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 0}
+  .kv span{background:#f1f3f8;border:1px solid var(--line);border-radius:7px;
+           padding:5px 11px;font-size:13px}
+  ol.steps{padding-left:0;list-style:none;counter-reset:s}
+  ol.steps>li{counter-increment:s;position:relative;padding:12px 16px 12px 54px;
+              border:1px solid var(--line);border-radius:9px;background:#fff;margin-bottom:10px}
+  ol.steps>li::before{content:counter(s);position:absolute;left:14px;top:12px;width:26px;height:26px;
+      border-radius:50%;background:var(--blue);color:#fff;font-weight:700;font-size:13px;
+      display:flex;align-items:center;justify-content:center}
+  .btn{display:inline-block;background:var(--blue);color:#fff;border:none;border-radius:7px;
+       padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600}
+  .btn:hover{background:#154c92}
+  .btn.sec{background:#eef0f6;color:#2b3143;border:1px solid var(--line)}
+  .btn.sec:hover{background:#e3e6ef}
+  .fl{display:flex;flex-direction:column;gap:8px}
+  .fl a{display:block;background:#fff;border:1px solid var(--line);border-radius:8px;
+        padding:10px 14px;border-bottom:1px solid var(--line)}
+  .fl a:hover{border-color:var(--blue);background:#f7faff}
+  .fl b{display:block;font-size:14px}
+  .fl small{color:var(--sub);font-size:12px}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  .tag{font-family:var(--mono);font-size:12px;background:#eef0f6;padding:2px 7px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="card hero">
+  <h1>Cloud Studio T4 · ComfyUI + Wan2.2 漫剧部署</h1>
+  <div class="meta">任务卡 v1.0 · 2026-09-16 · 执行人 <b>汤小龙（AI 分身）</b> · 龙虾五步法 V3.6 + 1234 四化迭代</div>
+  <div class="meta">依据：ComfyUI 官方工作流模板原文 + hf-mirror 实测探针 + GitHub API 核验</div>
+</div>
+
+<h2>一句话结论</h2>
+<div class="card">
+  <p><span class="pill p-green">能部署</span> Cloud Studio T4 跑 ComfyUI + Wan2.2 完全可行。</p>
+  <p><span class="pill p-red">但原脚本会挂</span> 你给的那份脚本有 <b>5 处</b>会直接跑失败，其中 3 处会让实例<b>空转烧机时</b>。</p>
+  <p><span class="pill p-amber">预期要下调</span> 「10 秒视频 3 分钟/条」在 T4 上做不到——按这个预期批量会烧光额度。真实档位见下方预算表。</p>
+</div>
+
+<h2>① 原脚本 5 处必修（附实测证据）</h2>
+
+<div class="bad">
+  <b>❌ 错误 1 · Wan2.2 的 ComfyUI 插件仓库不存在</b><br>
+  你写的 <code>git clone …/Wan-Video/Wan2.2-ComfyUI</code><br>
+  实测 <span class="tag">HTTP 404</span> —— 仓库不存在。<br>
+  <b>真相</b>：ComfyUI <b>已原生内置</b> Wan2.2 支持（自带 <code>Wan22ImageToVideoLatent</code> 等节点），<b>不需要任何第三方插件</b>。
+</div>
+
+<div class="bad">
+  <b>❌ 错误 2 · 模型仓名不存在，权重必然下载失败</b><br>
+  你写的 <code>snapshot_download('Wan-Video/Wan2.2-5B')</code> —— 该仓不存在。<br>
+  正确来源与体积（实测）：
+  <table>
+    <tr><th>文件</th><th>大小</th><th>落位目录</th><th>来源仓</th></tr>
+    <tr><td><code>wan2.2_ti2v_5B_fp16.safetensors</code></td><td><b>9.31 GB</b></td><td><code>models/diffusion_models/</code></td><td>Comfy-Org/Wan_<b>2.2</b>_ComfyUI_Repackaged</td></tr>
+    <tr><td><code>wan2.2_vae.safetensors</code></td><td><b>1.31 GB</b></td><td><code>models/vae/</code></td><td>Comfy-Org/Wan_<b>2.2</b>_ComfyUI_Repackaged</td></tr>
+    <tr><td><code>umt5_xxl_fp8_e4m3fn_scaled.safetensors</code></td><td><b>6.27 GB</b></td><td><code>models/text_encoders/</code></td><td>Comfy-Org/Wan_<b>2.1</b>_ComfyUI_repackaged ← 注意是 2.1 仓</td></tr>
+  </table>
+  合计 <b>16.89 GB</b>，不是你说的「约 9.8G」——9.8G 只是主模型那一个文件。
+</div>
+
+<div class="bad">
+  <b>❌ 错误 3 · HuggingFace 直连国内不通（这条最烧钱）</b><br>
+  实测（禁用代理直连）：<br>
+  <code>huggingface.co</code> → <span class="tag">WinError 10060 连接超时</span><br>
+  <code>hf-mirror.com</code> → <span class="tag">HTTP 200 ✅</span><br>
+  你的脚本会<b>卡在 0% 无限转圈，而实例在持续扣机时</b>。<br>
+  <b>修法</b>：<code>export HF_ENDPOINT=https://hf-mirror.com</code>
+</div>
+
+<div class="bad">
+  <b>❌ 错误 4 · 工作流 JSON 是伪格式，ComfyUI 导不进去</b>
+  <table>
+    <tr><th>你写的</th><th>真实的</th></tr>
+    <tr><td><code>Wan2.2ImageToVideo</code></td><td><code>Wan22ImageToVideoLatent</code>（22 无点，Latent 结尾）</td></tr>
+    <tr><td><code>CheckpointLoaderSimple</code> + <code>sdxl-base</code></td><td>不是 checkpoint 结构！要用 <code>UNETLoader</code> + <code>VAELoader</code> + <code>CLIPLoader</code> 分开加载</td></tr>
+    <tr><td>缺 <code>ModelSamplingSD3</code></td><td>必须有，<code>shift=8</code>——缺它画质会崩</td></tr>
+    <tr><td>缺 <code>last_node_id</code>/<code>size</code>/<code>inputs</code>/<code>outputs</code></td><td>缺这些字段 ComfyUI 直接拒绝加载</td></tr>
+  </table>
+  <b>已修</b>：直接抓了官方模板原文（<code>video_wan2_2_5B_ti2v.json</code>，14,175 字节，HTTP 200），基于它生成 3 套可直接 Load 的工作流。
+</div>
+
+<div class="bad">
+  <b>❌ 错误 5 · 默认参数会让第一条就 OOM</b><br>
+  官方模板默认 <b>1280×704 / 121 帧</b>，是给 A100/H100（24GB+）准备的。T4 只有 16GB，而权重加起来 16.89GB <b>已超显存</b>，必须 offload 硬撑 → 极慢甚至 OOM，<b>失败照样扣机时</b>。<br>
+  <b>已修</b>：降到 <b>480×832 / 49 帧</b>。
+</div>
+
+<h2>② T4 的三条硬限制</h2>
+<div class="card">
+  <p class="nobar">T4 是 <b>Turing 架构（SM 7.5）</b>，不是新卡。这三条决定了为什么必须降配：</p>
+  <table>
+    <tr><th>限制</th><th>后果</th><th>应对</th></tr>
+    <tr><td><b>不支持 bf16</b>（需 Ampere SM80+）</td><td>只能用 fp16 权重</td><td>✅ 已选 <code>fp16</code> 版主模型</td></tr>
+    <tr><td><b>不支持原生 fp8</b>（需 Ada/Hopper）</td><td>文本编码器走软件反量化，比硬件 fp8 慢</td><td>可接受；嫌慢可换 <code>umt5_xxl_fp16</code>（11.37GB，更吃显存）</td></tr>
+    <tr><td><b>不支持 FlashAttention 2</b>（需 Ampere+）</td><td>注意力走朴素实现，显存与速度都吃亏</td><td>别装 flash-attn，装了也编译不过</td></tr>
+  </table>
+</div>
+
+<h2>③ 20 机时怎么花（最关键的判断）</h2>
+
+<div class="warn">
+  <b>先纠正预期：</b>你说的「10 秒 Wan2.2 视频约 3 分钟/条」大概率来自更强的卡。10 秒 @24fps = <b>240 帧</b>，是官方默认 121 帧的近 2 倍；T4 还要吃 fp8 软解 + 无 FlashAttention + 显存 offload 三重折扣。
+</div>
+
+<div class="card">
+  <p class="nobar"><b>诚实估算区间</b>（首次实跑后必须回填实测值，别拿估算当结论）</p>
+  <table>
+    <tr><th>档位</th><th>分辨率 × 帧数</th><th>单条预估</th><th>20 机时（16.7h T4）能出</th></tr>
+    <tr><td><span class="pill p-green">小样</span></td><td>480×832×49（约2s）</td><td>约 4~10 分钟</td><td><b>约 100~250 条</b></td></tr>
+    <tr><td><span class="pill p-blue">标准</span></td><td>480×832×81（约3.4s）</td><td>约 8~16 分钟</td><td>约 60~125 条</td></tr>
+    <tr><td><span class="pill p-amber">官方默认</span></td><td>1280×704×121</td><td>约 25~60 分钟</td><td>约 17~40 条</td></tr>
+    <tr><td><span class="pill p-red">你说的档</span></td><td>1280×704×<b>240</b></td><td>约 50~120 分钟</td><td><b>仅 8~20 条</b></td></tr>
+  </table>
+  <div class="good"><b>结论：</b>20 机时够跑完整部漫剧的分镜小样（60~120 个镜头），前提是走<b>小样/标准档</b>，不是 10 秒满帧档。</div>
+</div>
+
+<div class="card">
+  <h3>额度优先级（按你的安排执行）</h3>
+  <table>
+    <tr><th>额度</th><th>数量</th><th>到期</th><th>用法</th></tr>
+    <tr><td><b>绑定赠送（长期）</b></td><td><b>20 机时</b></td><td>2027-09-16</td><td>✅ <b>优先用这个</b></td></tr>
+    <tr><td>每日签到（短期）</td><td>2 机时</td><td>剩余 6 天</td><td>留作应急</td></tr>
+    <tr><td>每日活跃</td><td>+2 机时/天</td><td>短期</td><td>顺手</td></tr>
+  </table>
+  <p class="nobar">截图确认：当前 <b>已用 0/22 机时（0%）</b>，干净启动。</p>
+</div>
+
+<div class="card">
+  <h3>三条省钱铁律</h3>
+  <ol>
+    <li><b>跑第一条就掐表</b> —— 手机秒表记一次，回填预估值再决定批量规模。<b>别凭估算一把梭。</b></li>
+    <li><b>模型只下一次</b> —— 16.89GB 下完，重启实例不重下（脚本有跳过逻辑）。但<b>删了实例就要重下</b>。</li>
+    <li><b>跑完立刻停机</b> —— 官方明确：资源包耗尽<b>不会自动停机</b>，会转按量付费扣余额；IDE 页面挂着（哪怕最小化）照样扣。</li>
+  </ol>
+</div>
+
+<h2>④ 一键部署脚本（全选复制 → 粘进 Cloud Studio 终端 → 回车）</h2>
+<div class="card">
+  <p class="nobar">
+    <span class="pill p-blue">已落盘</span>
+    <code>docs/CloudStudio_T4_Wan2.2_一键部署.sh</code>
+    <span class="pill p-green">7 处修正</span>
+  </p>
+  <pre id="deployscript"><code>#!/bin/bash
+# Cloud Studio T4 · ComfyUI + Wan2.2 TI2V-5B 漫剧零成本部署
+# v1.0 · 2026-09-16 · 汤小龙（AI 分身）
+set -o pipefail
+WORKDIR="$HOME"; COMFY="$WORKDIR/ComfyUI"
+
+echo "=========== [0/6] 环境准备 ==========="
+# 国内网络关键：HF 直连不通，必须走镜像
+export HF_ENDPOINT="https://hf-mirror.com"
+export HF_HUB_ENABLE_HF_TRANSFER=1
+export PIP_INDEX_URL="https://mirrors.aliyun.com/pypi/simple"
+export PIP_TRUSTED_HOST="mirrors.aliyun.com"
+python -V; echo "HF_ENDPOINT=$HF_ENDPOINT"; df -h "$WORKDIR" | tail -1
+echo "→ 需要至少 25GB 可用空间（模型 16.9GB + 依赖 + 输出）"
+
+echo "=========== [1/6] 拉取 ComfyUI ==========="
+cd "$WORKDIR"
+if [ ! -d "$COMFY" ]; then
+  git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git \
+    || git clone --depth 1 https://gh-proxy.com/https://github.com/comfyanonymous/ComfyUI.git \
+    || { echo "!! GitHub 不可达"; exit 1; }
+fi
+cd "$COMFY" || exit 1
+echo "ComfyUI: $(git log -1 --format='%h %ad' --date=short)"
+
+echo "=========== [2/6] PyTorch cu121 ==========="
+# T4 是 Turing 架构，只支持 fp16
+python -m pip install --upgrade pip -q
+python -m pip install torch torchvision torchaudio \
+  --index-url https://download.pytorch.org/whl/cu121
+python -c "import torch;print('torch',torch.__version__,'| cuda=',torch.cuda.is_available(),'| cap=',torch.cuda.get_device_capability() if torch.cuda.is_available() else 'N/A')"
+
+echo "=========== [3/6] 依赖 ==========="
+python -m pip install -r requirements.txt
+if [ ! -d custom_nodes/ComfyUI-VideoHelperSuite ]; then
+  git clone --depth 1 https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git custom_nodes/ComfyUI-VideoHelperSuite \
+    || git clone --depth 1 https://gh-proxy.com/https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git
+fi
+[ -f custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt ] && \
+  python -m pip install -r custom_nodes/ComfyUI-VideoHelperSuite/requirements.txt
+python -m pip install -U "huggingface_hub[hf_transfer]"
+
+echo "=========== [4/6] 下载 Wan2.2 模型（hf-mirror） ==========="
+# 官方仓是 Comfy-Org/Wan_2.2_ComfyUI_Repackaged，不是 Wan-Video/Wan2.2-5B
+python - &lt;&lt;'PYEOF'
+import os, shutil
+os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
+os.environ.setdefault("HF_HUB_ENABLE_HF_TRANSFER", "1")
+from huggingface_hub import hf_hub_download
+JOBS = [
+    ("Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
+     "split_files/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors",
+     "models/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors"),
+    ("Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
+     "split_files/vae/wan2.2_vae.safetensors",
+     "models/vae/wan2.2_vae.safetensors"),
+    ("Comfy-Org/Wan_2.1_ComfyUI_repackaged",
+     "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+     "models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors"),
+]
+STAGE = "models/_stage"
+for repo, src, dst in JOBS:
+    if os.path.exists(dst) and os.path.getsize(dst) &gt; 100_000_000:
+        print("[SKIP]", dst); continue
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    print("[GET ]", repo, "-&gt;", os.path.basename(src), flush=True)
+    shutil.move(hf_hub_download(repo_id=repo, filename=src, local_dir=STAGE), dst)
+    print("[ OK ]", dst, round(os.path.getsize(dst)/2**30,2), "GB", flush=True)
+shutil.rmtree(STAGE, ignore_errors=True)
+print("\n--- 模型落位自检 ---")
+for _,_,d in JOBS:
+    print(("  OK " if os.path.exists(d) else "  MISS ")+d)
+PYEOF
+
+echo "=========== [5/6] 官方模板包 ==========="
+python -m pip install comfyui-workflow-templates -q 2&gt;/dev/null \
+  &amp;&amp; echo "模板已装：界面 → 工作流 → 浏览模板 → 视频 → Wan 2.2" \
+  || echo "（模板包装失败不影响，手动 Load 我们的 JSON 即可）"
+
+echo "=========== [6/6] 启动 ==========="
+echo "→ 启动后回 Cloud Studio 侧边栏点 8188 预览进入"
+echo "→ ⚠️ 跑完务必【应用管理 → 停止使用】！"
+python main.py --listen 0.0.0.0 --port 8188 --preview-method none</code></pre>
+  <button class="btn" onclick="cp('deployscript',this)">复制脚本</button>
+</div>
+
+<h2>⑤ 工作流（已生成 3 套 · 可直接 Load）</h2>
+<div class="card">
+  <table>
+    <tr><th>文件</th><th>分辨率</th><th>时长</th><th>用途</th></tr>
+    <tr><td><code>wan22_5b_ti2v_480x832_49f_竖屏小样.json</code></td><td>480×832×49</td><td>约 2.0s</td><td><b>先跑这个</b>验证链路</td></tr>
+    <tr><td><code>wan22_5b_ti2v_480x832_81f_竖屏标准.json</code></td><td>480×832×81</td><td>约 3.4s</td><td>正式分镜</td></tr>
+    <tr><td><code>wan22_5b_ti2v_832x480_49f_横屏小样.json</code></td><td>832×480×49</td><td>约 2.0s</td><td>横屏物料</td></tr>
+  </table>
+  <h3>相对官方模板的改动</h3>
+  <ol>
+    <li>分辨率/帧数 → T4 友好档</li>
+    <li><code>LoadImage</code> 的 <code>mode</code> 从 <code>4</code>(bypass) 改为 <code>0</code>(启用) → <b>开箱即是图生视频</b>，不用再按 Ctrl+B</li>
+    <li>正/负向提示词 → 换成你的漫剧提示词</li>
+    <li><code>properties.models</code> 下载 URL → <b>改写为 hf-mirror.com</b>（界面里点"下载模型"走的是能通的镜像）</li>
+    <li><code>SaveVideo</code> 输出前缀 → <code>manju</code></li>
+  </ol>
+  <h3>程序自检结果（三个 JSON 全部通过）</h3>
+  <pre><code>no_bogus_node              : true   无 Wan2.2ImageToVideo / CheckpointLoaderSimple 等假节点
+has_ModelSamplingSD3       : true   shift=8 在
+has_Wan22ImageToVideoLatent: true
+has_SaveVideo              : true
+loadimage_enabled          : [0]    i2v 已启用
+url_is_mirror              : true</code></pre>
+</div>
+
+<h2>⑥ 操作步骤（4 步）</h2>
+<ol class="steps">
+  <li><b>新建 T4 实例</b><br>Cloud Studio 首页 → <b>新建工作空间</b> → 选 <b>GPU T4 16G</b> → 启动 → 进网页终端。<br>
+      <span class="nobar">注：你截图的 <code>cloudstudio.net/settings/data-resource</code> 是<b>额度页</b>，建实例要去工作空间/应用页。</span></li>
+  <li><b>跑部署脚本</b><br>复制上方脚本全部内容 → 粘进终端 → 回车。<br>
+      <span class="nobar">依赖 3~6 分钟 + 模型下载 16.89GB（10~40 分钟，看镜像速度）。下载阶段也扣机时，是一次性成本。</span></li>
+  <li><b>验证节点</b><br>跑 <code>python check_wan_nodes.py</code>，全部 <code>[ OK ]</code> 才继续。</li>
+  <li><b>导入工作流出片</b><br>重启 ComfyUI → 侧边栏点 <b>8188</b> 进界面 → 拖入小样 JSON → 上传一张本机出的分镜图到 <code>input/</code> → Queue → <b>掐表记时间</b>。</li>
+</ol>
+
+<h2>⑦ 风控红线</h2>
+<div class="card">
+  <table>
+    <tr><th>#</th><th>红线</th><th>原因</th></tr>
+    <tr><td>1</td><td><b>跑完立刻「应用管理 → 停止使用」</b></td><td>资源包耗尽不自动停机，会扣余额；光关浏览器要等约 10 分钟</td></tr>
+    <tr><td>2</td><td><b>不要删实例</b></td><td>删了 16.89GB 模型要重下，又烧一次机时</td></tr>
+    <tr><td>3</td><td><b>第一条必须掐表</b></td><td>估算值不可信，实测值才能用来规划批量</td></tr>
+    <tr><td>4</td><td><b>客户人像素材谨慎投喂公共实例</b></td><td>免费实例的数据政策需自行评估</td></tr>
+    <tr><td>5</td><td><b>别装 flash-attn / xformers 强开</b></td><td>T4 不支持，编译失败白烧机时</td></tr>
+    <tr><td>6</td><td><b>账单延迟约 2 小时</b></td><td>别被"已停机还收到提醒"吓到，以真实用时为准</td></tr>
+  </table>
+</div>
+
+<h2>⑧ 诚实交代：哪些我没做、做不到</h2>
+<div class="card">
+  <table>
+    <tr><th>事项</th><th>状态</th></tr>
+    <tr><td>修正你的脚本</td><td><span class="pill p-green">已做</span> 5 处错误全部修掉</td></tr>
+    <tr><td>拿到官方真实工作流</td><td><span class="pill p-green">已做</span> HTTP 200，14,175 字节原始文件</td></tr>
+    <tr><td>生成 T4 友好工作流</td><td><span class="pill p-green">已做</span> 3 套，程序自检全通过</td></tr>
+    <tr><td><b>登录你的 Cloud Studio 建实例</b></td><td><span class="pill p-red">做不到</span> 需你的浏览器登录态；本机实测 9222/9223/9224/9225/9333 <b>全部未监听</b>，无可用调试端口接管。这一步必须你点。</td></tr>
+    <tr><td><b>在云端实跑第一条视频</b></td><td><span class="pill p-red">未做</span> 依赖上一步</td></tr>
+    <tr><td>单条真实耗时</td><td><span class="pill p-amber">待回填</span> 你跑完第一条告诉我，我校准预算表</td></tr>
+  </table>
+</div>
+
+<h2>⑨ 交付物清单 & 外链</h2>
+<div class="grid">
+  <div class="card">
+    <h3>本地文件</h3>
+    <div class="fl">
+      <a href="CloudStudio-T4-Wan2.2漫剧部署手册_20260916.md"><b>部署手册（完整版）</b><small>MD · 含全部实测证据索引</small></a>
+      <a href="CloudStudio_T4_Wan2.2_一键部署.sh"><b>一键部署脚本</b><small>SH · 直接粘进终端</small></a>
+      <a href="check_wan_nodes.py"><b>节点自检脚本</b><small>PY · 零依赖，验证工作流可跑</small></a>
+      <a href="batch_manju_i2v.py"><b>批量出片脚本</b><small>PY · 带 --dry-run 预算闸门</small></a>
+      <a href="wan22_5b_ti2v_480x832_49f_竖屏小样.json"><b>工作流 · 竖屏小样（推荐先跑）</b><small>JSON · 480×832×49</small></a>
+      <a href="wan22_5b_ti2v_480x832_81f_竖屏标准.json"><b>工作流 · 竖屏标准</b><small>JSON · 480×832×81</small></a>
+      <a href="wan22_5b_ti2v_832x480_49f_横屏小样.json"><b>工作流 · 横屏小样</b><small>JSON · 832×480×49</small></a>
+      <a href="CloudStudio入口与计费速查卡_20260916.html"><b>Cloud Studio 计费速查卡</b><small>上一轮产物 · 入口与价格</small></a>
+    </div>
+  </div>
+  <div class="card">
+    <h3>官方外链（已实测 HTTP 200）</h3>
+    <div class="fl">
+      <a href="https://cloudstudio.net/" target="_blank"><b>Cloud Studio 主站</b><small>cloudstudio.net</small></a>
+      <a href="https://cloudstudio.net/docs/guide/billing/machine_time/how-to-purchase-compute-time/" target="_blank"><b>官方计费文档 · 机时购买</b><small>抵扣因子 / 价格表</small></a>
+      <a href="https://cloudstudio.net/docs/guide/billing/machine_time/compute-time-introduction/" target="_blank"><b>官方计费文档 · 机时介绍</b><small>何时扣费 / 如何停机</small></a>
+      <a href="https://hf-mirror.com/Comfy-Org/Wan_2.2_ComfyUI_Repackaged" target="_blank"><b>hf-mirror · Wan2.2 重打包仓</b><small>模型来源（国内可达）</small></a>
+      <a href="https://docs.comfy.org/tutorials/video/wan/wan2_2" target="_blank"><b>ComfyUI 官方 Wan2.2 教程</b><small>docs.comfy.org</small></a>
+      <a href="https://github.com/comfyanonymous/ComfyUI" target="_blank"><b>ComfyUI 仓库</b><small>133,343 stars · 2026-09-15 更新</small></a>
+      <a href="https://gh-proxy.com/https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/video_wan2_2_5B_ti2v.json" target="_blank"><b>官方工作流原文 · gh-proxy 镜像</b><small>本页工作流的来源文件（GitHub 直连失败时的兜底通道）</small></a>
+    </div>
+  </div>
+</div>
+
+<hr>
+<p class="nobar">
+  生成：2026-09-16 · 汤小龙（AI 分身）· 零元零积分（全程本机探针，云端算力未开通）<br>
+  四化归档：本地 docs ✅ · Obsidian ✅ · 乐享 ✅ · IMA ✅ · CNB/GitHub ⏸待推送
+</p>
+
+</div>
+<script>
+function cp(id, btn){
+  var t = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(t).then(function(){
+    var old = btn.innerText; btn.innerText = "✅ 已复制 " + t.length + " 字符";
+    setTimeout(function(){ btn.innerText = old; }, 1800);
+  }, function(){
+    var r = document.createRange(); r.selectNode(document.getElementById(id));
+    window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+    document.execCommand("copy"); btn.innerText = "✅ 已复制";
+    setTimeout(function(){ btn.innerText = "复制脚本"; }, 1800);
+  });
+}
+</script>
+</body>
+</html>

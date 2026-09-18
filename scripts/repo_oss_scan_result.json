@@ -1,0 +1,1255 @@
+[
+ {
+  "path": "E:\\龙虾AI主控中心",
+  "name": "龙虾AI主控中心",
+  "remote": "https://gh-proxy.com/https://github.com/lobster-ai/lobster-ai-control-center.git",
+  "branch": "main",
+  "commits": 45,
+  "last_commit": "2026-08-22 00:02:01 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 20003,
+  "size_mb": 8754.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-control-center",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Claw3D",
+  "name": "Claw3D",
+  "remote": "https://github.com/iamlukethedev/Claw3D.git",
+  "branch": "main",
+  "commits": 62,
+  "last_commit": "2026-04-25 14:39:29 -0500",
+  "authors": [
+   "AdminExcellence",
+   "dependabot[bot]",
+   "emiliovos",
+   "Gordo",
+   "gsknnft",
+   "iamlukethedev",
+   "jamartineztelecoengineer84-dotcom",
+   "Luke The Dev",
+   "Nix",
+   "robotica4us-collab",
+   "Tony Simons",
+   "Yusup Supriyadi"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 1277,
+  "size_mb": 43.6,
+  "gh_owner": "iamlukethedev",
+  "gh_repo": "Claw3D",
+  "gh": {
+   "stars": 2204,
+   "forks": 604,
+   "open_issues": 48,
+   "pushed_at": "2026-08-21T11:07:08Z",
+   "created_at": "2026-03-15T03:32:58Z",
+   "language": "TypeScript",
+   "is_fork": false,
+   "license": "MIT",
+   "desc": "Claw3D is an open source 3D engine built on OpenClaw for creating games, simulations, and high-performance 3D applications.",
+   "archived": false,
+   "homepage": "https://claw3d.ai"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Clawith\\pepelive",
+  "name": "pepelive",
+  "remote": "https://github.com/Alucard24/Rope.git",
+  "branch": "main",
+  "commits": 383,
+  "last_commit": "2024-09-23 20:32:18 +0200",
+  "authors": [
+   "alucard_24",
+   "Alucard24",
+   "aonmkugs",
+   "Hillobar",
+   "Rizwaan Salim",
+   "scf"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 1,
+  "size_mb": 0.1,
+  "gh_owner": "Alucard24",
+  "gh_repo": "Rope",
+  "gh": {
+   "stars": 459,
+   "forks": 92,
+   "open_issues": 14,
+   "pushed_at": "2024-09-23T18:56:36Z",
+   "created_at": "2024-04-07T09:50:04Z",
+   "language": "Python",
+   "is_fork": true,
+   "license": "GPL-3.0",
+   "desc": "GUI-focused roop",
+   "archived": false,
+   "homepage": null
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Clawith\\博主学习库",
+  "name": "博主学习库",
+  "remote": "",
+  "branch": "main",
+  "commits": 6,
+  "last_commit": "2026-04-11 23:20:09 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 155,
+  "size_mb": 11.5,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Clawith_official",
+  "name": "Clawith_official",
+  "remote": "https://github.com/dataelement/clawith.git",
+  "branch": "main",
+  "commits": 1117,
+  "last_commit": "2026-04-23 17:42:57 +0800",
+  "authors": [
+   "Atlas",
+   "cinder",
+   "cinderzhan",
+   "Congregalis",
+   "Eddylin03",
+   "Frankshen923",
+   "haoyi",
+   "huhp",
+   "jigangz",
+   "Kinyoo",
+   "KinyooZ",
+   "liaozip",
+   "lidpeng",
+   "lijiajun1997",
+   "little_peng",
+   "Longado",
+   "lu-ang",
+   "Matt Van Horn",
+   "Orange",
+   "QinRui"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 335,
+  "size_mb": 5.5,
+  "gh_owner": "dataelement",
+  "gh_repo": "clawith",
+  "gh": {
+   "stars": 4141,
+   "forks": 699,
+   "open_issues": 330,
+   "pushed_at": "2026-08-27T02:55:53Z",
+   "created_at": "2026-03-03T04:58:21Z",
+   "language": "Python",
+   "is_fork": false,
+   "license": "Apache-2.0",
+   "desc": "Your First AI Agents Company",
+   "archived": false,
+   "homepage": "https://www.clawith.ai"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\cnb_repos\\NPC_Hermes_Gateway",
+  "name": "NPC_Hermes_Gateway",
+  "remote": "https://cnb.cool/TJF19770107/NPC_Hermes_Gateway.git",
+  "branch": "main",
+  "commits": 20,
+  "last_commit": "2026-05-02 02:15:23 +0800",
+  "authors": [
+   "cnb.bMwxU6vpAHA",
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 31,
+  "size_mb": 0.3,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\cnb_repos\\NPC_Hermes_Gateway_remote",
+  "name": "NPC_Hermes_Gateway_remote",
+  "remote": "https://cnb.cool/TJF19770107/NPC_Hermes_Gateway.git",
+  "branch": "main",
+  "commits": 21,
+  "last_commit": "2026-05-02 02:02:46 +0800",
+  "authors": [
+   "cnb.bMwxU6vpAHA"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 15,
+  "size_mb": 0.2,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Codex",
+  "name": "Codex",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-codex.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:12 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 10703,
+  "size_mb": 1447.5,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-codex",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Codex++",
+  "name": "Codex++",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-codex-plus.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:18 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 1,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-codex-plus",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\config",
+  "name": "config",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-config.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:01 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 6,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-config",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Hermes",
+  "name": "Hermes",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-hermes.git",
+  "branch": "main",
+  "commits": 144,
+  "last_commit": "2026-05-11 13:42:45 +0400",
+  "authors": [
+   "Brad Mills",
+   "fathah",
+   "Fathah KA",
+   "J Diaz",
+   "Joathan Souza",
+   "Josh Müller",
+   "Leandro Piccione",
+   "liudashuang",
+   "MillsAirCode",
+   "Ricardo-M-L",
+   "Snow_Up",
+   "uni.lorenzo.a@gmail.com",
+   "yuj"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 210,
+  "size_mb": 17.5,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-hermes",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Hermes_official\\hermes-web-ui",
+  "name": "hermes-web-ui",
+  "remote": "https://github.com/EKKOLearnAI/hermes-web-ui.git",
+  "branch": "main",
+  "commits": 204,
+  "last_commit": "2026-04-26 22:59:43 +0800",
+  "authors": [
+   "356252190-star",
+   "Burak",
+   "cl1107",
+   "cuiliang",
+   "ekko",
+   "later0day",
+   "mysoul12138",
+   "P2K0",
+   "Shentar",
+   "ww",
+   "Zhicheng Han",
+   "zksnet",
+   "灵感屋"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 813,
+  "size_mb": 45.4,
+  "gh_owner": "EKKOLearnAI",
+  "gh_repo": "hermes-web-ui",
+  "gh": {
+   "stars": 10909,
+   "forks": 1315,
+   "open_issues": 356,
+   "pushed_at": "2026-09-07T09:24:20Z",
+   "created_at": "2026-04-11T07:38:18Z",
+   "language": "TypeScript",
+   "is_fork": false,
+   "license": "NOASSERTION",
+   "desc": "Web dashboard for Hermes Agent — multi-platform AI chat, session management, scheduled jobs, usage analytics ",
+   "archived": false,
+   "homepage": "https://hermes-studio.ai"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\lobster_templates\\templates",
+  "name": "templates",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-templates.git",
+  "branch": "main",
+  "commits": 3,
+  "last_commit": "2026-05-29 17:59:26 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 112,
+  "size_mb": 1.1,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-templates",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Marvis",
+  "name": "Marvis",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-marvis.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:46 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 20003,
+  "size_mb": 153.2,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-marvis",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Obsidian",
+  "name": "Obsidian",
+  "remote": "https://github.com/TJF19770107/lobster-knowledge-base.git",
+  "branch": "fresh-main",
+  "commits": 4,
+  "last_commit": "2026-09-06 08:31:25 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": true,
+  "files": 1384,
+  "size_mb": 381.9,
+  "gh_owner": "TJF19770107",
+  "gh_repo": "lobster-knowledge-base",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\Obsidian_E_bak_20260902",
+  "name": "Obsidian_E_bak_20260902",
+  "remote": "https://github.com/TJF19770107/lobster-knowledge-base.git",
+  "branch": "fresh-main",
+  "commits": 4,
+  "last_commit": "2026-09-06 08:31:25 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": true,
+  "files": 1384,
+  "size_mb": 381.9,
+  "gh_owner": "TJF19770107",
+  "gh_repo": "lobster-knowledge-base",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\orca-jiedan-pr30-fix",
+  "name": "orca-jiedan-pr30-fix",
+  "remote": "https://TJF19770107:3VZT1978ZS8pYcuI2fZElbXXxBH@cnb.cool/TJF19770107/orca-jiedan.git",
+  "branch": "main",
+  "commits": 115,
+  "last_commit": "2026-08-11 23:47:07 +0800",
+  "authors": [
+   "Claude Code",
+   "cnb.bMwxU6vpAHA",
+   "codebuddy",
+   "CodeBuddy",
+   "codex",
+   "ORCA Fleet",
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 1878,
+  "size_mb": 27.8,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\paperclip",
+  "name": "paperclip",
+  "remote": "https://github.com/paperclipai/paperclip.git",
+  "branch": "master",
+  "commits": 2283,
+  "last_commit": "2026-04-20 16:03:57 -0500",
+  "authors": [
+   "Aaron",
+   "adamrobbie",
+   "Aditya Sasidhar",
+   "AiMagic5000",
+   "akhater",
+   "Alaa Alghazouli",
+   "Albert Le Batteux",
+   "albttx",
+   "Allen Huang",
+   "amit221",
+   "Andrew Orobator",
+   "Antonio",
+   "Aron Prins",
+   "Arthur R Longbottom",
+   "Asish Kumar",
+   "bittoby",
+   "Brandon Woo",
+   "Chris Farhood",
+   "Chris Schneider",
+   "chrisschwer"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 3515,
+  "size_mb": 92.7,
+  "gh_owner": "paperclipai",
+  "gh_repo": "paperclip",
+  "gh": {
+   "stars": 80150,
+   "forks": 14713,
+   "open_issues": 5384,
+   "pushed_at": "2026-09-07T09:06:08Z",
+   "created_at": "2026-03-02T15:01:51Z",
+   "language": "TypeScript",
+   "is_fork": false,
+   "license": "MIT",
+   "desc": "The open-source app everyone uses to manage agents at work",
+   "archived": false,
+   "homepage": "https://paperclip.ing"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\RunJobs",
+  "name": "RunJobs",
+  "remote": "https://gitee.com/mirrors/RunJobs.git",
+  "branch": "HEAD",
+  "commits": 0,
+  "last_commit": "",
+  "authors": [],
+  "has_readme": false,
+  "has_license": false,
+  "files": 0,
+  "size_mb": 0.0,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\skill_knowledge",
+  "name": "skill_knowledge",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-skill-knowledge.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:25 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 51,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-skill-knowledge",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\templates",
+  "name": "templates",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-templates.git",
+  "branch": "main",
+  "commits": 3,
+  "last_commit": "2026-05-29 17:59:26 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 1259,
+  "size_mb": 84.6,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-templates",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\tools",
+  "name": "tools",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-tools.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:12 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 226,
+  "size_mb": 477.4,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-tools",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\vnpy_data",
+  "name": "vnpy_data",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-vnpy-data.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:32 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 1,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-vnpy-data",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\vnpy_home",
+  "name": "vnpy_home",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-vnpy-home.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:03:06 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 1,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-vnpy-home",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\WorkBuddy",
+  "name": "WorkBuddy",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-workbuddy.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:15 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 3,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-workbuddy",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\个人笔记库",
+  "name": "个人笔记库",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-personal-notes.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:39 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 2,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-personal-notes",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\共享技能库",
+  "name": "共享技能库",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-shared-skills.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:50 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 337,
+  "size_mb": 2.9,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-shared-skills",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\共享技能库\\Binance-Skills-Hub",
+  "name": "Binance-Skills-Hub",
+  "remote": "https://github.com/binance/binance-skills-hub.git",
+  "branch": "main",
+  "commits": 112,
+  "last_commit": "2026-05-22 17:05:17 +0700",
+  "authors": [
+   "Alexander Tanti",
+   "alplabin",
+   "github-actions",
+   "github-actions[bot]",
+   "theo-s68"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 82,
+  "size_mb": 0.5,
+  "gh_owner": "binance",
+  "gh_repo": "binance-skills-hub",
+  "gh": {
+   "stars": 1018,
+   "forks": 221,
+   "open_issues": 64,
+   "pushed_at": "2026-09-03T04:28:03Z",
+   "created_at": "2026-03-03T08:15:46Z",
+   "language": "JavaScript",
+   "is_fork": false,
+   "license": null,
+   "desc": "Binance Skills Hub is an open skills marketplace that gives AI agents native access to crypto",
+   "archived": false,
+   "homepage": ""
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\共享知识库",
+  "name": "共享知识库",
+  "remote": "https://TJF19770107:[REDACTED-SECRET]@github.com/TJF19770107/my-ai-clone.git",
+  "branch": "main",
+  "commits": 0,
+  "last_commit": "",
+  "authors": [],
+  "has_readme": false,
+  "has_license": false,
+  "files": 17103,
+  "size_mb": 709.8,
+  "gh_owner": "TJF19770107",
+  "gh_repo": "my-ai-clone",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\小说稿件",
+  "name": "小说稿件",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-novel-manuscripts.git",
+  "branch": "main",
+  "commits": 3,
+  "last_commit": "2026-05-29 18:00:00 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 595,
+  "size_mb": 5.2,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-novel-manuscripts",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身",
+  "name": "我的AI分身",
+  "remote": "https://github.com/TJF19770107/my-ai-clone.git",
+  "branch": "main",
+  "commits": 21,
+  "last_commit": "2026-08-14 16:37:36 +0800",
+  "authors": [
+   "hermes",
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 20006,
+  "size_mb": 3078.7,
+  "gh_owner": "TJF19770107",
+  "gh_repo": "my-ai-clone",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\AI视频生产线",
+  "name": "AI视频生产线",
+  "remote": "https://cnb.cool/TJF19770107/ai-video-pipeline.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-08-29 00:10:14 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 6,
+  "size_mb": 0.0,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\CODEX量化策略20260615",
+  "name": "CODEX量化策略20260615",
+  "remote": "https://cnb:5Srjzf13c4wUiDM5bxy0a9panlG@cnb.cool/TJF19770107/orca-quant.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-08-06 02:08:49 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 20061,
+  "size_mb": 279.2,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\opencodex",
+  "name": "opencodex",
+  "remote": "https://github.com/lidge-jun/opencodex.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-08-22 16:18:49 +0900",
+  "authors": [
+   "bitkyc08-arch"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 13878,
+  "size_mb": 330.3,
+  "gh_owner": "lidge-jun",
+  "gh_repo": "opencodex",
+  "gh": {
+   "stars": 13752,
+   "forks": 1032,
+   "open_issues": 116,
+   "pushed_at": "2026-09-07T11:07:41Z",
+   "created_at": "2026-06-18T23:03:18Z",
+   "language": "TypeScript",
+   "is_fork": false,
+   "license": "MIT",
+   "desc": "Universal provider proxy for OpenAI Codex & Claude Code — use any LLM (Claude, Gemini, Grok, DeepSeek, Ollama…) with Codex CLI, App, SDK, and Claude Code",
+   "archived": false,
+   "homepage": "https://opencodex.me/"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\VibeTrading",
+  "name": "VibeTrading",
+  "remote": "https://github.com/HKUDS/Vibe-Trading",
+  "branch": "main",
+  "commits": 318,
+  "last_commit": "2026-06-17 01:30:35 +0800",
+  "authors": [
+   "ai7eam-dev",
+   "Andrew Barnes",
+   "ArthurXi",
+   "bhlt",
+   "BigNounce",
+   "Brandy Good",
+   "chaohuang-ai",
+   "Chengcheng Ding",
+   "d 🔹",
+   "DoubleSky123",
+   "Faijan  Khan",
+   "gyx09212214-prog",
+   "Hamza Mobeen",
+   "Haozhe Wu",
+   "Hinotobi",
+   "Hitesh P",
+   "jiakeboge",
+   "Kai Lüttmann",
+   "leeadmin",
+   "LemonCANDY42"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 2198,
+  "size_mb": 62.1,
+  "gh_owner": "HKUDS",
+  "gh_repo": "Vibe-Trading",
+  "gh": {
+   "stars": 32907,
+   "forks": 5359,
+   "open_issues": 16,
+   "pushed_at": "2026-09-06T18:44:06Z",
+   "created_at": "2026-04-01T09:52:20Z",
+   "language": "Python",
+   "is_fork": false,
+   "license": "MIT",
+   "desc": "\"Vibe-Trading: Your Personal Trading Agent\"",
+   "archived": false,
+   "homepage": "https://vibetrading.wiki/"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\企业微信群定制接单项目",
+  "name": "企业微信群定制接单项目",
+  "remote": "https://cnb.cool/TJF19770107/orca-jiedan.git",
+  "branch": "main",
+  "commits": 228,
+  "last_commit": "2026-09-07 12:46:12 +0800",
+  "authors": [
+   "Claude Code",
+   "cnb.bMwxU6vpAHA",
+   "codebuddy",
+   "CodeBuddy",
+   "codex",
+   "hermes",
+   "ORCA Fleet",
+   "TJF19770107",
+   "WorkBuddy"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 2959,
+  "size_mb": 607.0,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\多智能体舰队编排",
+  "name": "多智能体舰队编排",
+  "remote": "",
+  "branch": "main",
+  "commits": 10,
+  "last_commit": "2026-07-19 12:19:17 +0800",
+  "authors": [
+   "TJF19770107",
+   "WorkBuddy"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 154,
+  "size_mb": 1.1,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\知识库",
+  "name": "知识库",
+  "remote": "https://TJF19770107:[REDACTED-SECRET]@github.com/TJF19770107/my-ai-clone.git",
+  "branch": "main",
+  "commits": 0,
+  "last_commit": "",
+  "authors": [],
+  "has_readme": false,
+  "has_license": false,
+  "files": 17103,
+  "size_mb": 709.8,
+  "gh_owner": "TJF19770107",
+  "gh_repo": "my-ai-clone",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\网盘课程资源知识萃取与沉淀体系建设",
+  "name": "网盘课程资源知识萃取与沉淀体系建设",
+  "remote": "https://cnb:5Srjzf13c4wUiDM5bxy0a9panlG@cnb.cool/TJF19770107/orca-wangpan.git",
+  "branch": "main",
+  "commits": 8,
+  "last_commit": "2026-08-06 05:10:10 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 3107,
+  "size_mb": 381.9,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\网盘课程资源知识萃取与沉淀体系重建",
+  "name": "网盘课程资源知识萃取与沉淀体系重建",
+  "remote": "https://github.com/TJF19770107/side-project-knowledge-base.git",
+  "branch": "master",
+  "commits": 8,
+  "last_commit": "2026-07-19 20:16:00 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 47,
+  "size_mb": 0.1,
+  "gh_owner": "TJF19770107",
+  "gh_repo": "side-project-knowledge-base",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\豆包主会话全集",
+  "name": "豆包主会话全集",
+  "remote": "",
+  "branch": "master",
+  "commits": 21,
+  "last_commit": "2026-08-26 01:03:27 +0800",
+  "authors": [
+   "lobster-ai"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 4162,
+  "size_mb": 1007.1,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\赛事预测分析系统",
+  "name": "赛事预测分析系统",
+  "remote": "",
+  "branch": "master",
+  "commits": 4,
+  "last_commit": "2026-07-20 14:15:41 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": false,
+  "files": 366,
+  "size_mb": 0.9,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\我的AI分身\\闲鱼自动化系统",
+  "name": "闲鱼自动化系统",
+  "remote": "https://cnb:5Srjzf13c4wUiDM5bxy0a9panlG@cnb.cool/TJF19770107/orca-xianyu.git",
+  "branch": "main",
+  "commits": 11,
+  "last_commit": "2026-08-06 05:10:12 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": true,
+  "has_license": true,
+  "files": 896,
+  "size_mb": 10.4,
+  "gh_owner": null,
+  "gh_repo": null
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\日志",
+  "name": "日志",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-logs.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:19 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 4,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-logs",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\核心程序",
+  "name": "核心程序",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-core-programs.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:03:12 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 785,
+  "size_mb": 4.6,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-core-programs",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\桥接配置",
+  "name": "桥接配置",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-bridge-config.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:03:20 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 2,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-bridge-config",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\浏览器桥接",
+  "name": "浏览器桥接",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-browser-bridge.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:43 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 112,
+  "size_mb": 0.8,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-browser-bridge",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\终端隔离",
+  "name": "终端隔离",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-terminal-isolation.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:35 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 458,
+  "size_mb": 9.2,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-terminal-isolation",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\豆包Agent",
+  "name": "豆包Agent",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-agent-doubao.git",
+  "branch": "main",
+  "commits": 2,
+  "last_commit": "2026-05-29 17:55:34 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 425,
+  "size_mb": 5.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-agent-doubao",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\豆包学习材料",
+  "name": "豆包学习材料",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-learning-materials.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:54 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 4,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-learning-materials",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\豆包桥接方案",
+  "name": "豆包桥接方案",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-bridge-solutions.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:06 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 14,
+  "size_mb": 0.1,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-bridge-solutions",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\迭代档案",
+  "name": "迭代档案",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-iteration-archive.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:01:58 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 8,
+  "size_mb": 0.1,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-iteration-archive",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\配置",
+  "name": "配置",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-config.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:01 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 7,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-config",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\量化工具组",
+  "name": "量化工具组",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-quant-tools.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:03:16 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 2,
+  "size_mb": 0.0,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-quant-tools",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ },
+ {
+  "path": "E:\\龙虾AI主控中心\\龙虾远程控制包",
+  "name": "龙虾远程控制包",
+  "remote": "https://lobster-ai:[REDACTED-SECRET]@github.com/lobster-ai/lobster-ai-remote-control.git",
+  "branch": "main",
+  "commits": 1,
+  "last_commit": "2026-05-29 01:02:28 +0800",
+  "authors": [
+   "TJF19770107"
+  ],
+  "has_readme": false,
+  "has_license": false,
+  "files": 32,
+  "size_mb": 48.2,
+  "gh_owner": "lobster-ai",
+  "gh_repo": "lobster-ai-remote-control",
+  "gh": {
+   "error": "HTTP Error 404: Not Found"
+  }
+ }
+]
