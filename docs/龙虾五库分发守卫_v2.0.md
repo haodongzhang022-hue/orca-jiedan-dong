@@ -71,6 +71,27 @@ node "G:\WorkBuddy_Data\binaries\node\cli-connector-packages\node_modules\@cnbco
 
 **必须清代理**：`-c http.proxy= -c https.proxy=`（全局 `http.proxy=127.0.0.1:7897` 在 7897 DOWN 时会让直连也失败）。
 
+## 3.5 ★ 假成功第 8 形态：网络探针层错配
+
+**2026-09-19 实证**：`socket.create_connection(('github.com', 443))` **3/3 全通、0.13s**
+（快得不正常），同一时刻：
+
+| 探测方式 | 结果 |
+|---|---|
+| Python `socket` connect | ✅ 3/3，0.13s |
+| `curl https://github.com/` | ❌ `http_code=000` |
+| `git ls-remote` | ❌ `Failed to connect ... after 21084 ms` |
+| `ssh -T git@github.com` | ✅ 完成握手（仅 `Permission denied (publickey)`） |
+
+**结论**：socket 层 connect 成功 ≠ 端到端可达（链路中被代答/透明拦截）。
+**只用 socket 探连通 = 系统性假阳性。**
+
+**判活铁律**：连通判定必须走到**应用层**（TLS 握手 + HTTP 请求）。脚本内 `http_window()` 即用
+`http.client.HTTPSConnection` 发 `HEAD /` 实现；`tcp_window()` 只用于测本机端口，不用于判外网可达。
+
+顺带结论：**HTTPS 被拦时 SSH 常仍可达**——所以 `github_channel()` 把 SSH 旁路纳入选路（前提：公钥已在 GitHub 注册）。
+本机 `~/.ssh/id_ed25519`、`id_rsa` 均**未注册**，当前旁路不可用。
+
 ## 4. ★ 目标远端必须从仓库自身解析（血案）
 
 **2026-09-19 事故**：脚本把 CNB 目标 URL 硬编码成 `lobster-knowledge-base.git`，
