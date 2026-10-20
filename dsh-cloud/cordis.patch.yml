@@ -1,0 +1,41 @@
+# =============================================================================
+# CNB 云端 dsh web 模型配置（用户覆盖层）
+# =============================================================================
+# 模型全部指向容器内的 CNB LLM Adapter（127.0.0.1:15741），由它负责：
+#   标准 OpenAI 接口  →  CNB 非标准网关 + 强制流式 + 非流式聚合
+#   CNB 失败时自动回落到 FALLBACK_BASE（若配置）
+#
+# 为什么不直接填 CNB 网关地址：
+#   1) CNB 网关路径是 .../-/ai/chat/completions，不是标准 /v1 前缀
+#   2) CNB 网关仅支持 stream=true，非流式直接 400 code 11101
+#   dsh 的 llm-pi-ai provider 无法直接适配这两条，必须经适配层。
+#
+# apiKeyEnv 指向 CNB_ADAPTER_KEY：适配层自身会忽略这个 key 并注入真实
+# CNB_TOKEN，此处仅为满足 provider schema 必填项，不放真实密钥。
+# =============================================================================
+
+- id: llm-pi-ai
+  name: '@deepseek-ai/dsh-llm-pi-ai'
+  config:
+    providers:
+      cnb-free:
+        displayName: CNB 免费 DeepSeek V4 Flash
+        apiKeyEnv: CNB_ADAPTER_KEY
+        api: openai-completions
+        baseURL: http://127.0.0.1:15741/v1
+        models:
+          - id: deepseek-v4-flash
+            name: DeepSeek V4 Flash (CNB Free)
+            contextWindow: 128000
+          - id: deepseek-r1
+            name: DeepSeek R1 (CNB Free)
+            contextWindow: 128000
+          - id: qwen3-235b-a22b
+            name: Qwen3 235B (CNB Free)
+            contextWindow: 128000
+
+- id: agent-default-model
+  name: '@deepseek-ai/dsh-agent-default-model'
+  config:
+    provider: cnb-free
+    model: deepseek-v4-flash

@@ -55,6 +55,28 @@ else
   echo "[cnb-start] ⚠️ /opt/deepseek-harness/harness_proxy.py 不存在，跳过 Harness 启动"
 fi
 
+# ---- 3.5 启动 dsh + ds-bot 群聊界面（后台，对外 8830 / 内部 8831）----
+# 这是第三条并行通道：前两条（Hermes 6060 / Harness 8080）都没有多 bot 群聊界面。
+# dsh 禁止绑 0.0.0.0 且 /api 有 Host 白名单，故必须经 host_rewrite_proxy 转一层。
+if [ -f /opt/dsh-cloud/entrypoint.sh ]; then
+  echo "[cnb-start] 启动 dsh + ds-bot 群聊界面（对外 8830 / 内部 8831）..."
+  nohup bash /opt/dsh-cloud/entrypoint.sh >/tmp/dsh-cloud.log 2>&1 &
+  echo "[cnb-start] dsh-cloud PID: $!"
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    sleep 1
+    if (echo >/dev/tcp/127.0.0.1/8830) 2>/dev/null; then
+      echo "[cnb-start] ✅ dsh 群聊界面已就绪（Host 代理监听 0.0.0.0:8830）"
+      break
+    fi
+    if [ "$i" = "10" ]; then
+      echo "[cnb-start] ⚠️ 8830 未在 10 秒内就绪，查看 /tmp/dsh-cloud.log"
+      tail -20 /tmp/dsh-cloud.log 2>/dev/null || true
+    fi
+  done
+else
+  echo "[cnb-start] ⚠️ /opt/dsh-cloud/entrypoint.sh 不存在，跳过 dsh 群聊界面"
+fi
+
 # ---- 4. 前台运行 Hermes Web UI（官方入口，端口 6060）----
 echo "[cnb-start] 启动 Hermes Web UI (PORT=${PORT:-6060}, BIND_HOST=${BIND_HOST:-0.0.0.0})..."
 cd /app || cd /

@@ -59,8 +59,84 @@ ENV HERMES_WEB_UI_XAI_CALLBACK_BIND_HOST=0.0.0.0
 ENV HERMES_ALLOW_ROOT_GATEWAY=1
 ENV PATH=/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+# =============================================================================
+# ---- 8. 第三层：dsh + ds-bot 云端群聊界面（对外 8830 / 内部 8831）----
+# =============================================================================
+# 为什么需要这一层：
+#   前两层（Hermes 6060 / Harness 8080）都没有「多 bot 群聊可视化界面」。
+#   dsh + ds-bot 才有 Chief + 多个 bot 实时对话的前端，这是本层唯一目的。
+#
+# 两个必须绕过、已在源码层证实的硬约束：
+#   ① dsh 禁止 --host 0.0.0.0
+#      源码 lib/startup.js: program.error("--host 0.0.0.0 is intentionally
+#      not supported yet for safety: it would expose remote code execution")
+#   ② /api 有 browser-trust fence，非信任 Host 一律 403
+#      本机实测：正常 Host = 401（放行）；伪造 cnb.run = 403（拒绝）
+#   → 因此 dsh 只绑 127.0.0.1:8831，由 host_rewrite_proxy.py 改写 Host
+#     后暴露到 0.0.0.0:8830。实测经代理后伪造 Host 返回 401 而非 403。
+#
+# 模型链路：dsh → 127.0.0.1:15741（CNB LLM Adapter）
+#           → CNB 免费网关 deepseek-v4-flash（0 积分）
+#           → 失败回落 FALLBACK_BASE
+# =============================================================================
+
+# ---- 8.1 Node 22（dsh 需要现代 Node；基础镜像版本不确定，不满足则升级）----
+RUN set -eux; \
+    need=1; \
+    if command -v node >/dev/null 2>&1; then \
+      cur="$(node -v | sed 's/^v//')"; \
+      major="$(echo "$cur" | cut -d. -f1)"; \
+      echo "[node] 当前版本 v$cur"; \
+      if [ "$major" -ge 22 ]; then need=0; echo "[node] 已满足 >=22，跳过升级"; fi; \
+    fi; \
+    if [ "$need" = "1" ]; then \
+      echo "[node] 升级到 v22.22.2（npmmirror 二进制源）..."; \
+      arch="$(dpkg --print-architecture 2>/dev/null || echo amd64)"; \
+      case "$arch" in \
+        amd64) narch=x64 ;; \
+        arm64) narch=arm64 ;; \
+        *) narch=x64 ;; \
+      esac; \
+      curl -fsSL "https://registry.npmmirror.com/-/binary/node/v22.22.2/node-v22.22.2-linux-${narch}.tar.xz" -o /tmp/node.tar.xz; \
+      tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+          --exclude=CHANGELOG.md --exclude=LICENSE --exclude=README.md; \
+      rm -f /tmp/node.tar.xz; \
+      node -v; \
+    fi
+
+# ---- 8.2 pnpm + dsh CLI ----
+RUN npm install -g pnpm@9 --registry=https://registry.npmmirror.com --no-audit --no-fund \
+ && npm install -g @deepseek-ai/dsh@0.2.1-rc.2 --registry=https://registry.npmmirror.com --no-audit --no-fund \
+ && dsh --version
+
+# ---- 8.3 适配层与代理脚本 ----
+COPY dsh-cloud/cnb_llm_adapter.py /opt/dsh-cloud/cnb_llm_adapter.py
+COPY dsh-cloud/host_rewrite_proxy.py /opt/dsh-cloud/host_rewrite_proxy.py
+COPY dsh-cloud/entrypoint.sh /opt/dsh-cloud/entrypoint.sh
+COPY dsh-cloud/profile-package.json /opt/dsh-cloud/profile-package.json
+COPY dsh-cloud/cordis.patch.yml /opt/dsh-cloud/cordis.patch.yml
+RUN chmod +x /opt/dsh-cloud/entrypoint.sh
+
+# ---- 8.4 预装 dsh web profile + ds-bot，固化进镜像（避免每次启动重装）----
+ENV DSH_HOME=/opt/dsh-home
+RUN set -eux; \
+    mkdir -p "$DSH_HOME/profiles/web"; \
+    cp /opt/dsh-cloud/profile-package.json "$DSH_HOME/profiles/web/package.json"; \
+    cp /opt/dsh-cloud/cordis.patch.yml "$DSH_HOME/profiles/web/cordis.patch.yml"; \
+    cd "$DSH_HOME/profiles/web"; \
+    pnpm install --registry=https://registry.npmmirror.com 2>&1 | tail -8 || true; \
+    dsh --profile web --dump-config > /opt/dsh-cloud/dump.txt 2>&1 || true; \
+    { \
+      echo "node      : $(node -v 2>&1)"; \
+      echo "dsh       : $(dsh --version 2>&1 | head -1)"; \
+      if grep -q "id: bot" /opt/dsh-cloud/dump.txt; then echo "ds-bot    : 已挂载 ✅"; else echo "ds-bot    : ⚠️ 未挂载（启动时会重试）"; fi; \
+      if grep -q "id: llm-pi-ai" /opt/dsh-cloud/dump.txt; then echo "llm-pi-ai : 已配置 ✅"; else echo "llm-pi-ai : ⚠️ 未配置"; fi; \
+      if grep -q "teamorouter\|cnb-free" /opt/dsh-cloud/dump.txt; then echo "provider  : cnb-free ✅"; else echo "provider  : ⚠️ 未找到"; fi; \
+    } > /opt/dsh-cloud/install-report.txt 2>&1; \
+    cat /opt/dsh-cloud/install-report.txt
+
 # ---- 6. 端口：6060(Hermes Web UI) + 8080(DeepSeek Harness) ----
-EXPOSE 6060 8651 56121 8080
+EXPOSE 6060 8651 56121 8080 8830 8831 15741
 
 # ---- 7. 启动入口：同时拉起两个服务 ----
 COPY .ide/start.sh /usr/local/bin/cnb-start.sh

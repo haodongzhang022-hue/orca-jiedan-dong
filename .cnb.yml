@@ -73,6 +73,11 @@ $:
             - deepseek-harness/run_harness.sh
             - deepseek-harness/entrypoint.sh
             - deploy/dsh-desktop/gateway_3080.py
+            - dsh-cloud/cnb_llm_adapter.py
+            - dsh-cloud/host_rewrite_proxy.py
+            - dsh-cloud/entrypoint.sh
+            - dsh-cloud/profile-package.json
+            - dsh-cloud/cordis.patch.yml
             - .ide/start.sh
         # 构建失败时的回退镜像（自带 code-server，可进 WebIDE）
         image: cnbcool/default-dev-env:latest
@@ -189,3 +194,53 @@ main:
         - name: push dsh-desktop reusable image
           script: |
             docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-2.0.3
+    # ---- dsh-cloud 多 Bot 群聊界面镜像（第三层：Hermes + Harness + dsh/ds-bot）----
+    # 目的：把「.ide/Dockerfile 到底能不能构建成功」这件事变成可自动验证，
+    #       不再依赖人手点云原生开发才发现构建挂了。
+    # 背景：上面两个 job 的 ifModify 都不含 .ide/Dockerfile 与 dsh-cloud/*，
+    #       改了这些文件 push 到 main 会被静默跳过——这是 2026-10-20 查出的真缺陷。
+    - name: build-dsh-cloud-image
+      services:
+        - docker
+      ifModify:
+        - .ide/Dockerfile
+        - .ide/start.sh
+        - dsh-cloud/cnb_llm_adapter.py
+        - dsh-cloud/host_rewrite_proxy.py
+        - dsh-cloud/entrypoint.sh
+        - dsh-cloud/profile-package.json
+        - dsh-cloud/cordis.patch.yml
+        - dsh-cloud/selftest.py
+        - adapters/anthropic_to_cnb.py
+        - deepseek-harness/harness_proxy.py
+        - deploy/dsh-desktop/gateway_3080.py
+      stages:
+        - name: build dsh-cloud image
+          script: |
+            set -e
+            echo "==== 构建上下文自检（缺文件会在这里先炸，不用等 docker 报错）===="
+            for f in .ide/Dockerfile .ide/start.sh \
+                     dsh-cloud/entrypoint.sh dsh-cloud/cnb_llm_adapter.py \
+                     dsh-cloud/host_rewrite_proxy.py dsh-cloud/profile-package.json \
+                     dsh-cloud/cordis.patch.yml \
+                     adapters/anthropic_to_cnb.py \
+                     deepseek-harness/harness_proxy.py \
+                     deploy/dsh-desktop/gateway_3080.py; do
+              if [ -f "$f" ]; then echo "[ok] $f"; else echo "[FATAL] 缺文件 $f"; exit 1; fi
+            done
+            echo "==== docker build ===="
+            docker build -f .ide/Dockerfile \
+              -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-cloud-1.0.0 .
+        - name: verify image layers
+          script: |
+            IMG=${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-cloud-1.0.0
+            echo "==== 镜像内容层校验（不只看 build 成功，要看里面真有东西）===="
+            docker run --rm --entrypoint sh $IMG -c '
+              echo "--- node ---"; node --version || echo "(node 缺失)"
+              echo "--- dsh ---"; dsh --version || ls /usr/local/lib/node_modules/@deepseek-ai/dsh/package.json || echo "(dsh 缺失)"
+              echo "--- ds-bot ---"; ls -d /root/.dsh/profiles/web/node_modules/ds-bot 2>/dev/null || echo "(ds-bot 由 entrypoint 首启安装)"
+              echo "--- dsh-cloud 脚本 ---"; ls -l /opt/dsh-cloud/ 2>/dev/null || echo "(未 COPY)"
+            ' || echo "[warn] 内容层校验未通过，但保留留证输出，不阻断推送"
+        - name: push dsh-cloud image
+          script: |
+            docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:dsh-cloud-1.0.0
